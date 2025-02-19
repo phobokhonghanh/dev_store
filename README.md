@@ -38,3 +38,5 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 # dev_store
 
 dev_store
+
+mantine.dev
