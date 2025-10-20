@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'ThạchCaoPro | Giải pháp chuyên nghiệp',
-  description: 'Cung cấp giải pháp trần và vách ngăn thạch cao thẩm mỹ, bền vững và an toàn.',
+  title: 'Giải pháp chuyên nghiệp',
+  description: 'Cung cấp giải pháp và sáng tạo tính năng.',
 };
 
 export default function RootLayout({
@@ -29,11 +29,15 @@ export default function RootLayout({
     <html lang="vi" data-mantine-color-scheme="light">
       <head>
         <ColorSchemeScript />
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <MantineProvider><AuthProvider>{children}</AuthProvider></MantineProvider>
+        <MantineProvider defaultColorScheme="dark"><AuthProvider>{children}</AuthProvider></MantineProvider>
       </body>
     </html>
   );
