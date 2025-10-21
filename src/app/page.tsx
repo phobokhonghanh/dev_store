@@ -12,11 +12,9 @@ import { Box } from '@mantine/core';
 export default function HomePage() {
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Header />
       <Box style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Welcome />
       </Box>
-      <Footer />
     </Box>
   );
 }

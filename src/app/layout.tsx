@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-// Import CSS và Provider của Mantine
-import '@mantine/core/styles.css';
 import { MantineProvider, ColorSchemeScript } from '@mantine/core';
 import { AuthProvider } from "@/hooks/contexts/auth";
+import { Header } from "@/components/header/Header";
+import { Footer } from "@/components/footer/Footer";
+
+import "./globals.css";
+import '@mantine/core/styles.css';
+import '@mantine/carousel/styles.css';
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -37,7 +41,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <MantineProvider defaultColorScheme="dark"><AuthProvider>{children}</AuthProvider></MantineProvider>
+        <MantineProvider defaultColorScheme="dark">
+          <Header />
+            <AuthProvider>{children}</AuthProvider>
+          <Footer />
+        </MantineProvider>
       </body>
     </html>
   );

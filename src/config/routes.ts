@@ -9,6 +9,7 @@ export const PUBLIC_ROUTES = [
     PATHS.home,
     PATHS.forgotPassword,
     PATHS.dashboard,
+    PATHS.feature1,
 ];
 
 /**

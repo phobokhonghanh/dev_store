@@ -2,7 +2,9 @@
 export const PATHS = {
   // Public routes
   home: '/',
-
+  feature1: '/feature/feature1',
+  contact: '/contact',
+  
   // Auth routes (dành cho người dùng chưa đăng nhập)
   login: '/login',
   register: '/register',

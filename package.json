@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@mantine/carousel": "^8.3.5",
     "@mantine/core": "^8.3.5",
     "@mantine/form": "^8.3.5",
     "@mantine/hooks": "^8.3.5",
@@ -16,6 +17,8 @@
     "@mantine/notifications": "^8.3.5",
     "@tabler/icons-react": "^3.35.0",
     "axios": "^1.12.2",
+    "embla-carousel-autoplay": "^8.6.0",
+    "embla-carousel-react": "^8.6.0",
     "next": "15.5.5",
     "postcss-nesting": "^13.0.2",
     "react": "^19.2.0",
