@@ -4,7 +4,10 @@ export const PATHS = {
   home: '/',
   feature1: '/feature/feature1',
   contact: '/contact',
+  features_website_thach_cao_nguyen_phong: '/features/website/thach-cao-nguyen-phong',
+  features_website_thach_cao_nguyen_phong_product: '/features/website/thach-cao-nguyen-phong/product',
   
+
   // Auth routes (dành cho người dùng chưa đăng nhập)
   login: '/login',
   register: '/register',

@@ -98,22 +98,70 @@
     font-size: var(--mantine-font-size-lg);
 }
 
-.floatingCallButton {
+.floatingActionGroup {
     position: fixed;
     bottom: rem(20px);
     right: rem(20px);
     z-index: 1000;
-    background-color: #ff4d4d;
+    display: flex;
+    flex-direction: column; /* Xếp chồng các nút */
+    gap: var(--mantine-spacing-sm);
+}
+
+.floatingActionGroup {
+    position: fixed;
+    bottom: rem(20px);
+    right: rem(20px);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column; /* Xếp chồng các nút */
+    gap: var(--mantine-spacing-sm);
+}
+
+.floatingButton {
     width: rem(60px);
     height: rem(60px);
     border-radius: 50%;
-    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
-    
-    &:hover {
-        background-color: #e60000;
-    }
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    color: white; /* Đảm bảo icon màu trắng */
+}
 
-    @media (min-width: 768px) {
-        display: none;
-    }
+/* Thêm màu cho các nút mới */
+.phoneButton {
+    background-color: #ff4d4d; /* Màu đỏ */
+    &:hover { background-color: #e60000; }
+}
+
+.zaloButton {
+    background-color: #0068FF; /* Màu Zalo */
+    &:hover { background-color: #0050c9; }
+}
+
+.facebookButton {
+    background-color: #1877F2; /* Màu Facebook */
+    &:hover { background-color: #166de0; }
+}
+
+
+/* --- THÊM MỚI: CTA CUỐI TRANG --- */
+.finalCtaSection {
+    text-align: center;
+    padding: calc(var(--mantine-spacing-xl) * 2);
+    /* background-color: var(--mantine-color-dark-8); */
+    /* background: radial-gradient(circle, rgba(182, 4, 4, 0.05) 0%, rgba(0, 0, 0, 0) 100%); */
+    background-color: rgba(255, 77, 77, 0.05);
+    border-radius: var(--mantine-radius-md);
+    border: rem(1px) solid var(--mantine-color-dark-6);
+}
+
+/* Class nhấn mạnh SĐT */
+.phoneHighlight {
+    font-size: rem(36px);
+    font-weight: 900;
+    color: #ff4d4d; /* Màu đỏ chủ đạo */
+    text-shadow: 0 0 10px #ff4d4d;
+    text-decoration: none;
+    display: block; /* Cho SĐT xuống hàng */
+    margin-top: var(--mantine-spacing-md);
+    margin-bottom: var(--mantine-spacing-lg);
 }

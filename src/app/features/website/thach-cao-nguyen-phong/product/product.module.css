@@ -1,0 +1,11 @@
+/* src/app/features/website/thach-cao-nguyen-phong/product/product.module.css */
+
+/* Chỉ giữ lại các style cho layout của trang này */
+.mainContentHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--mantine-spacing-md);
+    border-radius: var(--mantine-radius-md);
+    margin-bottom: var(--mantine-spacing-lg);
+}

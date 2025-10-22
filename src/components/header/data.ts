@@ -5,7 +5,7 @@ export const mainLinks = [
     label: 'Features 1',
     links: [
       { link: '/features/website/thach-cao-nguyen-phong', label: 'Thạch cao Nguyên Phong' },
-      { link: '/features/1-2', label: 'Feature 1.2' },
+      { link: '/features/website/thach-cao-nguyen-phong/product', label: 'Sản phẩm' },
       { link: '/features/1-3', label: 'Feature 1.3' },
     ],
   },

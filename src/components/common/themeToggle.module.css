@@ -1,0 +1,22 @@
+/* src/components/common/ThemeToggle.module.css */
+
+.icon {
+  width: rem(20px);
+  height: rem(20px);
+}
+
+.light {
+  display: block;
+
+  [data-mantine-color-scheme='dark'] & {
+    display: none;
+  }
+}
+
+.dark {
+  display: none;
+
+  [data-mantine-color-scheme='dark'] & {
+    display: block;
+  }
+}

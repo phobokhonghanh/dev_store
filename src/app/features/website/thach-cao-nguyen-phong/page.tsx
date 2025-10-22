@@ -2,10 +2,15 @@
 'use client';
 
 import { Carousel } from '@mantine/carousel';
-import { Container, Title, Text, Button, Box, Overlay, Table, Timeline, SimpleGrid, Paper, ThemeIcon, rem, ActionIcon } from '@mantine/core';
+import { 
+  Container, Title, Text, Button, Box, Overlay, Table, 
+  Timeline, SimpleGrid, Paper, ThemeIcon, rem, ActionIcon,
+  Stack, Group // <-- Thêm Stack và Group
+} from '@mantine/core';
 import Autoplay from 'embla-carousel-autoplay';
 import { useRef } from 'react';
-import { IconPhone } from '@tabler/icons-react';
+// --- Thêm icon Zalo, Facebook ---
+import { IconPhone, IconMessageCircle, IconBrandFacebook } from '@tabler/icons-react';
 
 import classes from './services.module.css';
 
@@ -40,13 +45,14 @@ export default function ThachCaoServicePage() {
 
   return (
     <>
+      {/* --- Slideshow Section (Giữ nguyên) --- */}
       <Box className={classes.carouselWrapper}>
         <Carousel
           plugins={[autoplay.current]}
           onMouseEnter={autoplay.current.stop}
           onMouseLeave={autoplay.current.reset}
           withIndicators
-          className={classes.carousel} // Class này chỉ định chiều cao 100%
+          className={classes.carousel}
         >
           {carouselImages.map((image) => (
             <Carousel.Slide key={image.src}>
@@ -86,13 +92,21 @@ export default function ThachCaoServicePage() {
                 <Table.Tbody>
                     {pricingRows}
                     <Table.Tr className={classes.tableCtaRow}>
-                        <Table.Td colSpan={3} align="center">{pricingData.cta} <Text component="a" href={`tel:${contact.phone}`} fw={700} c="red">{contact.phoneDisplay}</Text></Table.Td>
+                        {/* --- NHẤN MẠNH SĐT Ở BẢNG GIÁ --- */}
+                        <Table.Td colSpan={3} align="center">
+                          <Text fz="md" fw={500}>
+                            {pricingData.cta}{' '}
+                            <Text component="a" href={`tel:${contact.phone}`} fw={900} c="red" fz="xl" td="underline">
+                              {contact.phoneDisplay}
+                            </Text>
+                          </Text>
+                        </Table.Td>
                     </Table.Tr>
                 </Table.Tbody>
             </Table>
         </section>
 
-        {/* --- Process Section --- */}
+        {/* --- Process, Benefits, Other Services (Giữ nguyên) --- */}
         <section className={classes.section}>
             <Title order={2} className={classes.sectionTitle}>{processSteps.title}</Title>
             <Timeline active={5} bulletSize={24} lineWidth={2} color="red">
@@ -104,7 +118,6 @@ export default function ThachCaoServicePage() {
             </Timeline>
         </section>
 
-        {/* --- Benefits Section --- */}
         <section className={classes.section}>
             <Title order={2} className={classes.sectionTitle}>{benefits.title}</Title>
             <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="xl">
@@ -112,18 +125,84 @@ export default function ThachCaoServicePage() {
             </SimpleGrid>
         </section>
 
-        {/* --- Other Services Section --- */}
         <section className={classes.section}>
             <Title order={2} className={classes.sectionTitle}>{otherServices.title}</Title>
             <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="xl">
                 {otherServices.items.map(item => <InfoCard key={item.title} item={item} />)}
             </SimpleGrid>
         </section>
+        
+        {/* --- THÊM MỚI: CTA CUỐI TRANG --- */}
+        <section className={classes.section}>
+            <Paper className={classes.finalCtaSection}>
+                <Title order={2} className={classes.sectionTitle} mb="lg">{contact.finalCtaTitle}</Title>
+                <Text c="dimmed" maw={600} mx="auto">{contact.finalCtaDescription}</Text>
+                
+                {/* SĐT ĐƯỢC NHẤN MẠNH */}
+                <Text component="a" href={`tel:${contact.phone}`} className={classes.phoneHighlight}>
+                  <IconPhone size={32} style={{ marginRight: rem(10), verticalAlign: 'middle' }} />
+                  {contact.phoneDisplay}
+                </Text>
+
+                <Group justify="center" gap="md">
+                    <Button 
+                      component="a" 
+                      href={contact.zaloLink} 
+                      target="_blank" 
+                      leftSection={<IconMessageCircle size={22} />}
+                      className={classes.zaloButton}
+                      size="lg"
+                    >
+                        Chat Zalo
+                    </Button>
+                    <Button 
+                      component="a" 
+                      href={contact.facebookLink} 
+                      target="_blank" 
+                      leftSection={<IconBrandFacebook size={22} />}
+                      className={classes.facebookButton}
+                      size="lg"
+                    >
+                        Facebook Page
+                    </Button>
+                </Group>
+            </Paper>
+        </section>
+
       </Container>
-      {/* Nút gọi điện nổi (chỉ hiển thị trên mobile) */}
-      <ActionIcon component="a" href={`tel:${contact.phone}`} className={classes.floatingCallButton}>
-        <IconPhone style={{ width: '60%', height: '60%' }} stroke={1.5} />
-      </ActionIcon>
+      
+      {/* --- SỬA NÚT GỌI ĐIỆN NỔI (THÊM ZALO, FB) --- */}
+      <Stack className={classes.floatingActionGroup}>
+          <ActionIcon 
+            component="a" 
+            href={contact.facebookLink} 
+            target="_blank" 
+            className={`${classes.floatingButton} ${classes.facebookButton}`} 
+            size="xl"
+            title="Facebook"
+          >
+              <IconBrandFacebook stroke={1.5} />
+          </ActionIcon>
+          <ActionIcon 
+            component="a" 
+            href={contact.zaloLink} 
+            target="_blank" 
+            className={`${classes.floatingButton} ${classes.zaloButton}`} 
+            size="xl"
+            title="Zalo"
+          >
+              <IconMessageCircle stroke={1.5} />
+          </ActionIcon>
+          <ActionIcon 
+            component="a" 
+            href={`tel:${contact.phone}`} 
+            className={`${classes.floatingButton} ${classes.phoneButton}`} 
+            size="xl"
+            title="Gọi điện"
+          >
+              <IconPhone stroke={1.5} />
+          </ActionIcon>
+      </Stack>
     </>
   );
 }

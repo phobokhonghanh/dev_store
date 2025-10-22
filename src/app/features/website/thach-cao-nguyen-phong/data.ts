@@ -75,9 +75,16 @@ export const otherServices = {
 
 // THÔNG TIN LIÊN HỆ CHÍNH
 export const contact = {
-    phone: "0987654321",
-    phoneDisplay: "098.765.4321",
+    phone: "0987654321", // SĐT của bạn
+    phoneDisplay: "098.765.4321", // SĐT hiển thị
     heroButton: "Nhận Báo Giá Qua Điện Thoại",
     ctaTitle: "Đừng Ngần Ngại, Hãy Gọi Cho Chúng Tôi Ngay!",
     ctaButton: "Gọi Tư Vấn Miễn Phí",
+    
+    // --- BỔ SUNG MỚI ---
+    zaloLink: "https://zalo.me/0987654321", // Thay bằng link Zalo của bạn
+    facebookLink: "https://facebook.com/ten-trang-cua-ban", // Thay bằng link Facebook
+    
+    finalCtaTitle: "Kết Nối Với Chúng Tôi Ngay",
+    finalCtaDescription: "Luôn sẵn sàng tư vấn và giải đáp mọi thắc mắc của bạn qua điện thoại, Zalo hoặc Facebook. Liên hệ ngay để nhận báo giá tốt nhất!"
 };

@@ -30,9 +30,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" data-mantine-color-scheme="light">
+    <html lang="vi">
       <head>
-        <ColorSchemeScript />
+        {/* <ColorSchemeScript /> */}
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
@@ -41,7 +41,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <MantineProvider defaultColorScheme="dark">
+        <MantineProvider>
           <Header />
             <AuthProvider>{children}</AuthProvider>
           <Footer />
