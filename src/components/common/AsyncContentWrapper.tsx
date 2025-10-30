@@ -18,7 +18,7 @@ export function AsyncContentWrapper({
   error,
   data,
   children,
-  emptyMessage = "Không tìm thấy dữ liệu nào phù hợp." // Tin nhắn mặc định
+  emptyMessage = "Không tìm thấy dữ liệu." // Tin nhắn mặc định
 }: AsyncContentWrapperProps) {
 
   // 1. Trạng thái Đang Tải

@@ -23,6 +23,7 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 # dev_store
 dev_store, 
 mantine.dev
+
 # Refactor 16/10 (rf1610)
 
 1. Remove old packages:
@@ -77,3 +78,4 @@ npm install axios
 npm install @tabler/icons-react
 
 ```
+
