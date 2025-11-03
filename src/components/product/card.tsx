@@ -5,7 +5,7 @@ import { Card, Image, Text, Group, Rating, Badge, Box, Stack, rem } from '@manti
 import Link from 'next/link';
 // Import CSS module từ chính thư mục này
 import classes from './product.module.css'; 
-import { Product } from '@/services/productService';
+import { Product } from '@/models/product';
 
 // Hàm format tiền tệ (cho đẹp)
 function formatCurrency(price: number) {
