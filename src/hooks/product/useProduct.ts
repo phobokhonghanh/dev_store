@@ -1,14 +1,16 @@
 // src/hooks/useProducts.ts
-import { PaginatedProducts, GetProductsParams } from '@/models/product';
-import { productService } from '@/services/productService';
+import { PaginatedProducts, GetProductsParams } from '@/core/models/product';
+import { productService } from '@/core/services/productService';
 import { useState, useEffect } from 'react';
+
+import { Filters } from '@/core/types';
 
 // Lấy PRODUCTS_PER_PAGE từ đây (hoặc từ API config)
 const PRODUCTS_PER_PAGE = 12;
 
 interface UseProductsParams {
     page: number;
-    filters: any; // { categories, priceRange, rating }
+    filters: Filters;
     sortBy: string | null;
 }
 
@@ -32,8 +34,10 @@ export const useProducts = ({ page, filters, sortBy }: UseProductsParams) => {
       try {
         const result = await productService.getProducts(params);
         setData(result);
-      } catch (err: any) {
-        setError(err);
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err);
+        }
       } finally {
         setIsLoading(false);
       }

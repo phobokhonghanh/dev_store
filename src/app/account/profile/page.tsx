@@ -1,19 +1,27 @@
-// src/app/account/profile/page.tsx
 'use client';
 
 import { useState } from 'react';
 import { Grid, Group, Loader, Alert, Box, Text } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 
-import { useProfileData } from '@/hooks/account/useProfileData';
-import { UserInfoCard } from '@/components/account/profile/UserInfoCard';
-import { DeviceManagerCard } from '@/components/account/profile/DeviceManagerCard';
-import { ProfileNavbar } from '@/components/account/profile/ProfileNavbar';
+import { UserInfoCard } from '@/components/account/UserInfoCard';
+import { ProfileNavbar } from '@/components/account/ProfileNavbar';
+import { DeviceManagerCard } from '@/components/account/DeviceManagerCard';
 
+import { useProfileData } from '@/hooks/account/useProfileData';
+
+/**
+ * Renders the user profile page, displaying user information and device management options.
+ */
 export default function ProfilePage() {
   const { data: user, loading, error } = useProfileData();
+
   const [activeCategory, setActiveCategory] = useState('information');
 
+  /**
+   * Renders the content based on the active category (information or devices).
+   * Displays loading state, error messages, or relevant user data.
+   */
   const renderContent = () => {
     if (loading) {
       return <Group justify="center" p="xl"><Loader /></Group>;
@@ -31,7 +39,7 @@ export default function ProfilePage() {
       case 'information':
         return <UserInfoCard user={user} />;
       case 'devices':
-        return <DeviceManagerCard devices={user.devices} />;
+        return <DeviceManagerCard devices={user} />;
       default:
         return <Text>Vui lòng chọn một mục từ menu.</Text>;
     }

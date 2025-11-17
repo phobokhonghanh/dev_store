@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { UserProfile } from '@/models/profile';
+import type { UserProfile } from '@/core/models/profile';
 
 // Dữ liệu mẫu
 const mockUserProfile: UserProfile = {
@@ -28,7 +28,7 @@ export function useProfileData() {
       try {
         // Trong thực tế, bạn sẽ gọi API ở đây
         setData(mockUserProfile);
-      } catch (e) {
+      } catch {
         setError('Không thể tải dữ liệu người dùng.');
       }
       setLoading(false);

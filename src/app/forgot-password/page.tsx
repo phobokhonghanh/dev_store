@@ -4,6 +4,10 @@
 import { Button, Stack, TextInput, Title, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 
+/**
+ * Renders the Forgot Password Page component.
+ * Allows users to request a password reset link by entering their email.
+ */
 export default function ForgotPasswordPage() {
   const form = useForm({
     initialValues: {
@@ -14,6 +18,10 @@ export default function ForgotPasswordPage() {
     },
   });
 
+  /**
+   * Handles the form submission for requesting a password reset link.
+   * @param values - The form values containing the user's email.
+   */
   const handleSubmit = async (values: typeof form.values) => {
     try {
       console.log('Yêu cầu đặt lại mật khẩu cho email:', values.email);

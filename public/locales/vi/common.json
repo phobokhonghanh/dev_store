@@ -1,0 +1,26 @@
+{
+  "registerPage": {
+    "title": "Tạo tài khoản",
+    "nameLabel": "Tên của bạn",
+    "namePlaceholder": "John Doe",
+    "usernameLabel": "Tên người dùng",
+    "usernamePlaceholder": "johndoe",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@email.com",
+    "passwordLabel": "Mật khẩu",
+    "passwordPlaceholder": "Mật khẩu của bạn",
+    "confirmPasswordLabel": "Xác nhận mật khẩu",
+    "confirmPasswordPlaceholder": "Nhập lại mật khẩu",
+    "submitButton": "Đăng ký",
+    "validation": {
+      "nameMinLength": "Tên phải có ít nhất 2 ký tự",
+      "invalidEmail": "Email không hợp lệ",
+      "passwordMinLength": "Mật khẩu phải có ít nhất 6 ký tự",
+      "passwordMismatch": "Mật khẩu không khớp"
+    },
+    "alert": {
+      "success": "Đăng ký thành công! Vui lòng đăng nhập.",
+      "failure": "Đăng ký thất bại:"
+    }
+  }
+}

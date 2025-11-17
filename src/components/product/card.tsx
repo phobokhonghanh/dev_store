@@ -1,7 +1,7 @@
 // src/components/product/card.tsx
 'use client';
 
-import { Card, Image, Text, Group, Rating, Badge, Box, Stack, rem } from '@mantine/core';
+import { Card, Image, Text, Group, Rating, Badge, Box, Stack } from '@mantine/core';
 import Link from 'next/link';
 // Import CSS module từ chính thư mục này
 import classes from './product.module.css'; 

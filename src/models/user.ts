@@ -1,7 +1,13 @@
 // src/models/user.ts
 export interface User {
   id: string;
-  name: string;
+  username: string;
   email: string;
-  role: 'admin' | 'user';
+  status: string;
+  fullname: string;
+  avatar: string;
+  role: string[];
+  authProvider: string;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -1,4 +1,4 @@
-import { Product } from "@/models/product";
+import { Product } from "@/core/models/product";
 
 // DỮ LIỆU SẢN PHẨM MẪU
 export const allProducts: Product[] = [

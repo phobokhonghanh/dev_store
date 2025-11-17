@@ -1,0 +1,9 @@
+fe.local.test {
+    reverse_proxy http://100.122.90.44:3000
+    tls internal
+}
+
+be.local.test {
+    reverse_proxy http://100.89.19.53:8080
+    tls internal
+}

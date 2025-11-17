@@ -1,70 +1,72 @@
-// src/app/register/page.tsx
 'use client';
 
-import { Button, PasswordInput, Stack, TextInput, Title } from '@mantine/core';
+import { Button, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useRouter } from 'next/navigation';
-import { PATHS } from '@/constants/paths';
+import { useTranslation } from 'react-i18next';
+import { useRegister } from '@/hooks/auth/useRegister';
 
+/**
+ * Renders the Register Page component.
+ * Allows users to create a new account.
+ */
 export default function RegisterPage() {
-  const router = useRouter();
+  const { t } = useTranslation('common');
+  const { handleRegister, isLoading, error } = useRegister();
 
   const form = useForm({
     initialValues: {
-      name: '',
+      username: '',
       email: '',
       password: '',
       confirmPassword: '',
+      fullName: '',
+      avatar: '',
     },
     validate: {
-      name: (value) => (value.length < 2 ? 'Tên phải có ít nhất 2 ký tự' : null),
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Email không hợp lệ'),
-      password: (value) => (value.length < 6 ? 'Mật khẩu phải có ít nhất 6 ký tự' : null),
+      username: (value) => (value.length < 3 || value.length > 50 ? t('registerPage.validation.usernameLength') : null),
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : t('registerPage.validation.invalidEmail')),
+      password: (value) => (value.length < 3 || value.length > 50 ? t('registerPage.validation.passwordLength') : null),
       confirmPassword: (value, values) =>
-        value !== values.password ? 'Mật khẩu không khớp' : null,
+        value !== values.password ? t('registerPage.validation.passwordMismatch') : null,
+      fullName: (value) => (value.length < 3 || value.length > 100 ? t('registerPage.validation.fullNameLength') : null),
     },
   });
-
-  const handleSubmit = async (values: typeof form.values) => {
-    try {
-      console.log('Đăng ký với:', { name: values.name, email: values.email });
-      // GỌI API REGISTER TỪ BACKEND CỦA BẠN Ở ĐÂY
-      // Sau khi đăng ký thành công, chuyển hướng đến trang đăng nhập
-      alert('Đăng ký thành công! Vui lòng đăng nhập.');
-      router.push(PATHS.login);
-    } catch (error) {
-      console.error('Đăng ký thất bại:', error);
-      // Hiển thị thông báo lỗi
-    }
-  };
 
   return (
     <Stack w={320} mx="auto" mt="xl">
       <Title order={2} ta="center">
-        Tạo tài khoản
+        {t('registerPage.title')}
       </Title>
-      <form onSubmit={form.onSubmit(handleSubmit)}>
-        <TextInput label="Tên của bạn" placeholder="John Doe" {...form.getInputProps('name')} />
+      
+      <form onSubmit={form.onSubmit((values) => handleRegister(values))}>
+        {error && <Text c="red" size="sm" mt="xs">{error}</Text>}
+        <TextInput label={t('registerPage.nameLabel')} placeholder={t('registerPage.namePlaceholder')} {...form.getInputProps('fullName')} />
         <TextInput
-          label="Email"
-          placeholder="your@email.com"
+          label={t('registerPage.usernameLabel')}
+          placeholder={t('registerPage.usernamePlaceholder')}
+          mt="md"
+          {...form.getInputProps('username')}
+        />
+        <TextInput
+          label={t('registerPage.emailLabel')}
+          placeholder={t('registerPage.emailPlaceholder')}
           mt="md"
           {...form.getInputProps('email')}
         />
         <PasswordInput
-          label="Mật khẩu"
-          placeholder="Mật khẩu của bạn"
+          label={t('registerPage.passwordLabel')}
+          placeholder={t('registerPage.passwordPlaceholder')}
           mt="md"
           {...form.getInputProps('password')}
         />
         <PasswordInput
-          label="Xác nhận mật khẩu"
-          placeholder="Nhập lại mật khẩu"
+          label={t('registerPage.confirmPasswordLabel')}
+          placeholder={t('registerPage.confirmPasswordPlaceholder')}
           mt="md"
           {...form.getInputProps('confirmPassword')}
         />
-        <Button type="submit" mt="xl" fullWidth>
-          Đăng ký
+        <Button type="submit" mt="xl" fullWidth loading={isLoading}>
+          {t('registerPage.submitButton')}
         </Button>
       </form>
     </Stack>

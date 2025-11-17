@@ -1,47 +1,41 @@
 'use client';
 
-import { Button, TextInput, PasswordInput, Stack, Title } from '@mantine/core';
-import { useForm } from '@mantine/form';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/contexts/auth';
-import { PATHS } from '@/constants/paths';
+import { useTranslation } from 'react-i18next';
 
+import { Button, TextInput, PasswordInput, Stack, Title, Alert } from '@mantine/core';
+import { useForm } from '@mantine/form';
+
+import { useLogin } from '@/hooks/auth/useLogin';
+import { APP_ROUTES } from '@/constants';
+
+/**
+ * Renders the Login Page component.
+ * Allows users to log in with their email and password.
+ */
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { t } = useTranslation('common');
+  const { handleLogin, isLoading, error } = useLogin();
 
   const form = useForm({
-    initialValues: { email: '', password: '' },
+    initialValues: { identifier: '', password: '' },
     validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+      identifier: (value) => (value.length < 3 || value.length > 50 ? t('registerPage.validation.usernameLength') : null),
+      password: (value) => (value.length < 3 || value.length > 50 ? t('registerPage.validation.passwordLength') : null),
     },
   });
 
-  const handleSubmit = async (values: typeof form.values) => {
-    try {
-      // GỌI API LOGIN TỪ BACKEND CỦA BẠN
-      // const response = await api.post('/auth/login', values);
-      // const { token } = response.data;
-
-      // Giả lập token
-      const fakeToken = 'your-jwt-token-from-backend';
-      login(fakeToken);
-
-      router.push(PATHS.dashboard);
-    } catch (error) {
-      console.error('Login failed:', error);
-      // Hiển thị thông báo lỗi bằng Mantine Notifications
-    }
-  };
-
   return (
+    
     <Stack w={320} mx="auto" mt="xl">
       <Title order={2} ta="center">Login</Title>
-      <form onSubmit={form.onSubmit(handleSubmit)}>
+      {/* {error && <Alert color="red">{error.message}</Alert>} */}
+      <form onSubmit={form.onSubmit((values) => handleLogin(values))}>
         <TextInput
-          label="Email"
-          placeholder="your@email.com"
-          {...form.getInputProps('email')}
+          label="Username"
+          placeholder="your_username"
+          {...form.getInputProps('identifier')}
         />
         <PasswordInput
           label="Password"
@@ -49,7 +43,7 @@ export default function LoginPage() {
           mt="md"
           {...form.getInputProps('password')}
         />
-        <Button type="submit" mt="xl" fullWidth>
+        <Button type="submit" mt="xl" fullWidth loading={isLoading}>
           Sign in
         </Button>
       </form>

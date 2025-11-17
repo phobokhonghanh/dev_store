@@ -8,7 +8,7 @@ import { ReactNode } from 'react';
 interface AsyncContentWrapperProps {
   isLoading: boolean;
   error: Error | null;
-  data: any[]; // Mảng dữ liệu để kiểm tra (ví dụ: mảng products)
+  data: unknown[]; // Mảng dữ liệu để kiểm tra (ví dụ: mảng products)
   children: ReactNode; // Nội dung sẽ hiển thị nếu thành công
   emptyMessage?: string; // Tùy chỉnh tin nhắn khi không có dữ liệu
 }
