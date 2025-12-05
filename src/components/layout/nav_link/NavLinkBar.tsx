@@ -1,40 +1,62 @@
-import { Badge, NavLink } from '@mantine/core';
-import { IconHome2, IconGauge, IconChevronRight, IconActivity, IconCircleOff, IconFingerprint, IconFreeRights, IconFireExtinguisher, Icon360View, IconMoodSmile } from '@tabler/icons-react';
+"use client";
+
+import { Box, Burger, Drawer, NavLink, ScrollArea } from "@mantine/core";
+import Link from "next/link";
+import { navRoutes } from "./data/tools";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+
+function renderNav(items: any[], close?: () => void) {
+  return items.map((item) => {
+    const Icon = item.icon;
+
+    return (
+      <NavLink
+        key={item.href}
+        label={item.label}
+        href={item.href}
+        component={Link}
+        defaultOpened={item.opened}
+        leftSection={Icon ? <Icon size={16} stroke={1.5} /> : null}
+        childrenOffset={28}
+        onClick={close} // auto close mobile drawer
+      >
+        {item.children ? renderNav(item.children, close) : null}
+      </NavLink>
+    );
+  });
+}
 
 export function NavLinkBar() {
-  return (
-    <>
-      <NavLink
-        href="#required-for-focus"
-        label="With icon"
-        leftSection={<IconHome2 size={16} stroke={1.5} />}
-      />
-       <NavLink
-        href="#required-for-focus"
-        label="Premium"
-        leftSection={<IconFingerprint size={16} stroke={1.5} />}
-        childrenOffset={28}
-      >
-        <NavLink href="#required-for-focus" label="First tools" />
-        <NavLink label="Second tools" href="#required-for-focus" />
-        <NavLink label="Premium parent" childrenOffset={28} href="#required-for-focus">
-          <NavLink label="First tools" href="#required-for-focus" />
-          <NavLink label="Second tools" href="#required-for-focus" />
-          <NavLink label="Third tools" href="#required-for-focus" />
-        </NavLink>
-      </NavLink>
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const [opened, { toggle, close }] = useDisclosure(false);
 
-      <NavLink
-        href="#required-for-focus"
-        label="Free"
-        leftSection={<IconMoodSmile size={16} stroke={1.5} />}
-        childrenOffset={28}
-        defaultOpened
-      >
-        <NavLink label="First tools" href="#required-for-focus" />
-        <NavLink label="Second tools" href="#required-for-focus" />
-        <NavLink label="Third tools" href="#required-for-focus" />
-      </NavLink>
-    </>
+  // ------------------------------
+  // MOBILE VIEW
+  // ------------------------------
+  if (isMobile) {
+    return (
+      <>
+        {/* Burger */}
+        <Box p="xs">
+          <Burger opened={opened} onClick={toggle} />
+        </Box>
+
+        {/* Drawer */}
+        <Drawer opened={opened} onClose={close} size="75%" padding="md">
+          <ScrollArea h="100vh">
+            {renderNav(navRoutes, close)}
+          </ScrollArea>
+        </Drawer>
+      </>
+    );
+  }
+
+  // ------------------------------
+  // DESKTOP VIEW
+  // ------------------------------
+  return (
+    <Box>
+      {renderNav(navRoutes)}
+    </Box>
   );
 }

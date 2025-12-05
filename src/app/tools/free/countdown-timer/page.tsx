@@ -9,14 +9,25 @@ import {
   Button,
   NumberInput,
   Card,
-  Stack,
+  Title,
+  Center,
 } from '@mantine/core';
-import { IconPlayerPlay, IconPlayerPause, IconRotate } from '@tabler/icons-react';
+
+import {
+  IconPlayerPlay,
+  IconPlayerPause,
+  IconRotate,
+  IconX,
+} from '@tabler/icons-react';
+
+import classes from './tools-countdown.module.css';
+import Timer, { TimeData } from '@/components/tools/Timer';
+import Fullscreen from '@/components/layout/screen/FullscreenWrapper';
+import { AutoBreadcrumbs } from '@/components/layout/breadcrumb/AutoBreadcrumbs';
 
 export default function ToolsPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
-  // --- countdown states ---
   const [target, setTarget] = useState({
     days: 0,
     hours: 0,
@@ -27,7 +38,6 @@ export default function ToolsPage() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [running, setRunning] = useState(false);
 
-  // --- handle countdown interval ---
   useEffect(() => {
     if (!running) return;
 
@@ -45,160 +55,221 @@ export default function ToolsPage() {
     return () => clearInterval(interval);
   }, [running]);
 
-  // --- convert structured time into seconds ---
-  const calcSeconds = () => {
-    const total =
-      target.days * 86400 +
-      target.hours * 3600 +
-      target.minutes * 60 +
-      target.seconds;
-
-    return total;
-  };
+  const calcSeconds = () =>
+    target.days * 86400 +
+    target.hours * 3600 +
+    target.minutes * 60 +
+    target.seconds;
 
   const start = () => {
     const sec = calcSeconds();
-
-    setRunning(true);
+    if (sec <= 0) return;
 
     if (timeLeft > 0) {
+      setRunning(true);
       return;
     }
-
-    if (sec <= 0) return;
 
     setTimeLeft(sec);
     setRunning(true);
   };
 
   const pause = () => setRunning(false);
-
   const reset = () => {
     setRunning(false);
     setTimeLeft(0);
   };
 
-  // --- convert seconds → d/h/m/s ---
-  const formatTime = (sec: number) => {
+  const clear = () => {
+    setTarget({
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    });
+
+    setRunning(false);
+    setTimeLeft(0);
+  };
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        running ? pause() : start();
+      }
+      if (e.key.toLowerCase() === 'r') reset();
+    };
+
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [running, timeLeft]);
+
+  // Convert seconds → TimeData object
+  const formatTime = (sec: number): TimeData => {
     const d = Math.floor(sec / 86400);
     const h = Math.floor((sec % 86400) / 3600);
     const m = Math.floor((sec % 3600) / 60);
     const s = sec % 60;
-    return { d, h, m, s };
+
+    return {
+      y: 0,
+      mo: 0,
+      d,
+      h,
+      m,
+      s,
+      ms: 0,
+    };
   };
 
-  const t = formatTime(timeLeft);
+  // const timeObj = formatTime(timeLeft);
+  const timeObj =
+    !running && timeLeft === 0
+      ? {
+          y: 0,
+          mo: 0,
+          d: target.days,
+          h: target.hours,
+          m: target.minutes,
+          s: target.seconds,
+          ms: 0,
+        }
+      : formatTime(timeLeft);
 
   return (
     <Box p="md">
       <LoadingOverlay visible={isLoading} />
-
-      <Card shadow="md" radius="md" p="lg">
-        <Text size="xl" fw={700} mb="md">
-          Bộ đếm thời gian ngược
+      <Box mb="sm">
+        <AutoBreadcrumbs />
+      </Box>
+      <Box mb="md">
+        <Title order={2} c="green">Countdown Timer</Title>
+        <Text c="dimmed" mt={4}>
+          Set any duration and count down in real time.
         </Text>
-
-        {/* time inputs */}
-        <Group grow>
+      </Box>
+      <Card shadow="sm" radius="md" p="lg" withBorder mb="md">
+        <Group grow align="flex-end" gap="md" mb="md">
           <NumberInput
-            label="Ngày"
+            label="Days"
             value={target.days}
             onChange={(v) => setTarget({ ...target, days: Number(v) || 0 })}
-            min={0}
+            className={classes.inputClean}
           />
           <NumberInput
-            label="Giờ"
+            label="Hours"
             value={target.hours}
             onChange={(v) => setTarget({ ...target, hours: Number(v) || 0 })}
-            min={0}
+            className={classes.inputClean}
             max={23}
           />
           <NumberInput
-            label="Phút"
+            label="Minutes"
             value={target.minutes}
             onChange={(v) => setTarget({ ...target, minutes: Number(v) || 0 })}
-            min={0}
+            className={classes.inputClean}
             max={59}
           />
           <NumberInput
-            label="Giây"
+            label="Seconds"
             value={target.seconds}
             onChange={(v) => setTarget({ ...target, seconds: Number(v) || 0 })}
-            min={0}
+            className={classes.inputClean}
             max={59}
           />
         </Group>
+      </Card>
 
-        {/* selected time display */}
-        <Box mt="md" ta="center">
-          <Text size="2rem" fw={700}>
-            {t.d}d : {t.h}h : {t.m}m : {t.s}s
-          </Text>
+      <Card
+        shadow="sm"
+        radius="md"
+        p="lg"
+        withBorder
+        id="timer-root"
+        style={{
+          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+        }}
+      >
+        <Fullscreen targetId="timer-root" />
+        <Box mt="md">
+          <Timer time={timeObj} />
         </Box>
 
-        {/* buttons */}
         <Group mt="lg" justify="center">
-
-        {/* Start */}
-        {!running && timeLeft === 0 && (
-          <Button
-            variant="outline"
-            color="green"
-            onClick={start}
-            leftSection={<IconPlayerPlay size={18} />}
-          >
-            Start
-          </Button>
-        )}
-
-        {/* Continue + Reset */}
-        {!running && timeLeft > 0 && (
-          <>
+          {!running && timeLeft === 0 && (
+            <>
             <Button
               variant="outline"
               color="green"
               onClick={start}
               leftSection={<IconPlayerPlay size={18} />}
             >
-              Continue
+              Start
             </Button>
 
             <Button
               variant="outline"
               color="gray"
-              onClick={reset}
-              leftSection={<IconRotate size={18} />}
+              onClick={clear}
+              leftSection={<IconX size={18} />}
             >
-              Reset
+              Clear
             </Button>
-          </>
-        )}
+            </>
+          )}
 
-        {/* Pause + Reset */}
-        {running && (
-          <>
-            <Button
-              variant="outline"
-              color="red"
-              onClick={pause}
-              leftSection={<IconPlayerPause size={18} />}
-            >
-              Pause
-            </Button>
+          {!running && timeLeft > 0 && (
+            <>
+              <Button
+                variant="outline"
+                color="green"
+                onClick={start}
+                leftSection={<IconPlayerPlay size={18} />}
+              >
+                Continue
+              </Button>
+              <Button
+                variant="outline"
+                color="gray"
+                onClick={reset}
+                leftSection={<IconRotate size={18} />}
+              >
+                Reset
+              </Button>
+            </>
+          )}
 
-            <Button
-              variant="outline"
-              color="gray"
-              onClick={reset}
-              leftSection={<IconRotate size={18} />}
-            >
-              Reset
-            </Button>
-          </>
-        )}
-
+          {running && (
+            <>
+              <Button
+                variant="outline"
+                color="red"
+                onClick={pause}
+                leftSection={<IconPlayerPause size={18} />}
+              >
+                Pause
+              </Button>
+              <Button
+                variant="outline"
+                color="gray"
+                onClick={reset}
+                leftSection={<IconRotate size={18} />}
+              >
+                Reset
+              </Button>
+            </>
+          )}
         </Group>
 
+        <Text size="sm" c="dimmed" ta="center" mt="md">
+          Shortcuts: <b>Space</b> (Start/Pause), <b>R</b> (Reset)
+        </Text>
       </Card>
     </Box>
   );
