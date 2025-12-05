@@ -43,7 +43,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <MantineProvider>
+        <MantineProvider
+          theme={{
+            components: {
+              Container: {
+                defaultProps: {
+                  fluid: true,
+                },
+              },
+            },
+          }}
+        >
           <AuthProvider>
             <Box style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
               <Header />
