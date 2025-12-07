@@ -8,7 +8,7 @@ import {
 import classes from './contact.module.css';
 
 // Component con để hiển thị thông tin, không thay đổi
-export function ContactInfoItem({ icon: Icon, title, description }: { icon: any; title: string; description: string }) {
+export function ContactInfoItem({ icon: Icon, title, description }: { icon: React.FC<{ style: { width: number; height: number; }; }>; title: string; description:string }) {
   return (
     <Group wrap="nowrap" align="flex-start" mt="md">
       <Box className={classes.iconWrapper}>

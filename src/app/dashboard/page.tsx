@@ -1,9 +1,11 @@
 // src/app/forgot-password/page.tsx
 'use client';
 
-import { Button, Stack, TextInput, Title, Text } from '@mantine/core';
-import { useForm } from '@mantine/form';
+import { Stack, Title } from '@mantine/core';
 
+/**
+ * Renders the Dashboard Page component.
+ */
 export default function DashboardPage() {
   return (
     <Stack w={320} mx="auto" mt="xl">

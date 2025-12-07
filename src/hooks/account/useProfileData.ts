@@ -2,10 +2,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { UserProfile } from '@/models/profile';
 
 // Dữ liệu mẫu
-const mockUserProfile: UserProfile = {
+const mockUserProfile = {
   name: 'Nguyễn Văn An',
   email: 'nguyen.an@example.com',
   phone: '0987 654 321',
@@ -19,7 +18,7 @@ const mockUserProfile: UserProfile = {
 };
 
 export function useProfileData() {
-  const [data, setData] = useState<UserProfile | null>(null);
+  const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +27,7 @@ export function useProfileData() {
       try {
         // Trong thực tế, bạn sẽ gọi API ở đây
         setData(mockUserProfile);
-      } catch (e) {
+      } catch {
         setError('Không thể tải dữ liệu người dùng.');
       }
       setLoading(false);

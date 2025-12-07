@@ -1,0 +1,48 @@
+{
+  "registerPage": {
+    "title": "Create an account",
+    "nameLabel": "Your name",
+    "namePlaceholder": "John Doe",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "johndoe",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@email.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Your password",
+    "confirmPasswordLabel": "Confirm password",
+    "confirmPasswordPlaceholder": "Re-enter password",
+    "submitButton": "Register",
+    "validation": {
+      "fullNameLength": "Name must be at least 2 characters",
+      "usernameLength": "username must be at least 3 characters",
+      "invalidEmail": "Invalid email",
+      "passwordMinLength": "Password must be at least 6 characters",
+      "passwordMismatch": "Passwords do not match"
+    },
+    "alert": {
+      "success": "Registration successful!",
+      "successTitle": "Please activate your account via the link sent to your email.",
+      "failure": "Registration failed. Please try again.",
+      "unknownError": "An unknown error occurred. Please try again later."
+    }
+  },
+  "loginPage": {
+    "title": "Login to your account",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "johndoe",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Your password",
+    "submitButton": "Login",
+    "validation": {
+      "usernameLength": "username must be at least 3 characters",
+      "invalidEmail": "Invalid email",
+      "passwordRequired": "Passwords is required"
+      
+    },
+    "alert": {
+      "success": "Login successful!",
+      "failure": "Login failed. Please try again.",
+      "unknownError": "An unknown error occurred. Please try again later."
+    }
+  }
+}

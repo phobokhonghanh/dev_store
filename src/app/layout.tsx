@@ -1,9 +1,8 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { MantineProvider, ColorSchemeScript } from '@mantine/core';
+import { MantineProvider, Box } from '@mantine/core';
 import { AuthProvider } from "@/hooks/contexts/auth";
-import { Header } from "@/components/header/Header";
-import { Footer } from "@/components/footer/Footer";
+import { Header } from "@/components/layout/header/Header";
+import { I18nProvider } from '@/components/common/I18nProvider';
 
 import "./globals.css";
 import '@mantine/core/styles.css';
@@ -19,11 +18,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: 'Giải pháp chuyên nghiệp',
-  description: 'Cung cấp giải pháp và sáng tạo tính năng.',
-};
+import { siteMetadata } from '../data/metadata';
+import { Footer } from "@/components/layout/footer/Footer";
+import { Notifications } from "@mantine/notifications";
 
+export const metadata = siteMetadata;
+
+/**
+ * Root layout component for the application.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -40,10 +43,29 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <MantineProvider>
-          <Header />
-            <AuthProvider>{children}</AuthProvider>
-          <Footer />
+        <MantineProvider
+          theme={{
+            components: {
+              Container: {
+                defaultProps: {
+                  fluid: true,
+                },
+              },
+            },
+          }}
+        >
+          <AuthProvider>
+            <Box style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+              <Header />
+              <Box style={{ flex: 1 }}>
+                <I18nProvider>
+                    <Notifications />
+                    {children}
+                </I18nProvider>
+              </Box>
+              <Footer />
+            </Box>
+          </AuthProvider>
         </MantineProvider>
       </body>
     </html>

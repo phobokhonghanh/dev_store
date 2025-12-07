@@ -17,15 +17,20 @@ import { ContactInfoItem } from '@/components/contact/ContactInfo';
 import classes from '@/components/contact/contact.module.css';
 
 // Import toàn bộ dữ liệu từ file content
-import { contactInfo, formFields, pageContent } from '@/components/contact/data';
+import { contactInfo, formFields, pageContent } from '@/data/contact/data';
 
+/**
+ * Renders the Contact Page, including contact information and a contact form.
+ */
 export default function ContactPage() {
     // Tự động tạo initialValues và validation rules từ file dữ liệu
+    // Automatically generates initial form values from the formFields data.
     const initialValues = formFields.reduce((acc, field) => {
         acc[field.name] = '';
         return acc;
     }, {} as Record<string, string>);
 
+    // Automatically generates validation rules for the form fields.
     const validate = formFields.reduce((acc, field) => {
         if (field.required) {
             if (field.name === 'email') {
@@ -35,7 +40,7 @@ export default function ContactPage() {
             }
         }
         return acc;
-    }, {} as Record<string, any>);
+    }, {} as Record<string, (value: string) => boolean | null>);
     
     const form = useForm({ initialValues, validate });
 
