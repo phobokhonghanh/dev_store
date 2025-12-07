@@ -1,6 +1,5 @@
 import { IconBrandTwitter, IconBrandYoutube, IconBrandInstagram, IconBrandFacebook, IconBrandGithub } from '@tabler/icons-react';
 
-// Social Media
 export const SOCIAL = [
   { name: 'Facebook', url: 'https://facebook.com/your-page', icon: IconBrandFacebook },
   { name: 'Twitter', url: 'https://twitter.com/your-profile', icon: IconBrandTwitter },

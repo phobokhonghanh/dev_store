@@ -21,8 +21,8 @@ import {
 } from '@tabler/icons-react';
 
 import classes from './tools-countdown.module.css';
-import Timer, { TimeData } from '@/components/tools/Timer';
-import Fullscreen from '@/components/layout/screen/FullscreenWrapper';
+import Timer, { TimeData } from '@/components/tools/time/Timer';
+import Fullscreen from '@/components/common/FullscreenWrapper';
 import { AutoBreadcrumbs } from '@/components/layout/breadcrumb/AutoBreadcrumbs';
 
 export default function ToolsPage() {

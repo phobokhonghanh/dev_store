@@ -13,7 +13,8 @@
     "confirmPasswordPlaceholder": "Re-enter password",
     "submitButton": "Register",
     "validation": {
-      "nameMinLength": "Name must be at least 2 characters",
+      "fullNameLength": "Name must be at least 2 characters",
+      "usernameLength": "username must be at least 3 characters",
       "invalidEmail": "Invalid email",
       "passwordMinLength": "Password must be at least 6 characters",
       "passwordMismatch": "Passwords do not match"
@@ -32,6 +33,12 @@
     "passwordLabel": "Password",
     "passwordPlaceholder": "Your password",
     "submitButton": "Login",
+    "validation": {
+      "usernameLength": "username must be at least 3 characters",
+      "invalidEmail": "Invalid email",
+      "passwordRequired": "Passwords is required"
+      
+    },
     "alert": {
       "success": "Login successful!",
       "failure": "Login failed. Please try again.",

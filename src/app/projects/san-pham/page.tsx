@@ -21,7 +21,7 @@ import { AsyncContentWrapper } from '@/components/common/AsyncContentWrapper';
 import { sortOptions } from '@/data/projects/san-pham/data';
 import classes from './product.module.css';
 
-import { Filters } from '@/models/types';
+import { Filters } from '@/types/types';
 
 const initialFilters: Filters = {
     categories: [],

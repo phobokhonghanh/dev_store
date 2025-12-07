@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Avatar, Text, Card, Group, Stack, Title, Button, TextInput, Box } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { User } from '@/models/user';
+import { User } from '@/types/models/user';
 
 /**
  * Renders a card displaying user information and allows editing of certain fields.

@@ -53,6 +53,7 @@ const rawRoutes: RawNav[] = [
       { label: "Third tools", slug: "third" },
       // thêm countdown timer
       { label: "Countdown Timer", slug: "countdown-timer" },
+      { label: "QR Code Generator", slug: "qrcode" },
     ],
   },
 ];

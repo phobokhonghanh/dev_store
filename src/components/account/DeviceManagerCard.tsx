@@ -3,7 +3,7 @@
 
 import { Text, Button, Card, Group, Badge, Stack, Box, Divider } from '@mantine/core';
 import { IconDeviceDesktop, IconDeviceMobile, IconDeviceLaptop, IconAbc } from '@tabler/icons-react';
-import type { Device } from '@/models/device';
+import type { Device } from '@/types/models/device';
 
 export function DeviceManagerCard({ devices }: { devices: Device[] }) {
   const handleSignOutDevice = (deviceId: string) => {
