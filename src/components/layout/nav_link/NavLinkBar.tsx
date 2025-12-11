@@ -2,12 +2,16 @@
 
 import { Box, Burger, Drawer, NavLink, ScrollArea } from "@mantine/core";
 import Link from "next/link";
-import { navRoutes } from "./data/tools";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { NavRoute } from "./type"; // Import type vừa tạo
 
-function renderNav(items: any[], close?: () => void) {
+// Props interface
+interface NavLinkBarProps {
+  data: NavRoute[];
+}
+
+function renderNav(items: NavRoute[], close?: () => void) {
   return items.map((item) => {
-    const Icon = item.icon;
 
     return (
       <NavLink
@@ -16,7 +20,7 @@ function renderNav(items: any[], close?: () => void) {
         href={item.href}
         component={Link}
         defaultOpened={item.opened}
-        leftSection={Icon ? <Icon size={16} stroke={1.5} /> : null}
+        leftSection={item.icon}
         childrenOffset={28}
         onClick={close} // auto close mobile drawer
       >
@@ -26,7 +30,7 @@ function renderNav(items: any[], close?: () => void) {
   });
 }
 
-export function NavLinkBar() {
+export function NavLinkBar({ data }: NavLinkBarProps) {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [opened, { toggle, close }] = useDisclosure(false);
 
@@ -44,7 +48,7 @@ export function NavLinkBar() {
         {/* Drawer */}
         <Drawer opened={opened} onClose={close} size="75%" padding="md">
           <ScrollArea h="100vh">
-            {renderNav(navRoutes, close)}
+            {renderNav(data, close)}
           </ScrollArea>
         </Drawer>
       </>
@@ -56,7 +60,7 @@ export function NavLinkBar() {
   // ------------------------------
   return (
     <Box>
-      {renderNav(navRoutes)}
+      {renderNav(data)}
     </Box>
   );
 }
