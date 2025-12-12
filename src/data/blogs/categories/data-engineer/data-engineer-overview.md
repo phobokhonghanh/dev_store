@@ -1,3 +1,9 @@
+---
+title: "Data Engineer Overview"
+date: "2025-12-12"
+excerpt: "Data Engineer (Kỹ sư dữ liệu) là người xây dựng hệ thống dữ liệu từ nền tảng — tạo pipeline, lưu trữ, xử lý, và đảm bảo dữ liệu sạch & có thể sử dụng cho analytics, machine learning, báo cáo, hay các ứng dụng nội bộ/ngoại vi"
+---
+
 # Data Engineer — Vai trò, Công việc & Kỹ năng cần thiết
 
 ## 🎯 Giới thiệu chung  

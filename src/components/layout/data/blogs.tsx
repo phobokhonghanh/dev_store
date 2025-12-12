@@ -1,128 +1,3 @@
-// import 'server-only';
-// import fs from 'fs';
-// import path from 'path';
-// import React from 'react';
-// import {
-//     IconTag,
-//     IconNotebook,
-//     IconSearch,
-// } from "@tabler/icons-react";
-// import { NavRoute, RawNav } from "@/components/layout/nav_link/type";
-
-// // --- 1. CONFIGURATION ---
-
-// const PATH_MAPPING: Record<string, string> = {
-//     // Nếu thư mục này tồn tại và có folder con, nó sẽ tạo menu dropdown
-//     // Nếu thư mục này RỖNG hoặc KHÔNG TỒN TẠI, nó sẽ giữ nguyên link là 'blogs/categories'
-//     'blogs/categories': 'src/data/blogs/categories',
-//     'blogs/series': 'src/data/blogs/series',
-// };
-
-// const staticRawRoutes: RawNav[] = [
-//     {
-//         label: "Search",
-//         slug: "blogs",
-//         icon: <IconSearch size={16} stroke={1.5} />,
-//     },
-//     {
-//         label: "Categories",
-//         slug: "blogs/categories",
-//         icon: <IconTag size={16} stroke={1.5} />,
-//         opened: true,
-//         children: [],
-//     },
-//     {
-//         label: "Series",
-//         slug: "blogs/series",
-//         icon: <IconNotebook size={16} stroke={1.5} />,
-//         children: [
-//             { label: "Next.js Mastery", slug: "nextjs" },
-//             { label: "Mantine UI", slug: "mantine" },
-//         ],
-//     },
-// ];
-
-// // --- 2. Helper Functions ---
-
-// function formatCategoryLabel(folderName: string): string {
-//     return folderName
-//         .split('-')
-//         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-//         .join(' ');
-// }
-
-// function buildRoutes(nav: RawNav[], parent = ""): NavRoute[] {
-//     return nav.map((item): NavRoute => {
-//         const isExternal = item.slug.startsWith("http");
-//         const currentPath = isExternal
-//             ? item.slug
-//             : parent === "" ? `/${item.slug ?? ""}` : `${parent}/${item.slug}`;
-
-//         return {
-//             label: item.label,
-//             href: currentPath === "/" ? "/" : currentPath,
-//             icon: item.icon,
-//             opened: item.opened ?? false,
-//             // Logic quan trọng: Nếu children undefined, item này sẽ hoạt động như một Link bình thường
-//             children: item.children ? buildRoutes(item.children, currentPath) : undefined,
-//         };
-//     });
-// }
-
-// // Hàm đọc thư mục và trả về danh sách RawNav con
-// function getDynamicChildren(relativePath: string): RawNav[] {
-//     const fullPath = path.join(process.cwd(), relativePath);
-
-//     // 1. Kiểm tra thư mục có tồn tại không trước khi đọc
-//     if (!fs.existsSync(fullPath)) {
-//         return []; // Trả về mảng rỗng -> Fallback về link gốc
-//     }
-
-//     try {
-//         const items = fs.readdirSync(fullPath, { withFileTypes: true });
-//         return items
-//             .filter(item => item.isDirectory())
-//             .map(folder => ({
-//                 label: formatCategoryLabel(folder.name),
-//                 slug: folder.name,
-//             }));
-//     } catch (error) {
-//         console.error(`Error reading dynamic routes at ${relativePath}:`, error);
-//         return [];
-//     }
-// }
-
-// // Hàm đệ quy để quét toàn bộ staticRawRoutes và inject dữ liệu động
-// function injectDynamicRoutes(routes: RawNav[]): RawNav[] {
-//     return routes.map(route => {
-//         const mappedPath = PATH_MAPPING[route.slug];
-//         let dynamicChildren: RawNav[] = [];
-
-//         if (mappedPath) {
-//             dynamicChildren = getDynamicChildren(mappedPath);
-//         }
-
-//         const existingChildren = route.children ? injectDynamicRoutes(route.children) : [];
-//         const mergedChildren = [...dynamicChildren, ...existingChildren];
-
-//         // LOGIC FALLBACK:
-//         // Nếu mergedChildren rỗng (do không đọc được thư mục + không có con tĩnh),
-//         // ta trả về undefined. Khi children là undefined, 
-//         // hàm buildRoutes sẽ tạo ra href trỏ thẳng đến slug của cha (vd: /blogs/categories)
-//         return {
-//             ...route,
-//             children: mergedChildren.length > 0 ? mergedChildren : undefined
-//         };
-//     });
-// }
-
-// // --- 3. Main Generator Function ---
-
-// export function getBlogRoutes(): NavRoute[] {
-//     const mergedRawRoutes = injectDynamicRoutes(staticRawRoutes);
-//     return buildRoutes(mergedRawRoutes);
-// }
-
 import 'server-only';
 import fs from 'fs';
 import path from 'path';
@@ -130,6 +5,7 @@ import React from 'react';
 import {
     IconFolder,
     IconSearch,
+    IconFileText, // Import thêm icon cho file bài viết
 } from "@tabler/icons-react";
 import { NavRoute, RawNav } from "@/components/layout/nav_link/type";
 
@@ -158,7 +34,7 @@ function formatLabel(slug: string): string {
 }
 
 // Hàm đệ quy: Quét thư mục data để tạo cây menu
-// rootPath: Đường dẫn vật lý (vd: src/data/blogs)
+// physicalPath: Đường dẫn vật lý (vd: src/data/blogs)
 // urlPrefix: Tiền tố URL (vd: /blogs)
 function scanDirectory(physicalPath: string, urlPrefix: string): RawNav[] {
     const fullPath = path.join(process.cwd(), physicalPath);
@@ -168,23 +44,46 @@ function scanDirectory(physicalPath: string, urlPrefix: string): RawNav[] {
     try {
         const items = fs.readdirSync(fullPath, { withFileTypes: true });
 
-        // Lọc lấy các thư mục (vì file .md là bài viết, ta không hiện lên menu chính, chỉ hiện category)
-        const folders = items.filter(item => item.isDirectory());
+        // 1. Lọc lấy Folder HOẶC File .md
+        const validItems = items.filter(item =>
+            item.isDirectory() || (item.isFile() && item.name.endsWith('.md'))
+        );
 
-        return folders.map(folder => {
-            const folderSlug = folder.name;
-            const nextPhysicalPath = path.join(physicalPath, folderSlug);
-            const nextUrlPrefix = `${urlPrefix}/${folderSlug}`;
+        // 2. Sắp xếp: Folder lên trước, File xuống dưới
+        validItems.sort((a, b) => {
+            if (a.isDirectory() && !b.isDirectory()) return -1;
+            if (!a.isDirectory() && b.isDirectory()) return 1;
+            return a.name.localeCompare(b.name);
+        });
 
-            // Đệ quy: Tìm xem trong folder này có folder con không (Sub-categories)
-            const children = scanDirectory(nextPhysicalPath, nextUrlPrefix);
+        return validItems.map(item => {
+            const isDir = item.isDirectory();
+            const rawName = item.name;
+
+            // Nếu là file .md thì bỏ đuôi đi để lấy slug đẹp
+            const slugName = isDir ? rawName : rawName.replace(/\.md$/, '');
+
+            // Đường dẫn vật lý tiếp theo (chỉ dùng nếu là folder để scan tiếp)
+            const nextPhysicalPath = path.join(physicalPath, rawName);
+
+            // URL hiển thị trên trình duyệt
+            const nextUrlPrefix = `${urlPrefix}/${slugName}`;
+
+            let children: RawNav[] = [];
+
+            // Chỉ đệ quy nếu là thư mục
+            if (isDir) {
+                children = scanDirectory(nextPhysicalPath, nextUrlPrefix);
+            }
 
             return {
-                label: formatLabel(folderSlug),
-                slug: nextUrlPrefix, // Lưu full URL vào slug để buildRoutes xử lý dễ hơn
-                icon: <IconFolder size={16} stroke={1.5} />,
-                opened: false, // Mặc định đóng
-                // Nếu có con thì gán children, không thì undefined
+                label: formatLabel(slugName), // Format tên (bao gồm cả tên file md)
+                slug: nextUrlPrefix,
+                // Chọn Icon tương ứng
+                icon: isDir
+                    ? <IconFolder size={16} stroke={1.5} />
+                    : <IconFileText size={16} stroke={1.5} />,
+                opened: true,
                 children: children.length > 0 ? children : undefined
             };
         });
@@ -195,11 +94,9 @@ function scanDirectory(physicalPath: string, urlPrefix: string): RawNav[] {
     }
 }
 
-// Helper buildRoutes: Chuyển đổi từ RawNav sang NavRoute (chuẩn UI)
+// Helper buildRoutes: Chuyển đổi từ RawNav sang NavRoute
 function buildRoutes(nav: RawNav[]): NavRoute[] {
     return nav.map((item): NavRoute => {
-        // Slug trong logic mới này đã là đường dẫn đầy đủ (bắt đầu bằng /)
-        // hoặc là tên tĩnh (như 'blogs')
         const href = item.slug.startsWith('/')
             ? item.slug
             : `/${item.slug}`;
@@ -217,11 +114,7 @@ function buildRoutes(nav: RawNav[]): NavRoute[] {
 // --- 3. Main Generator Function ---
 
 export function getBlogRoutes(): NavRoute[] {
-    // 1. Quét động toàn bộ thư mục src/data/blogs
-    // Kết quả sẽ trả về cấu trúc cây:
-    // - Categories (/blogs/categories)
-    //   - Tech (/blogs/categories/tech)
-    // - Cook Tutorial (/blogs/cook-tutorial)
+    // 1. Quét động toàn bộ thư mục src/data/blogs (bao gồm cả file .md)
     const dynamicRoutes = scanDirectory(DATA_ROOT, '/blogs');
 
     // 2. Gộp với menu tĩnh (Search)
