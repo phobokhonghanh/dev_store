@@ -1,32 +1,23 @@
 import {
-  IconHome2,
   IconFingerprint,
   IconMoodSmile,
+  IconSearch,
 } from "@tabler/icons-react";
-import { NavRoute } from "../type";
-
-type RawNav = {
-  label: string;
-  base?: string;
-  icon?: any;
-  slug?: string;
-  opened?: boolean;   // ⬅ thêm vào đây
-  children?: RawNav[];
-};
+import { NavRoute, RawNav } from "../nav_link/type";
 
 
 // raw structure: clean, no repeating path
 const rawRoutes: RawNav[] = [
   {
-    label: "Home Tools",
-    slug: "tools", // homepage
-    icon: IconHome2,
+    label: "Search",
+    slug: "tools",
+    icon: <IconSearch size={16} stroke={1.5} />,
   },
   {
     label: "Premium",
     slug: "premium",
     opened: false,  
-    icon: IconFingerprint,
+    icon: <IconFingerprint size={16} stroke={1.5} />,
     children: [
       { label: "First tools", slug: "first" },
       { label: "Second tools", slug: "second" },
@@ -45,13 +36,9 @@ const rawRoutes: RawNav[] = [
   {
     label: "Free",
     slug: "tools/free",
-    icon: IconMoodSmile,
+    icon: <IconMoodSmile size={16} stroke={1.5} />,
     opened: true,  
     children: [
-      { label: "First tools", slug: "first" },
-      { label: "Second tools", slug: "second" },
-      { label: "Third tools", slug: "third" },
-      // thêm countdown timer
       { label: "Countdown Timer", slug: "countdown-timer" },
       { label: "QR Code Generator", slug: "qrcode" },
     ],
@@ -74,4 +61,4 @@ function buildRoutes(nav: RawNav[], parent = ""): NavRoute[] {
   });
 }
 
-export const navRoutes: NavRoute[] = buildRoutes(rawRoutes);
+export const toolsRoutes: NavRoute[] = buildRoutes(rawRoutes);

@@ -1,10 +1,13 @@
 "use client";
 
-import { Anchor, Breadcrumbs, Group, NavLink } from "@mantine/core";
+import { Anchor, Breadcrumbs, Group } from "@mantine/core";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { NavRoute } from "../nav_link/type";
-import { navRoutes } from "../nav_link/data/tools";
+import type { NavRoute } from "@/components/layout/nav_link/type"; // Sử dụng absolute import
+
+interface AutoBreadcrumbsProps {
+  routes: NavRoute[];
+}
 
 /**
  * Tìm đường dẫn từ root → đến route hiện tại
@@ -17,6 +20,8 @@ function findPath(
   for (const item of routes) {
     const newTrail = [...trail, item];
 
+    // So sánh chính xác hoặc startsWith nếu cần logic active parent
+    // Lưu ý: item.href có thể là "/" nên cần check kỹ để tránh match nhầm
     if (item.href === pathname) return newTrail;
 
     if (item.children) {
@@ -28,38 +33,39 @@ function findPath(
   return null;
 }
 
-export function AutoBreadcrumbs() {
+export function AutoBreadcrumbs({ routes }: AutoBreadcrumbsProps) {
   const pathname = usePathname();
 
-  const trail: NavRoute[] = findPath(pathname, navRoutes) ?? [];
+  // Truyền routes từ props vào hàm tìm kiếm
+  const trail: NavRoute[] = findPath(pathname, routes) ?? [];
+
+  if (trail.length === 0) return null; // Ẩn nếu không tìm thấy đường dẫn
 
   return (
-    <Breadcrumbs>
-      {
-        trail.map((item) => {
-        const Icon = item.icon;
+    <Breadcrumbs mb="md">
+      {trail.map((item) => {
         return (
           <Anchor
             key={item.href}
             component={Link}
             href={item.href}
-            c="inherit"                // kế thừa màu
-            underline="never"         // tắt underline
+            c="inherit"
+            underline="never"
             style={{
               display: "flex",
               alignItems: "center",
               gap: 6,
-              textDecoration: "none", // cho chắc
+              textDecoration: "none",
             }}
           >
             <Group gap={6} align="center">
-              {Icon ? <Icon size={16} stroke={1.5} /> : null}
+              {/* Render icon object */}
+              {item.icon}
               <span>{item.label}</span>
             </Group>
           </Anchor>
-          );
-        })
-      }
+        );
+      })}
     </Breadcrumbs>
   );
 }

@@ -1,14 +1,17 @@
 "use client";
 
-import { Box, Burger, Drawer, NavLink, ScrollArea } from "@mantine/core";
+import { Box, Burger, Drawer, NavLink, ScrollArea, rem } from "@mantine/core";
 import Link from "next/link";
-import { navRoutes } from "./data/tools";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { NavRoute } from "./type";
 
-function renderNav(items: any[], close?: () => void) {
+// Props interface
+interface NavLinkBarProps {
+  data: NavRoute[];
+}
+
+function renderNav(items: NavRoute[], close?: () => void) {
   return items.map((item) => {
-    const Icon = item.icon;
-
     return (
       <NavLink
         key={item.href}
@@ -16,7 +19,7 @@ function renderNav(items: any[], close?: () => void) {
         href={item.href}
         component={Link}
         defaultOpened={item.opened}
-        leftSection={Icon ? <Icon size={16} stroke={1.5} /> : null}
+        leftSection={item.icon}
         childrenOffset={28}
         onClick={close} // auto close mobile drawer
       >
@@ -26,7 +29,7 @@ function renderNav(items: any[], close?: () => void) {
   });
 }
 
-export function NavLinkBar() {
+export function NavLinkBar({ data }: NavLinkBarProps) {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [opened, { toggle, close }] = useDisclosure(false);
 
@@ -44,7 +47,7 @@ export function NavLinkBar() {
         {/* Drawer */}
         <Drawer opened={opened} onClose={close} size="75%" padding="md">
           <ScrollArea h="100vh">
-            {renderNav(navRoutes, close)}
+            {renderNav(data, close)}
           </ScrollArea>
         </Drawer>
       </>
@@ -55,8 +58,21 @@ export function NavLinkBar() {
   // DESKTOP VIEW
   // ------------------------------
   return (
-    <Box>
-      {renderNav(navRoutes)}
+    // 1. position: sticky giúp box bám lại trên màn hình khi cuộn
+    // top: rem(20) tạo khoảng cách 20px so với mép trên cùng
+    <Box style={{ position: 'sticky', top: rem(20) }}>
+
+      {/* 2. ScrollArea giới hạn chiều cao (ví dụ: viewport height - 40px padding)
+             type="hover" chỉ hiện thanh scroll khi di chuột vào giúp giao diện gọn hơn
+             overscrollBehavior: 'contain' ngăn chặn việc cuộn trang chính khi danh sách cuộn kịch */}
+      <ScrollArea
+        h={`calc(100vh - ${rem(40)})`}
+        type="hover"
+        offsetScrollbars
+        viewportProps={{ style: { overscrollBehavior: 'contain' } }}
+      >
+        {renderNav(data)}
+      </ScrollArea>
     </Box>
   );
 }

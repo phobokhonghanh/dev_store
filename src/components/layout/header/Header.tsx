@@ -29,28 +29,6 @@ export function Header() {
   const { user, logout } = useAuth();
 
   const mainItems = headerLinks.map((item) => {
-    if (item.subLinks) {
-      const menuItems = item.subLinks.map((subItem) => (
-        <Menu.Item key={subItem.link} component={Link} href={subItem.link}>
-          {subItem.label}
-        </Menu.Item>
-      ));
-
-      return (
-        <Menu key={item.label} trigger="hover" transitionProps={{ exitDuration: 0 }} withinPortal>
-          <Menu.Target>
-            <Link href={item.link} className={classes.link}>
-              <Center>
-                <span className={classes.linkLabel}>{item.label}</span>
-                <IconChevronDown size="0.9rem" stroke={1.5} />
-              </Center>
-            </Link>
-          </Menu.Target>
-          <Menu.Dropdown>{menuItems}</Menu.Dropdown>
-        </Menu>
-      );
-    }
-
     return (
       <Link key={item.label} href={item.link} className={classes.link}>
         {item.label}
@@ -133,26 +111,6 @@ export function Header() {
             <Divider my="sm" />
             <Accordion variant="transparent">
               {headerLinks.map((item) => {
-                if (item.subLinks) {
-                  return (
-                    <Accordion.Item key={item.label} value={item.label}>
-                      <Accordion.Control>{item.label}</Accordion.Control>
-                      <Accordion.Panel>
-                        {item.subLinks.map((subItem) => (
-                          <Link
-                            href={subItem.link}
-                            key={subItem.label}
-                            className={classes.link}
-                            style={{ paddingLeft: '2rem' }}
-                            onClick={close}
-                          >
-                            {subItem.label}
-                          </Link>
-                        ))}
-                      </Accordion.Panel>
-                    </Accordion.Item>
-                  );
-                }
                 return (
                   <Link
                     href={item.link}

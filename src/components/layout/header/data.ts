@@ -1,14 +1,15 @@
 export const headerLinks = [
-  { link: '/', label: 'Home' },
-  {
-    link: '/projects',
-    label: 'Projects',
-    subLinks: [
-      { link: '/projects/thach-cao-nguyen-phong', label: 'Thach cao nguyen phong' },
-      { link: '/projects/san-pham', label: 'San pham' },
-    ],
-  },
+  { link: '/home', label: 'Home' },
+  // {
+  //   link: '/projects',
+  //   label: 'Projects',
+  //   subLinks: [
+  //     { link: '/projects/thach-cao-nguyen-phong', label: 'Thach cao nguyen phong' },
+  //     { link: '/projects/san-pham', label: 'San pham' },
+  //   ],
+  // },
   { link: '/tools', label: 'Tools' },
+  { link: '/blogs', label: 'Blogs' },
   { link: '/contact', label: 'Contact' },
 ];
 

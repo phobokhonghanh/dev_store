@@ -21,6 +21,7 @@ const geistMono = Geist_Mono({
 import { siteMetadata } from '../data/metadata';
 import { Footer } from "@/components/layout/footer/Footer";
 import { Notifications } from "@mantine/notifications";
+import { LoadingProvider } from "@/components/common/LoadingProvider";
 
 export const metadata = siteMetadata;
 
@@ -44,28 +45,30 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <MantineProvider
-          theme={{
-            components: {
-              Container: {
-                defaultProps: {
-                  fluid: true,
+            theme={{
+              components: {
+                Container: {
+                  defaultProps: {
+                    fluid: true,
+                  },
                 },
               },
-            },
-          }}
-        >
-          <AuthProvider>
-            <Box style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-              <Header />
-              <Box style={{ flex: 1 }}>
-                <I18nProvider>
-                    <Notifications />
-                    {children}
-                </I18nProvider>
+            }}
+          >
+          <LoadingProvider>
+            <AuthProvider>
+              <Box style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                <Header />
+                <Box style={{ flex: 1 }}>
+                  <I18nProvider>
+                      <Notifications />
+                      {children}
+                  </I18nProvider>
+                </Box>
+                <Footer />
               </Box>
-              <Footer />
-            </Box>
-          </AuthProvider>
+            </AuthProvider>
+          </LoadingProvider>
         </MantineProvider>
       </body>
     </html>
