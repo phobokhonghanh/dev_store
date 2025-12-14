@@ -12,13 +12,14 @@ import {
   ThemeIcon,
   Container,
 } from '@mantine/core';
-import { IconFolder, IconFileText, IconCalendar, IconChevronRight } from '@tabler/icons-react';
+import { IconFolder, IconFileText, IconChevronRight } from '@tabler/icons-react';
 import Markdown from 'react-markdown';
 
 // Import các hàm helper
 import { getContentBySlug } from '@/utils/common';
 import { getBlogRoutes } from '@/components/layout/data/blogs';
 import { AutoBreadcrumbs } from '@/components/layout/breadcrumb/AutoBreadcrumbs';
+import { CodeBlock } from '@/components/blogs/CodeBlock'; // Import component hiển thị code
 
 // 1. Helper Format Label (Tự viết hoa chữ cái đầu)
 function formatLabel(slug: string): string {
@@ -63,7 +64,14 @@ export default async function BlogDynamicPage({ params }: PageProps) {
           )}
 
           <Box style={{ lineHeight: 1.7, fontSize: '1.05rem' }}>
-            <Markdown>{data.content}</Markdown>
+            {/* Tích hợp component CodeBlock vào react-markdown */}
+            <Markdown 
+              components={{
+                code: CodeBlock
+              }}
+            >
+              {data.content}
+            </Markdown>
 
             {/* Empty State */}
             {data.content.length === 0 && (
