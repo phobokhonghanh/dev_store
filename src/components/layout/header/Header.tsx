@@ -1,27 +1,26 @@
 'use client';
 
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
+import { useAuth } from '@/hooks/contexts/auth';
+import {
+  Accordion,
+  Box,
+  Burger,
+  Button,
+  Container,
+  Divider,
+  Drawer,
+  Group,
+  Menu,
+  rem,
+  ScrollArea
+} from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { IconLogout, IconUser } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useDisclosure } from '@mantine/hooks';
-import { IconChevronDown, IconUser, IconLogout } from '@tabler/icons-react';
-import {
-  Container,
-  Group,
-  Burger,
-  Menu,
-  Button,
-  Box,
-  Drawer,
-  ScrollArea,
-  Divider,
-  rem,
-  Center,
-  Accordion,
-} from '@mantine/core';
+import { accountLinks, headerLinks, userLinks } from './data';
 import classes from './header.module.css';
-import { useAuth } from '@/hooks/contexts/auth';
-import { accountLinks, headerLinks, userLinks } from './data'; 
-import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 export function Header() {
   const [isOpen, { toggle, close }] = useDisclosure(false);

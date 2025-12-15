@@ -13,7 +13,7 @@ export function UserInfoCard({ user }: { user: User }) {
 
   const form = useForm({
     initialValues: {
-      name: user.name,
+      name: user.username,
       phone: user.phone,
       // Thêm các trường khác có thể chỉnh sửa ở đây
     },
@@ -82,7 +82,7 @@ export function UserInfoCard({ user }: { user: User }) {
         </Group>
 
         <Group align="flex-start">
-          <Avatar src={user.avatar} size={120} radius="50%" alt={`${user.name}'s avatar`} />
+          <Avatar src={user.avatar} size={120} radius="50%" alt={`${user.username}'s avatar`} />
           <Box style={{ flex: 1 }}>
             <Stack gap="md">
               {isEditing ? (
@@ -114,10 +114,6 @@ export function UserInfoCard({ user }: { user: User }) {
                 <Box>
                     <Text fz="sm" c="dimmed">Email (không thể thay đổi)</Text>
                     <Text>{user.email}</Text>
-                </Box>
-                <Box>
-                    <Text fz="sm" c="dimmed">Ngày sinh (không thể thay đổi)</Text>
-                    <Text>{new Date(user.birthday).toLocaleDateString('vi-VN')}</Text>
                 </Box>
             </Stack>
           </Box>

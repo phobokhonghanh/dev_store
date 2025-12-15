@@ -3,7 +3,7 @@
 
 import { Carousel } from '@mantine/carousel';
 import { 
-  Container, Title, Text, Button, Box, Overlay, Table, 
+  Container, Title, Text, Button, Box, Table, 
   Timeline, SimpleGrid, Paper, ThemeIcon, rem, ActionIcon,
   Stack, Group, Image // <-- Thêm Stack và Group
 } from '@mantine/core';
@@ -28,7 +28,7 @@ function InfoCard({ item }: { item: { icon: React.FC<{ size: number; }>; title: 
     return (
         <Paper withBorder radius="md" p="lg">
             <ThemeIcon size="xl" radius="md" variant="gradient" gradient={{ deg: 0, from: 'red', to: 'orange' }}>
-                <Icon style={{ width: rem(28), height: rem(28) }} stroke={1.5} />
+                <Icon size={28} />
             </ThemeIcon>
             <Text fz="lg" fw={500} mt="md">{item.title}</Text>
             <Text fz="sm" c="dimmed" mt="sm">{item.description}</Text>

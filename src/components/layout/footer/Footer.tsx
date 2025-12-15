@@ -1,20 +1,19 @@
 'use client';
 
-import Link from 'next/link';
-import { 
-  Container, 
-  Group, 
-  ActionIcon, 
-  Text, 
-  Stack, 
-  TextInput,
-  Button,
-  SimpleGrid,
-  Box,
-  rem,
-  Anchor
-} from '@mantine/core';
 import { SOCIAL } from '@/constants/social';
+import {
+  ActionIcon,
+  Box,
+  Button,
+  Container,
+  Group,
+  rem,
+  SimpleGrid,
+  Stack,
+  Text,
+  TextInput
+} from '@mantine/core';
+import Link from 'next/link';
 import { footerLinks } from './data';
 import classes from './footer.module.css';
 

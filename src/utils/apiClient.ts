@@ -105,7 +105,7 @@ export const callAPI = async <T = unknown>(
         errorData = null;
       }
       
-      const errorMessage = (errorData as any)?.message || response.statusText || 'API Error';
+      const errorMessage = (errorData as ApiError)?.message || response.statusText || 'API Error';
       throw new ApiError(errorMessage, response.status, errorData);
     }
 

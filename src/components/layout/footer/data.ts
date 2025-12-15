@@ -1,4 +1,3 @@
-import { IconBrandTwitter, IconBrandYoutube, IconBrandInstagram } from '@tabler/icons-react';
 
 export const footerLinks = [
   {

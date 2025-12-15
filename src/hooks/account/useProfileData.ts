@@ -1,24 +1,25 @@
-// src/hooks/account/useProfileData.ts
 'use client';
 
-import { useState, useEffect } from 'react';
+import { User } from '@/types/models/user';
+import { useEffect, useState } from 'react';
 
 // Dữ liệu mẫu
-const mockUserProfile = {
-  name: 'Nguyễn Văn An',
+const mockUserProfile : User = {
+  fullname: 'Nguyễn Văn An',
   email: 'nguyen.an@example.com',
   phone: '0987 654 321',
-  birthday: '1995-08-15',
   avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
-  devices: [
-    { id: '1', agent: 'Chrome on Windows', ip: '192.168.1.10', isActive: true, lastSeen: new Date(), type: 'desktop' },
-    { id: '2', agent: 'Safari on iPhone', ip: '203.0.113.25', isActive: false, lastSeen: new Date(new Date().setDate(new Date().getDate() - 5)), type: 'mobile' },
-    { id: '3', agent: 'Firefox on Linux', ip: '198.51.100.5', isActive: false, lastSeen: new Date(new Date().setMonth(new Date().getMonth() - 1)), type: 'laptop' },
-  ],
+  id: '1',
+  username: 'ab',
+  status: '1',
+  role: [],
+  authProvider: 'system',
+  createdAt: '',
+  updatedAt: ''
 };
 
 export function useProfileData() {
-  const [data, setData] = useState<any | null>(null);
+  const [data, setData] = useState<typeof mockUserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

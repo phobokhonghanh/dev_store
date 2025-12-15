@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks/contexts/auth';
-import { Menu, Avatar, Text, Group, Button } from '@mantine/core';
+import { Avatar, Group, Menu, Text } from '@mantine/core';
 import { IconUser } from '@tabler/icons-react';
 import Link from 'next/link';
 

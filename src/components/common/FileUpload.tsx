@@ -1,23 +1,21 @@
-import React from 'react';
-import { 
-  Group, 
-  Button, 
-  Text, 
-  Avatar, 
-  Stack, 
-  FileButton, 
-  CloseButton, 
-  Alert, 
-  ThemeIcon,
-  rem 
+import {
+  Alert,
+  Avatar,
+  Button,
+  CloseButton,
+  FileButton,
+  Group,
+  Stack,
+  Text,
+  ThemeIcon
 } from '@mantine/core';
-import { 
-  IconUpload, 
-  IconPhoto, 
-  IconFileZip, 
-  IconFileText, 
-  IconFileCode, 
-  IconFile 
+import {
+  IconFile,
+  IconFileCode,
+  IconFileText,
+  IconFileZip,
+  IconPhoto,
+  IconUpload
 } from '@tabler/icons-react';
 
 interface FileUploaderProps {
