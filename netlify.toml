@@ -1,3 +1,9 @@
 [build]
-command = "npm run build"
-publish = ".next"
+  # Lệnh build mặc định
+  command = "npm run build"
+  # Thư mục chứa kết quả build của Next.js SSR
+  publish = ".next"
+
+# Bắt buộc: Sử dụng Plugin này để Netlify chạy được Next.js Server/SSR
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
