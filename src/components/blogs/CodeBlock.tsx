@@ -1,29 +1,40 @@
 'use client';
 
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { atomDark } from 'react-syntax-highlighter/dist/cjs/styles/prism'; // Theme tối màu
 import { ActionIcon, Box, CopyButton, Tooltip, rem } from '@mantine/core';
 import { IconCheck, IconCopy } from '@tabler/icons-react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { ComponentPropsWithoutRef } from 'react';
 
-export function CodeBlock({ className, children, ...props }: any) {
+// Định nghĩa kiểu props kế thừa từ thẻ code chuẩn
+interface CodeBlockProps extends ComponentPropsWithoutRef<'code'> {
+  node?: unknown;
+  inline?: boolean;
+}
+
+export function CodeBlock({ className, children, node, inline, ...props }: CodeBlockProps) {
+  // FIX: Sử dụng void node để đánh dấu biến này đã được dùng, tránh lỗi unused-vars
+  // Chúng ta cần destructure 'node' ra để không truyền nó vào SyntaxHighlighter (gây lỗi DOM)
+  void node;
+
   // react-markdown trả về className dạng "language-js"
   // Ta cần tách lấy phần "js"
   const match = /language-(\w+)/.exec(className || '');
-  
+
   // Nếu không có ngôn ngữ cụ thể hoặc là inline code (không có xuống dòng), trả về thẻ code thường
-  const isInline = !String(children).includes('\n') && !match;
+  const isInline = inline || (!String(children).includes('\n') && !match);
 
   if (isInline) {
     return (
-      <code 
-        {...props} 
-        className={className} 
-        style={{ 
-          background: 'var(--mantine-color-gray-1)', 
-          padding: '2px 4px', 
-          borderRadius: '4px', 
+      <code
+        {...props}
+        className={className}
+        style={{
+          background: 'var(--mantine-color-gray-1)',
+          padding: '2px 4px',
+          borderRadius: '4px',
           color: '#c0392b',
-          fontSize: '0.9em' 
+          fontSize: '0.9em'
         }}
       >
         {children}

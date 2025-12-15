@@ -1,4 +1,4 @@
-// 'use client';
+'use client';
 
 // import { useState, useEffect } from 'react';
 // import { SimpleGrid, Card, Image, Text, TextInput, Pagination, Group, Container, LoadingOverlay } from '@mantine/core';
@@ -17,7 +17,7 @@
 // /**
 //  * Renders the Projects Page, displaying a list of projects with search and pagination.
 //  */
-// export default function ProjectsPage() {
+export default function ProjectsPage() {
 //   const [search, setSearch] = useState('');
 //   const [activePage, setPage] = useState(1);
 
@@ -83,4 +83,4 @@
 //       </Group>
 //     </Container>
 //   );
-// }
+}

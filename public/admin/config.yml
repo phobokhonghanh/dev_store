@@ -1,22 +1,20 @@
 backend:
-  name: git-gateway # Kết nối với GitHub
-  branch: main      # Nhánh chính
+  name: github
+  repo: username/your-repo
+  branch: main
+  client_id: Ov23ligiluF6N1mYGE4Y
 
-media_folder: "public/images/uploads" # Nơi lưu ảnh
+media_folder: "public/images/uploads"
 public_folder: "/images/uploads"
-
-# Chỉ mình bạn login được thông qua GitHub
-auth_type: implicit
-app_id: YOUR_GITHUB_APP_ID
 
 collections:
   - name: "blog"
     label: "Blog"
-    folder: "src/data/blogs/" # Thư mục gốc
+    folder: "src/data/blogs"
     create: true
-    # Dòng này quyết định việc tạo thư mục con:
-    # Nếu category là "cooking", file sẽ lưu tại: src/data/blogs/cooking/bai-viet.md
-    path: "{{category}}/{{slug}}" 
+    path: "{{slug}}"
     fields:
-      - {label: "Danh mục", name: "category", widget: "select", options: ["cooking", "learning", "tech"]}
-      - {label: "Tiêu đề", name: "title", widget: "string"}
+      - { label: "Tiêu đề", name: "title", widget: "string" }
+      - { label: "Slug", name: "slug", widget: "string" }
+      - { label: "Ngày đăng", name: "date", widget: "datetime" }
+      - { label: "Nội dung", name: "body", widget: "markdown" }

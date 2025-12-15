@@ -1,33 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import {
   Box,
-  LoadingOverlay,
-  Text,
-  Group,
   Button,
-  NumberInput,
   Card,
-  Title,
-  Center,
+  Group,
+  LoadingOverlay,
+  NumberInput,
+  Text,
+  Title
 } from '@mantine/core';
+import { useCallback, useEffect, useState } from 'react';
 
 import {
-  IconPlayerPlay,
   IconPlayerPause,
+  IconPlayerPlay,
   IconRotate,
   IconX,
 } from '@tabler/icons-react';
 
-import classes from './tools-countdown.module.css';
-import Timer, { TimeData } from '@/components/tools/time/Timer';
 import Fullscreen from '@/components/common/FullscreenWrapper';
 import { AutoBreadcrumbs } from '@/components/layout/breadcrumb/AutoBreadcrumbs';
+import { toolsRoutes } from '@/components/layout/data/tools';
+import Timer, { TimeData } from '@/components/tools/time/Timer';
+import classes from './tools-countdown.module.css';
 
 export default function ToolsPage() {
   const [isLoading] = useState(false);
-
   const [target, setTarget] = useState({
     days: 0,
     hours: 0,
@@ -55,13 +54,13 @@ export default function ToolsPage() {
     return () => clearInterval(interval);
   }, [running]);
 
-  const calcSeconds = () =>
+  const calcSeconds = useCallback(() =>
     target.days * 86400 +
     target.hours * 3600 +
     target.minutes * 60 +
-    target.seconds;
+    target.seconds, [target]);
 
-  const start = () => {
+  const start = useCallback(() => {
     const sec = calcSeconds();
     if (sec <= 0) return;
 
@@ -72,13 +71,14 @@ export default function ToolsPage() {
 
     setTimeLeft(sec);
     setRunning(true);
-  };
+  }, [calcSeconds, timeLeft]);
 
-  const pause = () => setRunning(false);
-  const reset = () => {
+  const pause = useCallback(() => setRunning(false), []);
+
+  const reset = useCallback(() => {
     setRunning(false);
     setTimeLeft(0);
-  };
+  }, []);
 
   const clear = () => {
     setTarget({
@@ -96,14 +96,18 @@ export default function ToolsPage() {
     const handler = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
         e.preventDefault();
-        running ? pause() : start();
+        if (running) {
+          pause();
+        } else {
+          start();
+        }
       }
       if (e.key.toLowerCase() === 'r') reset();
     };
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [running, timeLeft]);
+  }, [running, start, pause, reset]);
 
   // Convert seconds → TimeData object
   const formatTime = (sec: number): TimeData => {
@@ -127,21 +131,21 @@ export default function ToolsPage() {
   const timeObj =
     !running && timeLeft === 0
       ? {
-          y: 0,
-          mo: 0,
-          d: target.days,
-          h: target.hours,
-          m: target.minutes,
-          s: target.seconds,
-          ms: 0,
-        }
+        y: 0,
+        mo: 0,
+        d: target.days,
+        h: target.hours,
+        m: target.minutes,
+        s: target.seconds,
+        ms: 0,
+      }
       : formatTime(timeLeft);
 
   return (
     <Box p="md">
       <LoadingOverlay visible={isLoading} />
       <Box mb="sm">
-        <AutoBreadcrumbs />
+        <AutoBreadcrumbs routes={toolsRoutes} />
       </Box>
       <Box mb="md">
         <Title order={2} c="green">Countdown Timer</Title>
@@ -204,23 +208,23 @@ export default function ToolsPage() {
         <Group mt="lg" justify="center">
           {!running && timeLeft === 0 && (
             <>
-            <Button
-              variant="outline"
-              color="green"
-              onClick={start}
-              leftSection={<IconPlayerPlay size={18} />}
-            >
-              Start
-            </Button>
+              <Button
+                variant="outline"
+                color="green"
+                onClick={start}
+                leftSection={<IconPlayerPlay size={18} />}
+              >
+                Start
+              </Button>
 
-            <Button
-              variant="outline"
-              color="gray"
-              onClick={clear}
-              leftSection={<IconX size={18} />}
-            >
-              Clear
-            </Button>
+              <Button
+                variant="outline"
+                color="gray"
+                onClick={clear}
+                leftSection={<IconX size={18} />}
+              >
+                Clear
+              </Button>
             </>
           )}
 

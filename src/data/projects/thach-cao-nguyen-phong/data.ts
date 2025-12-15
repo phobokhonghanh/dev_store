@@ -1,4 +1,4 @@
-import { IconGauge, IconMessageDots, IconPhone, IconBrandFacebook } from '@tabler/icons-react';
+import { IconGauge, IconMessageDots } from '@tabler/icons-react';
 
 export const carouselImages = [
     { src: 'https://picsum.photos/1200/800?random=1', alt: 'Slide 1' },

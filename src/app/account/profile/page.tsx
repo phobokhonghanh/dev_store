@@ -1,12 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { Grid, Group, Loader, Alert, Box, Text } from '@mantine/core';
+import { Alert, Box, Grid, Group, Loader, Text } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
+import { useState } from 'react';
 
-import { UserInfoCard } from '@/components/account/UserInfoCard';
 import { ProfileNavbar } from '@/components/account/ProfileNavbar';
-import { DeviceManagerCard } from '@/components/account/DeviceManagerCard';
+import { UserInfoCard } from '@/components/account/UserInfoCard';
 
 import { useProfileData } from '@/hooks/account/useProfileData';
 
@@ -38,8 +37,8 @@ export default function ProfilePage() {
     switch (activeCategory) {
       case 'information':
         return <UserInfoCard user={user} />;
-      case 'devices':
-        return <DeviceManagerCard devices={user} />;
+      // case 'devices':
+      //   return <DeviceManagerCard devices={user} />;
       default:
         return <Text>Vui lòng chọn một mục từ menu.</Text>;
     }

@@ -1,30 +1,31 @@
 'use client';
 
-import { useRef, useState } from 'react';
 import {
   Box,
-  Text,
-  Title,
-  Card,
-  Grid,
-  Stack,
-  Slider,
-  Select,
-  Group,
   Button,
+  Card,
   ColorInput,
   Divider,
+  Grid,
+  Group,
+  Select,
+  Slider,
+  Stack,
+  Text,
+  Title,
 } from '@mantine/core';
+import { useRef, useState } from 'react';
 
-import { IconDownload, IconCopy, IconCheck } from '@tabler/icons-react';
+import FileUploader from '@/components/common/FileUpload';
 import Fullscreen from '@/components/common/FullscreenWrapper';
 import { AutoBreadcrumbs } from '@/components/layout/breadcrumb/AutoBreadcrumbs';
+import { toolsRoutes } from '@/components/layout/data/tools';
 import QRCode from '@/components/tools/qrcode/QRCode';
 import QRCodeTabs, { QRType } from '@/components/tools/qrcode/QRCodeTabs';
-import { useClipboard } from '@mantine/hooks';
 import { useDownload } from '@/hooks/tools/io/useDownload';
-import FileUploader from '@/components/common/FileUpload';
 import { useFileUpload } from '@/hooks/tools/io/useFileUpload';
+import { useClipboard } from '@mantine/hooks';
+import { IconCheck, IconCopy, IconDownload } from '@tabler/icons-react';
 
 export default function QRCodeToolPage() {
   // State: QR Content
@@ -38,7 +39,6 @@ export default function QRCodeToolPage() {
     accept: "image/*", 
     readAs: "DataURL" // Quan trọng: Đọc để hiển thị lên QR
   });
-  
   const [qrValue, setQrValue] = useState('');
   const [qrType, setQrType] = useState<QRType>('url');
 
@@ -61,7 +61,7 @@ export default function QRCodeToolPage() {
     <Box p="md">
       {/* Header & Nav */}
       <Box mb="sm">
-        <AutoBreadcrumbs />
+        <AutoBreadcrumbs routes={toolsRoutes} />
       </Box>
       <Box mb="md">
         <Title order={2} c="green">
@@ -107,7 +107,7 @@ export default function QRCodeToolPage() {
                   <Select
                     label="Độ khó (Error Correction)"
                     value={level}
-                    onChange={(v) => setLevel(v as any)}
+                    onChange={(v) => setLevel(v as 'L' | 'M' | 'Q' | 'H')}
                     data={[
                       { value: 'L', label: 'Low (7%)' },
                       { value: 'M', label: 'Medium (15%)' },

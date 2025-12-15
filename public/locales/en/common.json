@@ -1,6 +1,7 @@
 {
   "registerPage": {
     "title": "Create an account",
+    "subtitle": "Create a new account",
     "nameLabel": "Your name",
     "namePlaceholder": "John Doe",
     "usernameLabel": "Username",
@@ -12,6 +13,7 @@
     "confirmPasswordLabel": "Confirm password",
     "confirmPasswordPlaceholder": "Re-enter password",
     "submitButton": "Register",
+    "alreadyHaveAccount": "Already Have Account?",
     "validation": {
       "fullNameLength": "Name must be at least 2 characters",
       "usernameLength": "username must be at least 3 characters",
@@ -28,11 +30,13 @@
   },
   "loginPage": {
     "title": "Login to your account",
+    "subtitle": "Login to your account",
     "usernameLabel": "Username",
     "usernamePlaceholder": "johndoe",
     "passwordLabel": "Password",
     "passwordPlaceholder": "Your password",
     "submitButton": "Login",
+    "noAccount": "Not Account?",
     "validation": {
       "usernameLength": "username must be at least 3 characters",
       "invalidEmail": "Invalid email",

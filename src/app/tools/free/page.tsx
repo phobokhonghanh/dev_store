@@ -1,23 +1,17 @@
-'use client';
-
-import { useState, useEffect } from 'react';
 import {
   Box,
-  LoadingOverlay,
   Text,
-  Title,
+  Title
 } from '@mantine/core';
 
 import { AutoBreadcrumbs } from '@/components/layout/breadcrumb/AutoBreadcrumbs';
+import { toolsRoutes } from '@/components/layout/data/tools';
 
 export default function ToolsFreePage() {
-  const [isLoading] = useState(false);
-
   return (
     <Box p="md">
-      <LoadingOverlay visible={isLoading} />
       <Box mb="sm">
-        <AutoBreadcrumbs />
+        <AutoBreadcrumbs routes={toolsRoutes} />
       </Box>
       <Box mb="md">
         <Title order={2} c="green">Home Free Tools</Title>

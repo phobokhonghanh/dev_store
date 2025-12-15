@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Stack,
-  TextInput,
-  Select,
-  Button,
-  Text,
   ActionIcon,
+  Button,
   Group,
+  Select,
+  Stack,
   Switch,
+  Text,
+  TextInput,
 } from '@mantine/core';
 import {
   IconLink,
-  IconWifi,
-  IconTypography,
-  IconUser,
   IconPlus,
   IconTrash,
+  IconTypography,
+  IconUser,
+  IconWifi,
 } from '@tabler/icons-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import DynamicTabs, { TabItem } from '../../layout/tab/DynamicTabs';
 
 // Import component tái sử dụng vừa tạo
@@ -110,19 +110,19 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
     onCodeChange(result, activeTab);
   }, [activeTab, urlValue, wifiData, customFields, textValue, onCodeChange]);
 
-  // Handlers cho VCard
-  const addCustomField = () => {
-    setCustomFields([
-      ...customFields,
+  // Handlers cho VCard - Wrapped in useCallback to stabilize references
+  const addCustomField = useCallback(() => {
+    setCustomFields((prev) => [
+      ...prev,
       { id: Date.now().toString(), key: 'NOTE', value: '', label: 'Ghi chú' },
     ]);
-  };
+  }, []);
 
-  const removeCustomField = (id: string) => {
-    setCustomFields(customFields.filter((f) => f.id !== id));
-  };
+  const removeCustomField = useCallback((id: string) => {
+    setCustomFields((prev) => prev.filter((f) => f.id !== id));
+  }, []);
 
-  const updateCustomField = (id: string, field: keyof CustomField, newValue: string) => {
+  const updateCustomField = useCallback((id: string, field: keyof CustomField, newValue: string) => {
     setCustomFields((fields) =>
       fields.map((f) => {
         if (f.id !== id) return f;
@@ -133,7 +133,7 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
         return { ...f, [field]: newValue };
       })
     );
-  };
+  }, []);
 
   // --- Cấu hình các Tabs ---
   // Tại đây ta định nghĩa nội dung (UI Inputs) cho từng tab
@@ -179,7 +179,11 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
                 { value: 'nopass', label: 'Không mật khẩu' },
               ]}
               value={wifiData.encryption}
-              onChange={(v) => setWifiData({ ...wifiData, encryption: v as any })}
+              // FIX: Removed 'any', used explicit union type casting
+              onChange={(v) => {
+                if (v) setWifiData({ ...wifiData, encryption: v as 'WPA' | 'WEP' | 'nopass' });
+              }}
+              allowDeselect={false}
             />
             <Switch
               label="Mạng ẩn (Hidden)"
@@ -262,11 +266,19 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
         />
       ),
     },
-  ], [urlValue, wifiData, customFields, textValue]);
+  ], [
+    urlValue,
+    wifiData,
+    customFields,
+    textValue,
+    addCustomField,
+    removeCustomField,
+    updateCustomField
+  ]);
 
   return (
-    <DynamicTabs 
-      items={tabItems} 
+    <DynamicTabs
+      items={tabItems}
       defaultValue="url"
       onChange={(value: string) => setActiveTab(value as QRType)}
     />
