@@ -1,0 +1,18 @@
+{
+  "name": "@origini/tailwind-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "./"
+  ],
+  "dependencies": {
+    "@headlessui/tailwindcss": "^0.2.2",
+    "@tailwindcss/typography": "^0.5.16",
+    "deepmerge": "^4.3.1",
+    "tailwind-highlightjs": "^2.0.1",
+    "tailwindcss": "^4.1.6",
+    "tailwindcss-animate": "^1.0.7"
+  }
+}
