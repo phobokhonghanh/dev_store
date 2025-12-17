@@ -79,3 +79,8 @@ npm install @tabler/icons-react
 
 ```
 
+6. using yarn:
+``` bash
+yarn set version berry
+yarn install
+```

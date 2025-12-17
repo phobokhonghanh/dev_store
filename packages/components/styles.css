@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+@config './tailwind.config.mjs';
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+
+  /* Unified dark mode CSS variables for consistent theming across all apps */
+  :root {
+    /* Light mode colors */
+    --background: #ffffff;
+    --foreground: #374151; /* gray-700 */
+  }
+
+  :root.dark {
+    /* Dark mode colors - consistent across blog, cv, insights */
+    --background: #0f172a; /* slate-900 */
+    --foreground: #f8fafc; /* slate-50 */
+  }
+}
