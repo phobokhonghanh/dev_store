@@ -1,5 +1,5 @@
-import type { Series } from '@duyet/interfaces'
-import { cn } from '@duyet/libs/utils'
+import type { Series } from '@origini/interfaces'
+import { cn } from '@origini/libs/utils'
 import { NewspaperIcon } from 'lucide-react'
 import Link from 'next/link'
 

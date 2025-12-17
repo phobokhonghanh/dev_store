@@ -42,7 +42,7 @@ export default function AnalyticWrapper() {
           !function(e,n,t){e.onload=function(){
           let e=n.createElement("script");
           e.src=t,n.body.appendChild(e)}}
-          (window,document,"//pageview.duyet.net/pageview.js");
+          (window,document,"//pageview.origini.net/pageview.js");
         `}
       </Script>
 
@@ -68,7 +68,7 @@ export default function AnalyticWrapper() {
       <Script
         id="jitsu"
         strategy="afterInteractive"
-        src="https://j.duyet.net/p.js"
+        src="https://j.origini.net/p.js"
       />
     </>
   );
