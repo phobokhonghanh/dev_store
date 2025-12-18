@@ -15,7 +15,10 @@ export default async function Page() {
   )
 
   const years = Object.keys(postsByYear).map(Number)
-  const pastYears = new Date().getFullYear() - Math.min(...years)
+  const pastYears =
+    years.length > 0
+      ? new Date().getFullYear() - Math.min(...years)
+      : 0
 
   const seriesList = getAllSeries().slice(0, 3)
   const allTags = getAllTags()

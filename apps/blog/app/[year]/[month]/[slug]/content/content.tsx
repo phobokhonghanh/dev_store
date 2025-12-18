@@ -34,6 +34,7 @@ export default function Content({ post }: { post: Post }) {
         )}
         dangerouslySetInnerHTML={{ __html: post.content || 'No content' }}
       />
+      {/* {console.log(post.content)} */}
 
       <Snippet html={post.snippet || ''} />
     </>
@@ -69,5 +70,5 @@ const getGithubEditUrl = (slug: string) => {
   const repoUrl =
     process.env.NEXT_PUBLIC_GITHUB_REPO_URL ||
     'https://github.com/phobokhonghanh/dev_store'
-  return `${repoUrl}/edit/master/apps/blog/_posts/${file}`
+  return `${repoUrl}/edit/main/apps/blog/_posts/${file}`
 }
