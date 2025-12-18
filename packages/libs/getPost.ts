@@ -17,9 +17,9 @@ function cacheGet(key: string): string | undefined {
 
 function cacheSet(key: string, value: string): void {
     if (CACHED.size >= MAX_CACHE_SIZE) {
-        const firstKey = CACHED.keys().next().value;
-        if (firstKey !== undefined) {
-            CACHED.delete(firstKey);
+        const iterator = CACHED.keys().next();
+        if (!iterator.done) {
+            CACHED.delete(iterator.value);
         }
     }
     CACHED.set(key, value);
