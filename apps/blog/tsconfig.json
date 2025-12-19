@@ -1,23 +1,25 @@
 {
   "extends": "@origini/tsconfig/nextjs.json",
   "compilerOptions": {
-    "strict": true,
     "plugins": [
       {
         "name": "next"
       }
     ],
+    "strictNullChecks": true,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts"
-  ],
-  "exclude": ["node_modules"]
+    ".next/types/**/*.ts"
+, "next.config.js"  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -3,8 +3,8 @@
  *
  * Claude AI's warm, approachable color palette and design tokens.
  * This theme provides the foundation for Claude-branded applications.
+ * * @type {import('tailwindcss').Config['theme']}
  */
-
 export const theme = {
   colors: {
     // Claude's warm color palette - accent colors
@@ -37,7 +37,7 @@ export const theme = {
       900: '#1F1F1F',
     },
   },
-}
+};
 
 export const safelist = [
   // Claude color backgrounds
@@ -70,6 +70,4 @@ export const safelist = [
     pattern: /^border-claude-gray-(50|100|200|300|400|500|600|700|800|900)$/,
     variants: ['hover', 'dark'],
   },
-]
-
-export default theme;
+];

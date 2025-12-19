@@ -34,7 +34,6 @@ export default function Content({ post }: { post: Post }) {
         )}
         dangerouslySetInnerHTML={{ __html: post.content || 'No content' }}
       />
-      {/* {console.log(post.content)} */}
 
       <Snippet html={post.snippet || ''} />
     </>
