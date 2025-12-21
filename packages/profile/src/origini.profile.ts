@@ -25,7 +25,7 @@ export const originiProfile: Profile = {
     shortName: "pho",
     email: "pho@gmail.com",
     title: "Data Engineer",
-    bio: "Data Engineering, Rustacean at night",
+    bio: "Data Engineering, life led me here...",
     experience: "2+ years",
     location: "Vietnam",
   },
