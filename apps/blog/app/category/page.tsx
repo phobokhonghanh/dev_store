@@ -22,7 +22,7 @@ export default function Categories() {
               {categoryEntries.length} main categories
             </strong>
             , covering everything from data engineering and machine learning to web
-            development and career insights. {totalPosts} posts and counting.
+            development and career insights. Starting with {totalPosts} {totalPosts === 1 ? 'post' : 'posts'}, many more ahead.
           </p>
         </div>
 

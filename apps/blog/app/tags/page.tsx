@@ -23,7 +23,7 @@ export default function Tags() {
               {tagEntries.length} diverse topics
             </strong>
             , spanning programming languages, frameworks, data engineering, cloud
-            infrastructure, and career development. {totalPosts} posts tagged and
+            infrastructure, and career development. {totalPosts} {totalPosts === 1 ? 'post' : 'posts'} tagged and
             organized for you.
           </p>
         </div>

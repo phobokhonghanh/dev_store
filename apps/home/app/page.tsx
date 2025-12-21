@@ -53,7 +53,7 @@ export default function HomePage() {
           <ContentCard
             title="Blog"
             href={addUtmParams(
-              process.env.NEXT_PUBLIC_BLOG_URL || 'https://blog.origini.net',
+              process.env.NEXT_PUBLIC_BLOG_URL || '',
               'homepage',
               'blog_card'
             )}
@@ -66,7 +66,7 @@ export default function HomePage() {
           <ContentCard
             title="Resume"
             href={addUtmParams(
-              process.env.NEXT_PUBLIC_CV_URL || 'https://cv.origini.net',
+              process.env.NEXT_PUBLIC_CV_URL || '',
               'homepage',
               'resume_card'
             )}
@@ -80,7 +80,7 @@ export default function HomePage() {
             title="Insights"
             href={addUtmParams(
               process.env.NEXT_PUBLIC_INSIGHTS_URL ||
-              'https://insights.origini.net',
+              '',
               'homepage',
               'insights_card'
             )}
@@ -108,19 +108,19 @@ export default function HomePage() {
             title="Photos"
             href={addUtmParams(
               process.env.NEXT_PUBLIC_PHOTOS_URL ||
-              'https://photos.origini.net',
+              '',
               'homepage',
               'photos_card'
             )}
             description="Photography portfolio and visual stories from travels and daily life."
             color="cream"
-            backgroundImage="https://images.unsplash.com/photo-1760809974561-545e45bea13e?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=872"
+            backgroundImage="https://images.unsplash.com/photo-1766068968931-0af2cdf805f7?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           />
 
           <LinkCard
             title="Chat"
             href={addUtmParams(
-              process.env.NEXT_PUBLIC_AI_URL || 'https://ai.origini.net',
+              process.env.NEXT_PUBLIC_AI_URL || '',
               'homepage',
               'ai_card'
             )}
@@ -140,7 +140,7 @@ export default function HomePage() {
         <div className="flex flex-wrap justify-center gap-6 text-sm font-medium text-neutral-600 sm:gap-10">
           <Link
             href={addUtmParams(
-              'https://github.com/origini',
+              'https://github.com/phobokhonghanh',
               'homepage',
               'footer_github'
             )}
@@ -151,7 +151,7 @@ export default function HomePage() {
           </Link>
           <Link
             href={addUtmParams(
-              'https://linkedin.com/in/origini',
+              'https://linkedin.com/in/phobo',
               'homepage',
               'footer_linkedin'
             )}
@@ -174,7 +174,7 @@ export default function HomePage() {
           </a>
           <Link
             href={addUtmParams(
-              'https://status.origini.net',
+              '',
               'homepage',
               'footer_status'
             )}

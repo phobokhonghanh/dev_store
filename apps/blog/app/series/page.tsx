@@ -4,11 +4,11 @@ import { getAllSeries } from '@origini/libs/getSeries'
 import { SeriesBox } from '../../components/series'
 
 const seriesBackgrounds = [
+  'bg-ivory-medium',
+  'bg-cactus-light',
   'bg-oat',
   'bg-sage',
   'bg-lavender',
-  'bg-cactus-light',
-  'bg-ivory-medium',
 ]
 
 export default function SeriesPage() {
@@ -23,6 +23,12 @@ export default function SeriesPage() {
           series={series}
         />
       ))}
+      {seriesList.length === 0 && (
+        <div className="text-center text-neutral-600 dark:text-neutral-400">
+          No series available at the moment. Please check back later!
+        </div>
+      )
+      }
     </div>
   )
 }

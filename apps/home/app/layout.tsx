@@ -22,7 +22,7 @@ const libreBaskerville = Libre_Baskerville({
 })
 
 export const metadata = {
-  title: 'Origini - Data Engineer',
+  title: 'Phở - Data Engineer',
   description:
     'Data Engineer. I build data infrastructure and explore my true strengths.',
 }

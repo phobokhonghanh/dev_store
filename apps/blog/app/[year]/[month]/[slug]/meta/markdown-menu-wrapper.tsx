@@ -2,8 +2,6 @@
 
 import { MarkdownMenu } from "./markdown-menu"
 
-
-
 interface MarkdownMenuWrapperProps {
   markdownUrl: string
   markdownContent: string

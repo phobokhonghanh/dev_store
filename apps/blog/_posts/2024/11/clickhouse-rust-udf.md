@@ -9,7 +9,6 @@ tags:
 slug: /2024/11/clickhouse-rust-udf.html
 thumbnail: /media/2024/11/udf/clickhouse-rust-udf-dbt.png
 description: In Data Platform System with ClickHouse, rather than extracting data from ClickHouse for processing in external systems, we can perform transformations directly within ClickHouse itself. ClickHouse can call any external executable program or script to process data. My idea is using custom **User-Defined Functions (UDFs) written in Rust** to handle data transformations between tables.
-twitterCommentUrl: https://x.com/search?q=https%3A%2F%2Fblog.duyet.net%2F2024%2F11%2Fclickhouse-rust-udf.html
 ---
 
 In Data Platform System with ClickHouse, rather than extracting data from ClickHouse for processing in external systems, we can perform transformations directly within ClickHouse itself. ClickHouse can call any external executable program or script to process data. My idea is using custom **User-Defined Functions (UDFs) written in Rust** to handle data transformations between tables.
@@ -334,7 +333,7 @@ Executable user-defined functions can take constant parameters configured in the
 
 ## More examples
 
-More examples can be found in my repo at https://github.com/duyet/clickhouse-udf-rs, including:
+More examples can be found in my repo at https://github.com/phobokhonghanh/clickhouse-udf-rs, including:
 
 - How to create a shared library and IO interface
 - How to conduct tests
@@ -343,5 +342,5 @@ More examples can be found in my repo at https://github.com/duyet/clickhouse-udf
 # References
 
 - [UDFs User Defined Functions](https://clickhouse.com/docs/en/sql-reference/functions/udf)
-- [clickhouse-udf-rs](https://github.com/duyet/clickhouse-udf-rs/) - example repo
+- [clickhouse-udf-rs](https://github.com/phobokhonghanh/clickhouse-udf-rs/) - example repo
 - [Series: ClickHouse on Kubernetes](/series/clickhouse-on-kubernetes)

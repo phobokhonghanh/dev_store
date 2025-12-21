@@ -1,7 +1,8 @@
 import Link from 'next/link'
 
 export const dynamic = 'force-static'
-
+import { originiUrls } from "@origini/urls";
+import { originiProfile } from "@origini/profile";
 // Claude-style SVG Icons - minimal, geometric, soft
 const ResumeIcon = () => (
   <svg
@@ -180,31 +181,31 @@ export default function About() {
       icon: ResumeIcon,
       title: 'Resume',
       description:
-        'Experience building scalable data infrastructure and leading engineering teams.',
-      url: 'https://cv.origini.net',
+        'Hands-on experience in building and maintaining data pipelines & data infrastructure.',
+      url: originiUrls.apps.cv,
       color: 'bg-orange-100/50',
     },
     {
       icon: GithubIcon,
       title: 'GitHub',
       description:
-        'Open source contributions and personal projects in Python, Rust, and TypeScript.',
-      url: 'https://github.com/origini',
+        'Developed personal projects using Python, Java, and TypeScript.',
+      url: originiProfile.social.github || 'https://github.com/',
       color: 'bg-purple-100/50',
     },
     {
       icon: LinkedInIcon,
       title: 'LinkedIn',
       description:
-        'Professional network and career highlights in data engineering.',
-      url: 'https://linkedin.com/in/origini',
+        'Overview of my experience in data engineering. Open to professional connections.',
+      url: originiProfile.social.linkedin || 'https://linkedin.com/',
       color: 'bg-blue-100/50',
     },
     {
       icon: BlogIcon,
       title: 'Blog Home',
       description:
-        'Technical writings on data engineering, distributed systems, and open source.',
+        'Insights on data engineering, software development, and emerging technology trends.',
       url: '/',
       color: 'bg-amber-100/60',
     },
@@ -213,20 +214,23 @@ export default function About() {
   const skills = [
     {
       name: 'Python',
-      link: 'https://github.com/origini?utf8=%E2%9C%93&tab=repositories&q=&type=public&language=python',
+      link: `${originiProfile.social.github}?utf8=%E2%9C%93&tab=repositories&q=&type=public&language=python`,
     },
     {
-      name: 'Rust',
-      link: 'https://github.com/origini?utf8=%E2%9C%93&tab=repositories&q=&type=public&language=rust',
+      name: 'Java',
+      link: `${originiProfile.social.github}?utf8=%E2%9C%93&tab=repositories&q=&type=public&language=java`,
     },
     {
-      name: 'Javascript',
-      link: 'https://github.com/origini?utf8=%E2%9C%93&tab=repositories&q=&type=public&language=javascript',
+      name: 'Typescript',
+      link: `${originiProfile.social.github}?utf8=%E2%9C%93&tab=repositories&q=&type=public&language=typescript`,
     },
+    { name: 'Airflow' },
+    { name: 'Ansible' },
+    { name: 'Data Warehouse' },
+    { name: 'Docker' },
+    { name: 'Flink' },
+    { name: 'Kafka' },
     { name: 'Spark' },
-    { name: 'Airflow', link: 'https://blog.origini.net/tag/airflow/' },
-    { name: 'AWS' },
-    { name: 'GCP' },
   ]
 
   return (
@@ -241,9 +245,9 @@ export default function About() {
             <strong className="font-semibold text-neutral-900">
               Data Engineer
             </strong>{' '}
-            with 6+ years of experience. I am confident in my knowledge of Data
-            Engineering concepts, best practices and state-of-the-art data and
-            Cloud technologies.
+            with 2 years of experience. I am continuously building my knowledge 
+            of Data Engineering concepts, best practices, and modern data 
+            and cloud technologies.
           </p>
         </div>
 

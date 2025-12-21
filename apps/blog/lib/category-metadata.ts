@@ -9,20 +9,20 @@ export interface CategoryMetadata {
 
 // Rotating color and illustration scheme
 const colorRotation: Array<CategoryMetadata['color']> = [
-  'cactus',
-  'sage',
-  'lavender',
-  'oat',
   'ivory',
   'cream',
   'terracotta',
   'coral',
+  'cactus',
+  'sage',
+  'lavender',
+  'oat',
 ]
 
 const illustrationRotation: Array<CategoryMetadata['illustration']> = [
-  'wavy',
-  'geometric',
   'blob',
+  'geometric',
+  'wavy',
 ]
 
 /**

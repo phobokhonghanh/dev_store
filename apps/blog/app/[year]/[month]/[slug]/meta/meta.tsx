@@ -6,7 +6,7 @@ import { distanceToNow } from '@origini/libs/date'
 import { getSeries } from '@origini/libs/getSeries'
 import { getSlug } from '@origini/libs/getSlug'
 import { cn } from '@origini/libs/utils'
-import { SeriesBox } from '../../../../../components/series'
+import { SeriesBox } from '@components/series'
 import { MarkdownMenuWrapper } from './markdown-menu-wrapper'
 
 interface ContentProps {

@@ -8,14 +8,15 @@ export const dynamic = 'force-static'
 export default function HtmlSitemapPage() {
   const posts = getAllPosts(['slug', 'title', 'excerpt', 'date'], 100000)
   const categories = Object.keys(getAllCategories())
-  const HOME_URL = process.env.NEXT_PUBLIC_origini_HOME_URL || 'https://origini.net'
-
   return (
     <div className="mx-auto max-w-4xl">
-      <h1 className="mb-8 text-3xl font-bold">HTML Sitemap</h1>
-      <div className="mb-8">
-        <h2 className="mb-4 mt-8 text-2xl font-semibold">Pages</h2>
-        <ul className="flex flex-wrap gap-4">
+      {/* <h1 className="mb-8 text-3xl font-bold">HTML Sitemap</h1> */}
+      <div className="mb-12 text-center">
+          <h1 className="mb-6 font-serif text-5xl font-normal text-neutral-900 sm:text-6xl">
+          Sitemap
+          </h1>
+          <div className="mb-8">
+        <ul className="flex flex-wrap gap-4 justify-center">
           <li>
             <Link
               href="/"
@@ -23,16 +24,6 @@ export default function HtmlSitemapPage() {
             >
               Home
             </Link>
-          </li>
-          <li>
-            <a
-              href={`${HOME_URL}/about`}
-              className="text-blue-600 underline hover:text-blue-800"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              About
-            </a>
           </li>
           <li>
             <Link
@@ -52,6 +43,14 @@ export default function HtmlSitemapPage() {
           </li>
           <li>
             <Link
+              href="/category"
+              className="text-blue-600 underline hover:text-blue-800"
+            >
+              Categoires
+            </Link>
+          </li>
+          <li>
+            <Link
               href="/tags"
               className="text-blue-600 underline hover:text-blue-800"
             >
@@ -66,8 +65,20 @@ export default function HtmlSitemapPage() {
               Series
             </Link>
           </li>
+          <li>
+            <a
+              href={`/about`}
+              className="text-blue-600 underline hover:text-blue-800"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              About
+            </a>
+          </li>
         </ul>
       </div>
+      </div>
+
       <div className="grid gap-8 md:grid-cols-2">
         <section>
           <h2 className="mb-4 text-2xl font-semibold">
@@ -90,7 +101,7 @@ export default function HtmlSitemapPage() {
           </ul>
         </section>
 
-        <section>
+        <section className='text-right'>
           <h2 className="mb-4 text-2xl font-semibold">
             Categories ({categories.length})
           </h2>
