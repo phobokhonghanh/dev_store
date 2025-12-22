@@ -1,16 +1,19 @@
 {
-  "name": "devstore",
-  "version": "0.1.0",
+  "name": "origini",
   "private": true,
   "workspaces": [
     "packages/*",
     "apps/*"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phobokhonghanh/dev_store.git"
+  },
   "scripts": {
     "build": "dotenv -- turbo build",
     "dev": "dotenv -- turbo dev --parallel",
     "prepare": "husky",
-    "fix": "prettier --write \"**/*.{js,ts,tsx,jsx,json,md,toml,yaml,yml,css,scss}\" --ignore-path .gitignore",
+    "format": "prettier --write \"**/*.{js,ts,tsx,jsx,json,md,toml,yaml,yml,css,scss}\" --ignore-path .gitignore",
     "fmt": "dotenv -- turbo fmt",
     "lint": "dotenv -- turbo lint",
     "prettier-check": "prettier --check \"**/*.{ts,tsx,md}\"",
@@ -20,53 +23,25 @@
   "lint-staged": {
     "*": "prettier -w --ignore-unknown"
   },
-  "dependencies": {
-    "@mantine/carousel": "^8.3.5",
-    "@mantine/core": "^8.3.5",
-    "@mantine/form": "^8.3.5",
-    "@mantine/hooks": "^8.3.5",
-    "@mantine/modals": "^8.3.5",
-    "@mantine/notifications": "^8.3.5",
-    "@tabler/icons-react": "^3.35.0",
-    "@types/cookie": "^0.6.0",
-    "axios": "^1.12.2",
-    "embla-carousel-autoplay": "^8.6.0",
-    "embla-carousel-react": "^8.6.0",
-    "gray-matter": "^4.0.3",
-    "i18next": "^25.6.0",
-    "i18next-browser-languagedetector": "^8.2.0",
-    "next": "^16.0.10",
-    "postcss-nesting": "^13.0.2",
-    "qrcode.react": "^4.2.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-i18next": "^16.2.4",
-    "react-markdown": "^10.1.0",
-    "react-syntax-highlighter": "^16.1.0",
-    "rehype-katex": "^7.0.1",
-    "server-only": "^0.0.1",
-    "solid-js": "^1.9.10",
-    "swr": "^2.3.6",
-    "vfile": "^6.0.3"
-  },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@netlify/plugin-nextjs": "^5.15.1",
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
     "@origini/tsconfig": "*",
-    "@tailwindcss/postcss": "^4.1.14",
-    "@types/node": "^24",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@types/react-syntax-highlighter": "^15.5.13",
-    "autoprefixer": "^10.4.21",
-    "depcheck": "^1.4.7",
+    "@tailwindcss/postcss": "^4.1.6",
     "dotenv-cli": "^11.0.0",
-    "eslint": "^8",
-    "postcss": "^8",
-    "postcss-preset-mantine": "^1.18.0",
-    "postcss-simple-vars": "^7.0.1",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "^16.1.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-config-turbo": "^2.5.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.0.0",
+    "postcss": "^8.5.3",
     "prettier": "^3.0.0",
-    "tailwindcss": "^4.1.14",
-    "typescript": "^5"
-  }
+    "tailwindcss": "^4.1.6",
+    "turbo": "^2.5.3",
+    "tw-animate-css": "^1.2.9",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.1"
+  },
+  "packageManager": "yarn@1.22.22"
 }
