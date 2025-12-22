@@ -77,7 +77,13 @@ const TIME_CONFIG = [
   { key: "h", label: "Hours", pad: 2, forceShow: true },
   { key: "m", label: "Minutes", pad: 2, forceShow: true },
   { key: "s", label: "Seconds", pad: 2, forceShow: true },
-  { key: "ms", label: "Milliseconds", pad: 3, separator: ".", forceShow: false }, // Dùng dấu chấm trước MS
+  {
+    key: "ms",
+    label: "Milliseconds",
+    pad: 3,
+    separator: ".",
+    forceShow: false,
+  }, // Dùng dấu chấm trước MS
 ] as const;
 
 export default function Timer({ time }: { time: TimeData }) {

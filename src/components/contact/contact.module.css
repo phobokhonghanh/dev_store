@@ -1,8 +1,12 @@
 .wrapper {
-  background: radial-gradient(circle, rgba(255, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0) 70%
+  );
   padding: var(--mantine-spacing-xl);
   border-radius: var(--mantine-radius-lg);
-  
+
   @media (max-width: 755px) {
     padding: var(--mantine-spacing-md);
   }
@@ -12,7 +16,8 @@
   background-color: var(--mantine-color-body);
   padding: var(--mantine-spacing-xl);
   border-radius: var(--mantine-radius-md);
-  border: rem(1px) solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-6));
+  border: rem(1px) solid
+    light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-6));
 }
 
 .title {

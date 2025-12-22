@@ -1,5 +1,5 @@
 export interface Filters {
-    categories: string[];
-    priceRange: [number, number] | undefined;
-    rating: number;
+  categories: string[];
+  priceRange: [number, number] | undefined;
+  rating: number;
 }

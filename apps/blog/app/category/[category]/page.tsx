@@ -1,7 +1,10 @@
 import Link from 'next/link'
 
 import { YearPost } from '@/components/year-post'
-import { getCategoryColorClass, getCategoryMetadata } from '@/lib/category-metadata'
+import {
+  getCategoryColorClass,
+  getCategoryMetadata,
+} from '@/lib/category-metadata'
 import Container from '@origini/components/Container'
 import type { Post } from '@origini/interfaces'
 import { getAllCategories, getPostsByCategory } from '@origini/libs/getPost'
@@ -34,9 +37,8 @@ export default async function PostsByCategory({
 
   // Get the category display name (reverse slug to title)
   const categories = getAllCategories()
-  const categoryName = Object.keys(categories).find(
-    (cat) => getSlug(cat) === category,
-  ) || category
+  const categoryName =
+    Object.keys(categories).find((cat) => getSlug(cat) === category) || category
 
   // Get the index for consistent color rotation
   const categoryIndex = Object.keys(categories)
@@ -140,11 +142,7 @@ export default async function PostsByCategory({
           {Object.entries(postsByYear)
             .sort(([a], [b]) => parseInt(b) - parseInt(a))
             .map(([year, yearPosts]) => (
-              <YearPost
-                key={year}
-                year={parseInt(year)}
-                posts={yearPosts}
-              />
+              <YearPost key={year} year={parseInt(year)} posts={yearPosts} />
             ))}
         </div>
 

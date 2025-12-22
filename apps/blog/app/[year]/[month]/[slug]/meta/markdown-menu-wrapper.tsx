@@ -1,6 +1,6 @@
 'use client'
 
-import { MarkdownMenu } from "./markdown-menu"
+import { MarkdownMenu } from './markdown-menu'
 
 interface MarkdownMenuWrapperProps {
   markdownUrl: string

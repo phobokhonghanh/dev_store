@@ -1,5 +1,5 @@
 export const headerLinks = [
-  { link: '/home', label: 'Home' },
+  { link: "/home", label: "Home" },
   // {
   //   link: '/projects',
   //   label: 'Projects',
@@ -8,17 +8,17 @@ export const headerLinks = [
   //     { link: '/projects/san-pham', label: 'San pham' },
   //   ],
   // },
-  { link: '/tools', label: 'Tools' },
-  { link: '/blogs', label: 'Blogs' },
-  { link: '/contact', label: 'Contact' },
+  { link: "/tools", label: "Tools" },
+  { link: "/blogs", label: "Blogs" },
+  { link: "/contact", label: "Contact" },
 ];
 
 export const userLinks = [
-    { link: '/login', label: 'Đăng nhập' },
-    { link: '/register', label: 'Đăng ký' },
+  { link: "/login", label: "Đăng nhập" },
+  { link: "/register", label: "Đăng ký" },
 ];
 
 export const accountLinks = [
-  { link: '/account/profile', label: 'Hồ sơ', icon: 'user' },
-  { link: '/account/logout', label: 'Đăng xuất', icon: 'logout', color: 'red' },
+  { link: "/account/profile", label: "Hồ sơ", icon: "user" },
+  { link: "/account/logout", label: "Đăng xuất", icon: "logout", color: "red" },
 ];

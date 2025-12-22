@@ -5,5 +5,5 @@ export interface Device {
   ip: string;
   isActive: boolean;
   lastSeen: Date;
-  type: 'desktop' | 'mobile' | 'laptop' | 'other';
-};
+  type: "desktop" | "mobile" | "laptop" | "other";
+}

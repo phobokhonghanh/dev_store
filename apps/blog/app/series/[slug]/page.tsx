@@ -26,5 +26,5 @@ export default async function SeriesPage({ params }: PageProps) {
     return notFound()
   }
 
-  return <SeriesBox className="mt-0 border-0 pb-10 pt-10" series={series} />
+  return <SeriesBox className="mt-0 border-0 pt-10 pb-10" series={series} />
 }

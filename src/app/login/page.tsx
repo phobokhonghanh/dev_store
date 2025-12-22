@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Anchor,
@@ -10,33 +10,33 @@ import {
   Text,
   TextInput,
   Title,
-} from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { useTranslation } from 'react-i18next';
-import Link from 'next/link';
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { useTranslation } from "react-i18next";
+import Link from "next/link";
 
 // Import đúng đường dẫn hook đã refactor
-import { APP_ROUTES } from '@/constants';
-import { LoginRequest } from '@/types/requests';
-import { useLogin } from '@/hooks/auth/useLogin';
+import { APP_ROUTES } from "@/constants";
+import { LoginRequest } from "@/types/requests";
+import { useLogin } from "@/hooks/auth/useLogin";
 
 // Interface cho form values, khớp với LoginRequest
 type LoginFormValues = LoginRequest;
 
 export default function LoginPage() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const { handleLogin, isLoading, error } = useLogin();
 
   const form = useForm<LoginFormValues>({
     initialValues: {
-      identifier: '',
-      password: '',
+      identifier: "",
+      password: "",
     },
     validate: {
       identifier: (value) =>
-        value.length < 3 ? t('loginPage.validation.usernameLength') : null,
+        value.length < 3 ? t("loginPage.validation.usernameLength") : null,
       password: (value) =>
-        value.length < 1 ? t('loginPage.validation.passwordRequired') : null,
+        value.length < 1 ? t("loginPage.validation.passwordRequired") : null,
     },
   });
 
@@ -47,11 +47,11 @@ export default function LoginPage() {
   return (
     <Container size={420} my={40}>
       <Title ta="center" order={2}>
-        {t('loginPage.title', { defaultValue: 'Welcome back!' })}
+        {t("loginPage.title", { defaultValue: "Welcome back!" })}
       </Title>
 
       <Text c="dimmed" size="sm" ta="center" mt={5} mb={30}>
-        {t('loginPage.subtitle', { defaultValue: 'Login to your account' })}
+        {t("loginPage.subtitle", { defaultValue: "Login to your account" })}
       </Text>
 
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
@@ -59,29 +59,35 @@ export default function LoginPage() {
           <Stack>
             {error && (
               <Text c="red" size="sm" ta="center">
-                {error instanceof Error ? error.message : t('loginPage.alert.unknownError')}
+                {error instanceof Error
+                  ? error.message
+                  : t("loginPage.alert.unknownError")}
               </Text>
             )}
 
             <TextInput
-              label={t('loginPage.usernameLabel', { defaultValue: 'Username' })}
-              placeholder={t('loginPage.usernamePlaceholder', { defaultValue: 'Your username' })}
+              label={t("loginPage.usernameLabel", { defaultValue: "Username" })}
+              placeholder={t("loginPage.usernamePlaceholder", {
+                defaultValue: "Your username",
+              })}
               withAsterisk
               autoComplete="username"
-              {...form.getInputProps('username')}
+              {...form.getInputProps("username")}
             />
 
             <PasswordInput
-              label={t('loginPage.passwordLabel', { defaultValue: 'Password' })}
-              placeholder={t('loginPage.passwordPlaceholder', { defaultValue: 'Your password' })}
+              label={t("loginPage.passwordLabel", { defaultValue: "Password" })}
+              placeholder={t("loginPage.passwordPlaceholder", {
+                defaultValue: "Your password",
+              })}
               withAsterisk
               mt="md"
               autoComplete="current-password"
-              {...form.getInputProps('password')}
+              {...form.getInputProps("password")}
             />
 
             <Button type="submit" mt="xl" fullWidth loading={isLoading}>
-              {t('loginPage.submitButton', { defaultValue: 'Sign in' })}
+              {t("loginPage.submitButton", { defaultValue: "Sign in" })}
             </Button>
           </Stack>
         </form>
@@ -89,7 +95,7 @@ export default function LoginPage() {
 
       <Text ta="center" mt="md">
         <Anchor component={Link} href={APP_ROUTES.REGISTER?.pattern} fw={700}>
-          {t('loginPage.noAccount')}{' '}
+          {t("loginPage.noAccount")}{" "}
         </Anchor>
       </Text>
     </Container>

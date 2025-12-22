@@ -3,7 +3,15 @@
 
 export interface TagMetadata {
   description: string
-  color: 'ivory' | 'oat' | 'cream' | 'cactus' | 'sage' | 'lavender' | 'terracotta' | 'coral'
+  color:
+    | 'ivory'
+    | 'oat'
+    | 'cream'
+    | 'cactus'
+    | 'sage'
+    | 'lavender'
+    | 'terracotta'
+    | 'coral'
   illustration: 'wavy' | 'geometric' | 'blob' | 'none'
 }
 
@@ -55,48 +63,56 @@ export function getTagMetadata(
  */
 function generateTagDescription(tagName: string, postCount: number): string {
   const lowerTag = tagName.toLowerCase()
-  const countText = postCount > 0
-    ? `${postCount} ${postCount === 1 ? 'article' : 'articles'} exploring`
-    : 'Deep dive into'
+  const countText =
+    postCount > 0
+      ? `${postCount} ${postCount === 1 ? 'article' : 'articles'} exploring`
+      : 'Deep dive into'
 
   // Pattern-based intelligent descriptions
-  const patterns: Array<{ regex: RegExp; template: (tag: string) => string }> = [
-    // Programming languages
-    {
-      regex: /^(python|javascript|typescript|go|rust|java|scala|kotlin|ruby|php|c\+\+|c#)/i,
-      template: (tag) => `${countText} ${tag} programming, patterns, and best practices`
-    },
-    // Frameworks & libraries
-    {
-      regex: /(react|vue|angular|svelte|next\.?js|django|flask|spring|express)/i,
-      template: (tag) => `${countText} building applications with ${tag}`
-    },
-    // Data & ML
-    {
-      regex: /(machine learning|deep learning|data|analytics|bigquery|spark|flink|kafka|airflow)/i,
-      template: (tag) => `${countText} ${tag} engineering and architecture`
-    },
-    // Cloud & Infrastructure
-    {
-      regex: /(aws|azure|gcp|cloud|kubernetes|docker|terraform|helm)/i,
-      template: (tag) => `${countText} ${tag} infrastructure and deployment`
-    },
-    // Databases
-    {
-      regex: /(postgres|mysql|mongodb|redis|elasticsearch|clickhouse|cassandra)/i,
-      template: (tag) => `${countText} ${tag} optimization and design patterns`
-    },
-    // Tools & Practices
-    {
-      regex: /(git|ci\/cd|testing|monitoring|observability|performance)/i,
-      template: (tag) => `${countText} ${tag} techniques and workflows`
-    },
-    // Career & Soft Skills
-    {
-      regex: /(career|interview|leadership|management|productivity)/i,
-      template: (tag) => `${countText} ${tag} insights and experiences`
-    },
-  ]
+  const patterns: Array<{ regex: RegExp; template: (tag: string) => string }> =
+    [
+      // Programming languages
+      {
+        regex:
+          /^(python|javascript|typescript|go|rust|java|scala|kotlin|ruby|php|c\+\+|c#)/i,
+        template: (tag) =>
+          `${countText} ${tag} programming, patterns, and best practices`,
+      },
+      // Frameworks & libraries
+      {
+        regex:
+          /(react|vue|angular|svelte|next\.?js|django|flask|spring|express)/i,
+        template: (tag) => `${countText} building applications with ${tag}`,
+      },
+      // Data & ML
+      {
+        regex:
+          /(machine learning|deep learning|data|analytics|bigquery|spark|flink|kafka|airflow)/i,
+        template: (tag) => `${countText} ${tag} engineering and architecture`,
+      },
+      // Cloud & Infrastructure
+      {
+        regex: /(aws|azure|gcp|cloud|kubernetes|docker|terraform|helm)/i,
+        template: (tag) => `${countText} ${tag} infrastructure and deployment`,
+      },
+      // Databases
+      {
+        regex:
+          /(postgres|mysql|mongodb|redis|elasticsearch|clickhouse|cassandra)/i,
+        template: (tag) =>
+          `${countText} ${tag} optimization and design patterns`,
+      },
+      // Tools & Practices
+      {
+        regex: /(git|ci\/cd|testing|monitoring|observability|performance)/i,
+        template: (tag) => `${countText} ${tag} techniques and workflows`,
+      },
+      // Career & Soft Skills
+      {
+        regex: /(career|interview|leadership|management|productivity)/i,
+        template: (tag) => `${countText} ${tag} insights and experiences`,
+      },
+    ]
 
   // Try to match patterns
   for (const { regex, template } of patterns) {

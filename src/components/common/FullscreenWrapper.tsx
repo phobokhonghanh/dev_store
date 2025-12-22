@@ -45,7 +45,11 @@ export default function Fullscreen({ targetId }: { targetId: string }) {
           color="gray"
           onClick={toggle}
         >
-          {isFull ? <IconMinimize size={isMobile ? 10 : 20} /> : <IconMaximize size={isMobile ? 10 : 20} />}
+          {isFull ? (
+            <IconMinimize size={isMobile ? 10 : 20} />
+          ) : (
+            <IconMaximize size={isMobile ? 10 : 20} />
+          )}
         </ActionIcon>
       </Tooltip>
     </div>

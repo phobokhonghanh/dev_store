@@ -15,7 +15,7 @@ interface AutoBreadcrumbsProps {
 function findPath(
   pathname: string,
   routes: NavRoute[],
-  trail: NavRoute[] = []
+  trail: NavRoute[] = [],
 ): NavRoute[] | null {
   for (const item of routes) {
     const newTrail = [...trail, item];

@@ -62,10 +62,8 @@ export const appUrls: AppUrls = {
   insights:
     process.env.NEXT_PUBLIC_INSIGHTS_URL || "https://insights.origini.net",
   home: process.env.NEXT_PUBLIC_HOME_URL || "https://origini.net",
-  photos:
-    process.env.NEXT_PUBLIC_PHOTOS_URL || "https://photos.origini.net",
-  homelab:
-    process.env.NEXT_PUBLIC_HOMELAB_URL || "https://homelab.origini.net",
+  photos: process.env.NEXT_PUBLIC_PHOTOS_URL || "https://photos.origini.net",
+  homelab: process.env.NEXT_PUBLIC_HOMELAB_URL || "https://homelab.origini.net",
 };
 
 // Blog app configuration

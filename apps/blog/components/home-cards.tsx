@@ -1,5 +1,5 @@
-import type { Series } from '@origini/interfaces'
 import { ContentCard, FeaturedCard } from '@origini/components'
+import type { Series } from '@origini/interfaces'
 
 interface HomeCardsProps {
   seriesList: Series[]

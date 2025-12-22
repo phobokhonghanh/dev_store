@@ -1,7 +1,7 @@
 // src/app/forgot-password/page.tsx
-'use client';
+"use client";
 
-import { Stack, Title } from '@mantine/core';
+import { Stack, Title } from "@mantine/core";
 
 /**
  * Renders the Dashboard Page component.

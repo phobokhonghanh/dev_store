@@ -15,7 +15,7 @@ export default function SeriesPage() {
   const seriesList: Series[] = getAllSeries()
 
   return (
-    <div className="mb-0 mt-10 grid grid-cols-1 gap-8 md:grid-cols-1">
+    <div className="mt-10 mb-0 grid grid-cols-1 gap-8 md:grid-cols-1">
       {seriesList.map((series: Series, index: number) => (
         <SeriesBox
           className={cn(seriesBackgrounds[index % seriesBackgrounds.length])}
@@ -27,8 +27,7 @@ export default function SeriesPage() {
         <div className="text-center text-neutral-600 dark:text-neutral-400">
           No series available at the moment. Please check back later!
         </div>
-      )
-      }
+      )}
     </div>
   )
 }

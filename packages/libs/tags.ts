@@ -4,13 +4,13 @@
  * @param tag string
  */
 export function normalizeTag(tag: string): string {
-    const normalizedTag = tag
-        .split(" ")
-        .filter((word) => word.length > 0)
-        .map((word) => {
-            return word[0].toUpperCase() + word.toLowerCase().substring(1);
-        })
-        .join(" ");
+  const normalizedTag = tag
+    .split(" ")
+    .filter((word) => word.length > 0)
+    .map((word) => {
+      return word[0].toUpperCase() + word.toLowerCase().substring(1);
+    })
+    .join(" ");
 
-    return normalizedTag;
+  return normalizedTag;
 }

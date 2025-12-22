@@ -1,9 +1,23 @@
 // src/components/account/profile/DeviceManagerCard.tsx
-'use client';
+"use client";
 
-import { Text, Button, Card, Group, Badge, Stack, Box, Divider } from '@mantine/core';
-import { IconDeviceDesktop, IconDeviceMobile, IconDeviceLaptop, IconAbc } from '@tabler/icons-react';
-import type { Device } from '@/types/models/device';
+import {
+  Text,
+  Button,
+  Card,
+  Group,
+  Badge,
+  Stack,
+  Box,
+  Divider,
+} from "@mantine/core";
+import {
+  IconDeviceDesktop,
+  IconDeviceMobile,
+  IconDeviceLaptop,
+  IconAbc,
+} from "@tabler/icons-react";
+import type { Device } from "@/types/models/device";
 
 export function DeviceManagerCard({ devices }: { devices: Device[] }) {
   const handleSignOutDevice = (deviceId: string) => {
@@ -22,13 +36,17 @@ export function DeviceManagerCard({ devices }: { devices: Device[] }) {
     return "Vài giây trước";
   };
 
-  const getDeviceIcon = (type: Device['type']) => {
+  const getDeviceIcon = (type: Device["type"]) => {
     const iconProps = { size: "1.8rem", stroke: 1.5 };
     switch (type) {
-      case 'desktop': return <IconDeviceDesktop {...iconProps} />;
-      case 'mobile': return <IconDeviceMobile {...iconProps} />;
-      case 'laptop': return <IconDeviceLaptop {...iconProps} />;
-      default: return <IconAbc {...iconProps} />;
+      case "desktop":
+        return <IconDeviceDesktop {...iconProps} />;
+      case "mobile":
+        return <IconDeviceMobile {...iconProps} />;
+      case "laptop":
+        return <IconDeviceLaptop {...iconProps} />;
+      default:
+        return <IconAbc {...iconProps} />;
     }
   };
 
@@ -43,17 +61,30 @@ export function DeviceManagerCard({ devices }: { devices: Device[] }) {
                 <Stack gap={0}>
                   <Text fw={500}>{device.agent}</Text>
                   <Text size="sm" c="dimmed">
-                    {device.isActive ? `IP: ${device.ip}` : `Lần cuối: ${formatLastSeen(device.lastSeen)}`}
+                    {device.isActive
+                      ? `IP: ${device.ip}`
+                      : `Lần cuối: ${formatLastSeen(device.lastSeen)}`}
                   </Text>
                 </Stack>
               </Group>
               <Group>
                 {device.isActive && (
-                  <Badge color="green" variant="light" leftSection={<Box className="w-1.5 h-1.5 rounded-full bg-green-600" />}>
+                  <Badge
+                    color="green"
+                    variant="light"
+                    leftSection={
+                      <Box className="w-1.5 h-1.5 rounded-full bg-green-600" />
+                    }
+                  >
                     Đang hoạt động
                   </Badge>
                 )}
-                <Button variant="outline" color="red" size="xs" onClick={() => handleSignOutDevice(device.id)}>
+                <Button
+                  variant="outline"
+                  color="red"
+                  size="xs"
+                  onClick={() => handleSignOutDevice(device.id)}
+                >
                   Đăng xuất
                 </Button>
               </Group>

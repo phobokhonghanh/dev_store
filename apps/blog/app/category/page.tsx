@@ -6,8 +6,13 @@ import { getSlug } from '@origini/libs/getSlug'
 
 export default function Categories() {
   const categories = getAllCategories()
-  const categoryEntries = Object.entries(categories).sort(([, a], [, b]) => b - a)
-  const totalPosts = Object.values(categories).reduce((sum, count) => sum + count, 0)
+  const categoryEntries = Object.entries(categories).sort(
+    ([, a], [, b]) => b - a,
+  )
+  const totalPosts = Object.values(categories).reduce(
+    (sum, count) => sum + count,
+    0,
+  )
 
   return (
     <div className="min-h-screen">
@@ -21,8 +26,9 @@ export default function Categories() {
             <strong className="font-semibold text-neutral-900">
               {categoryEntries.length} main categories
             </strong>
-            , covering everything from data engineering and machine learning to web
-            development and career insights. Starting with {totalPosts} {totalPosts === 1 ? 'post' : 'posts'}, many more ahead.
+            , covering everything from data engineering and machine learning to
+            web development and career insights. Starting with {totalPosts}{' '}
+            {totalPosts === 1 ? 'post' : 'posts'}, many more ahead.
           </p>
         </div>
 

@@ -1,5 +1,5 @@
+import { ContentCard, LinkCard } from '@origini/components'
 import Link from 'next/link'
-import { LinkCard, ContentCard } from '@origini/components'
 // import { nodes } from '../../homelab/lib/data/nodes'
 
 export const dynamic = 'force-static'
@@ -19,7 +19,7 @@ const buildDate = new Date().toISOString().split('T')[0] // Format: YYYY-MM-DD
 function addUtmParams(
   url: string,
   campaign: string = 'homepage',
-  content?: string
+  content?: string,
 ): string {
   // Don't add UTM params to internal routes
   if (url.startsWith('/')) return url
@@ -55,7 +55,7 @@ export default function HomePage() {
             href={addUtmParams(
               process.env.NEXT_PUBLIC_BLOG_URL || '',
               'homepage',
-              'blog_card'
+              'blog_card',
             )}
             description="Technical writings on data engineering, distributed systems, and open source."
             color="terracotta"
@@ -68,7 +68,7 @@ export default function HomePage() {
             href={addUtmParams(
               process.env.NEXT_PUBLIC_CV_URL || '',
               'homepage',
-              'resume_card'
+              'resume_card',
             )}
             category={`Updated ${buildDate}`}
             description="Experience building scalable data infrastructure and leading engineering teams."
@@ -79,10 +79,9 @@ export default function HomePage() {
           <ContentCard
             title="Insights"
             href={addUtmParams(
-              process.env.NEXT_PUBLIC_INSIGHTS_URL ||
-              '',
+              process.env.NEXT_PUBLIC_INSIGHTS_URL || '',
               'homepage',
-              'insights_card'
+              'insights_card',
             )}
             description="Analytics dashboard showcasing data from GitHub, WakaTime, and more."
             color="cactus"
@@ -107,10 +106,9 @@ export default function HomePage() {
           <LinkCard
             title="Photos"
             href={addUtmParams(
-              process.env.NEXT_PUBLIC_PHOTOS_URL ||
-              '',
+              process.env.NEXT_PUBLIC_PHOTOS_URL || '',
               'homepage',
-              'photos_card'
+              'photos_card',
             )}
             description="Photography portfolio and visual stories from travels and daily life."
             color="cream"
@@ -122,7 +120,7 @@ export default function HomePage() {
             href={addUtmParams(
               process.env.NEXT_PUBLIC_AI_URL || '',
               'homepage',
-              'ai_card'
+              'ai_card',
             )}
             description="Experimental @originibot LLM base for questions about origini.net and related topics."
             color="sage"
@@ -142,7 +140,7 @@ export default function HomePage() {
             href={addUtmParams(
               'https://github.com/phobokhonghanh',
               'homepage',
-              'footer_github'
+              'footer_github',
             )}
             target="_blank"
             className="transition-colors duration-200 hover:text-neutral-900"
@@ -153,7 +151,7 @@ export default function HomePage() {
             href={addUtmParams(
               'https://linkedin.com/in/phobo',
               'homepage',
-              'footer_linkedin'
+              'footer_linkedin',
             )}
             target="_blank"
             className="transition-colors duration-200 hover:text-neutral-900"
@@ -173,11 +171,7 @@ export default function HomePage() {
             llms.txt
           </a>
           <Link
-            href={addUtmParams(
-              '',
-              'homepage',
-              'footer_status'
-            )}
+            href={addUtmParams('', 'homepage', 'footer_status')}
             target="_blank"
             className="transition-colors duration-200 hover:text-neutral-900"
           >

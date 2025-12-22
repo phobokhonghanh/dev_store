@@ -1,8 +1,8 @@
+import { originiProfile } from '@origini/profile'
+import { originiUrls } from '@origini/urls'
 import Link from 'next/link'
 
 export const dynamic = 'force-static'
-import { originiUrls } from "@origini/urls";
-import { originiProfile } from "@origini/profile";
 // Claude-style SVG Icons - minimal, geometric, soft
 const ResumeIcon = () => (
   <svg
@@ -245,9 +245,9 @@ export default function About() {
             <strong className="font-semibold text-neutral-900">
               Data Engineer
             </strong>{' '}
-            with 2 years of experience. I am continuously building my knowledge 
-            of Data Engineering concepts, best practices, and modern data 
-            and cloud technologies.
+            with 2 years of experience. I am continuously building my knowledge
+            of Data Engineering concepts, best practices, and modern data and
+            cloud technologies.
           </p>
         </div>
 

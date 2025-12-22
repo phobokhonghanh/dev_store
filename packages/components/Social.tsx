@@ -3,7 +3,15 @@ import type { Profile } from "@origini/profile";
 import { originiProfile } from "@origini/profile";
 
 import { cn } from "@origini/libs";
-import { LinkedIn, Unsplash, TikTok, Medium, DevTo, Github, Twitter } from "./Icons";
+import {
+  LinkedIn,
+  Unsplash,
+  TikTok,
+  Medium,
+  DevTo,
+  Github,
+  Twitter,
+} from "./Icons";
 
 export interface SocialProps {
   /** Profile containing social links */

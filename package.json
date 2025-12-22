@@ -10,16 +10,16 @@
     "url": "https://github.com/phobokhonghanh/dev_store.git"
   },
   "scripts": {
-    "build": "dotenv -- turbo build",
-    "dev": "dotenv -- turbo dev --parallel",
     "prepare": "husky",
-    "format": "prettier --write \"**/*.{js,ts,tsx,jsx,json,md,toml,yaml,yml,css,scss}\" --ignore-path .gitignore",
-    "fmt": "dotenv -- turbo fmt",
     "cz": "cz",
+    "dev": "dotenv -- turbo dev --parallel",
+    "format": "prettier --write \"**/*.{js,ts,tsx,jsx,json,md,toml,yaml,yml,css,scss}\" --ignore-path .gitignore",
+    "fmt": "dotenv -- turbo format",
     "lint": "dotenv -- turbo lint",
     "prettier-check": "prettier --check \"**/*.{ts,tsx,md}\"",
-    "start": "dotenv -- turbo start",
-    "test": "dotenv -- turbo test"
+    "test": "dotenv -- turbo test",
+    "build": "dotenv -- turbo build",
+    "start": "dotenv -- turbo start"
   },
   "lint-staged": {
     "*": "prettier -w --ignore-unknown"

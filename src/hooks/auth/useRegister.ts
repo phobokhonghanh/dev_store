@@ -1,18 +1,21 @@
-import { useRouter } from 'next/navigation';
-import { useTranslation } from 'react-i18next';
-import useSWRMutation, { SWRMutationConfiguration } from 'swr/mutation';
+import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import useSWRMutation, { SWRMutationConfiguration } from "swr/mutation";
 
-import { showNotification } from '@/components/layout/notification/Notification';
-import { API_ROUTES, APP_ROUTES } from '@/constants';
-import { registerServices } from '@/services/auth/register';
-import { RegisterRequest } from '@/types/requests';
-import { RegisterResponse } from '@/types/responses';
-import { ApiError } from '@/utils/apiClient';
+import { showNotification } from "@/components/layout/notification/Notification";
+import { API_ROUTES, APP_ROUTES } from "@/constants";
+import { registerServices } from "@/services/auth/register";
+import { RegisterRequest } from "@/types/requests";
+import { RegisterResponse } from "@/types/responses";
+import { ApiError } from "@/utils/apiClient";
 
 /**
  * Fetcher function cho SWR Mutation
  */
-async function registerFetcher(url: string, { arg }: { arg: RegisterRequest }): Promise<RegisterResponse> {
+async function registerFetcher(
+  url: string,
+  { arg }: { arg: RegisterRequest },
+): Promise<RegisterResponse> {
   return registerServices(arg);
 }
 
@@ -23,17 +26,26 @@ interface UseRegisterOptions {
   shouldRedirect?: boolean; // Cho phép tắt redirect nếu dùng trong Modal/Multi-step form
 }
 
-export function useRegister({ onSuccess, onError, shouldRedirect = true }: UseRegisterOptions = {}) {
+export function useRegister({
+  onSuccess,
+  onError,
+  shouldRedirect = true,
+}: UseRegisterOptions = {}) {
   const router = useRouter();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
-  const config: SWRMutationConfiguration<RegisterResponse, ApiError, string, RegisterRequest> = {
+  const config: SWRMutationConfiguration<
+    RegisterResponse,
+    ApiError,
+    string,
+    RegisterRequest
+  > = {
     onSuccess: (data) => {
       // 1. Luôn hiển thị thông báo thành công (Core UX)
       showNotification({
-        type: 'success',
-        title: t('registerPage.alert.success'),
-        message: t('registerPage.alert.successMessage'),
+        type: "success",
+        title: t("registerPage.alert.success"),
+        message: t("registerPage.alert.successMessage"),
       });
 
       // 2. Chạy logic tùy chỉnh từ component (nếu có)
@@ -55,28 +67,23 @@ export function useRegister({ onSuccess, onError, shouldRedirect = true }: UseRe
 
       // 2. Fallback: Hiển thị thông báo lỗi mặc định
       showNotification({
-        type: 'error',
-        title: t('registerPage.alert.failure'),
-        message: err?.message || t('registerPage.alert.unknownError'),
+        type: "error",
+        title: t("registerPage.alert.failure"),
+        message: err?.message || t("registerPage.alert.unknownError"),
       });
     },
   };
 
-  const { 
-    trigger, 
-    isMutating, 
-    error,
-    reset 
-  } = useSWRMutation(
-    API_ROUTES.REGISTER, 
-    registerFetcher, 
-    config
+  const { trigger, isMutating, error, reset } = useSWRMutation(
+    API_ROUTES.REGISTER,
+    registerFetcher,
+    config,
   );
 
   return {
     handleRegister: trigger,
     isLoading: isMutating,
     error,
-    reset // Expose reset để clear error state khi user nhập lại form
+    reset, // Expose reset để clear error state khi user nhập lại form
   };
 }

@@ -22,9 +22,9 @@ export default function Tags() {
             <strong className="font-semibold text-neutral-900">
               {tagEntries.length} diverse topics
             </strong>
-            , spanning programming languages, frameworks, data engineering, cloud
-            infrastructure, and career development. {totalPosts} {totalPosts === 1 ? 'post' : 'posts'} tagged and
-            organized for you.
+            , spanning programming languages, frameworks, data engineering,
+            cloud infrastructure, and career development. {totalPosts}{' '}
+            {totalPosts === 1 ? 'post' : 'posts'} tagged and organized for you.
           </p>
         </div>
 

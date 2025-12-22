@@ -32,9 +32,7 @@ export default async function PostsByTag({ params }: PostsByTagProps) {
 
   // Get the tag display name (reverse slug to title)
   const tags = getAllTags()
-  const tagName = Object.keys(tags).find(
-    (t) => getSlug(t) === tag,
-  ) || tag
+  const tagName = Object.keys(tags).find((t) => getSlug(t) === tag) || tag
 
   // Get the index for consistent color rotation
   const tagIndex = Object.keys(tags)
@@ -138,11 +136,7 @@ export default async function PostsByTag({ params }: PostsByTagProps) {
           {Object.entries(postsByYear)
             .sort(([a], [b]) => parseInt(b) - parseInt(a))
             .map(([year, yearPosts]) => (
-              <YearPost
-                key={year}
-                year={parseInt(year)}
-                posts={yearPosts}
-              />
+              <YearPost key={year} year={parseInt(year)} posts={yearPosts} />
             ))}
         </div>
 
@@ -160,11 +154,5 @@ export default async function PostsByTag({ params }: PostsByTagProps) {
 }
 
 async function getPosts(tag: Params['tag']) {
-  return getPostsByTag(tag, [
-    'slug',
-    'date',
-    'title',
-    'category',
-    'featured',
-  ])
+  return getPostsByTag(tag, ['slug', 'date', 'title', 'category', 'featured'])
 }

@@ -14,7 +14,7 @@ export default function Content({ post }: { post: Post }) {
       <header className="mb-8 flex flex-col gap-4">
         <h1
           className={cn(
-            'mt-2 inline-block break-words py-2',
+            'mt-2 inline-block py-2 break-words',
             'font-serif text-neutral-900 dark:text-neutral-100',
             'text-4xl font-bold tracking-normal',
             'md:text-5xl md:tracking-tight',
@@ -30,7 +30,7 @@ export default function Content({ post }: { post: Post }) {
       <article
         className={cn(
           'prose-a[href^="https://"]:after:content-["↗︎"] prose dark:prose-invert prose-code:break-words',
-          'mb-10 mt-10 max-w-none',
+          'mt-10 mb-10 max-w-none',
         )}
         dangerouslySetInnerHTML={{ __html: post.content || 'No content' }}
       />

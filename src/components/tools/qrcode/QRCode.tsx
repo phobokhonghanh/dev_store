@@ -1,22 +1,17 @@
-import React from 'react';
-import { QRCodeCanvas } from 'qrcode.react';
-import {
-  Stack,
-  Paper,
-  Text,
-  Center,
-} from '@mantine/core';
+import React from "react";
+import { QRCodeCanvas } from "qrcode.react";
+import { Stack, Paper, Text, Center } from "@mantine/core";
 
 interface QRCodeDisplayProps {
   value: string;
   size: number;
   fgColor: string;
   bgColor: string;
-  level: 'L' | 'M' | 'Q' | 'H';
+  level: "L" | "M" | "Q" | "H";
   includeMargin: boolean;
   // --- Props mới cho hình ảnh ---
-  imageSrc?: string;      // Đường dẫn ảnh/icon (URL hoặc base64)
-  imageSize?: number;     // Kích thước ảnh (pixel)
+  imageSrc?: string; // Đường dẫn ảnh/icon (URL hoặc base64)
+  imageSize?: number; // Kích thước ảnh (pixel)
   imageExcavate?: boolean; // Có xóa các điểm QR phía sau ảnh không (mặc định true để dễ quét)
 }
 
@@ -31,7 +26,6 @@ export default function QRCode({
   imageSize,
   imageExcavate = true,
 }: QRCodeDisplayProps) {
-
   // Chuẩn bị object settings cho ảnh nếu có imageSrc
   const imageSettings = imageSrc
     ? {
@@ -44,7 +38,11 @@ export default function QRCode({
     : undefined;
 
   return (
-    <Stack style={{ minWidth: 300, height: '100%' }} align="center" justify="center">
+    <Stack
+      style={{ minWidth: 300, height: "100%" }}
+      align="center"
+      justify="center"
+    >
       <Paper p="xl" withBorder radius="lg" bg="gray.1">
         <Center>
           <QRCodeCanvas
@@ -56,7 +54,12 @@ export default function QRCode({
             includeMargin={includeMargin}
             // Truyền settings ảnh vào đây
             imageSettings={imageSettings}
-            style={{ width: '100%', height: 'auto', maxWidth: '250px', maxHeight: '250px' }}
+            style={{
+              width: "100%",
+              height: "auto",
+              maxWidth: "250px",
+              maxHeight: "250px",
+            }}
           />
         </Center>
       </Paper>
@@ -65,9 +68,11 @@ export default function QRCode({
         size="xs"
         c="dimmed"
         ta="center"
-        style={{ wordBreak: 'break-all', maxWidth: 300, minHeight: 20 }}
+        style={{ wordBreak: "break-all", maxWidth: 300, minHeight: 20 }}
       >
-        {value.length > 50 ? value.substring(0, 50) + '...' : value || 'Chưa có dữ liệu'}
+        {value.length > 50
+          ? value.substring(0, 50) + "..."
+          : value || "Chưa có dữ liệu"}
       </Text>
     </Stack>
   );

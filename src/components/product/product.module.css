@@ -3,7 +3,9 @@
 .productName {
   /* Giới hạn tên sản phẩm 2 dòng */
   line-height: 1.4;
-  height: calc(1.4 * 2 * var(--mantine-font-size-md)); /* line-height * 2 lines * font-size */
+  height: calc(
+    1.4 * 2 * var(--mantine-font-size-md)
+  ); /* line-height * 2 lines * font-size */
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -23,8 +25,8 @@
 }
 
 .discountBadge {
-    position: absolute;
-    top: var(--mantine-spacing-sm);
-    left: var(--mantine-spacing-sm);
-    z-index: 1;
+  position: absolute;
+  top: var(--mantine-spacing-sm);
+  left: var(--mantine-spacing-sm);
+  z-index: 1;
 }

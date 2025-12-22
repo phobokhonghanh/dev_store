@@ -157,7 +157,7 @@ function deepMerge<T extends object>(target: T, source: DeepPartial<T>): T {
  */
 export function createProfile(
   base: Profile,
-  overrides?: DeepPartial<Profile>
+  overrides?: DeepPartial<Profile>,
 ): Profile {
   if (!overrides) return base;
   return deepMerge(base, overrides);

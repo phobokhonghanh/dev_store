@@ -1,14 +1,17 @@
 'use client'
 
-import { useState } from 'react'
 import { cn } from '@origini/libs/utils'
+import { useState } from 'react'
 
 interface MarkdownMenuProps {
   markdownUrl: string
   onCopyMarkdown: () => Promise<void>
 }
 
-export function MarkdownMenu({ markdownUrl, onCopyMarkdown }: MarkdownMenuProps) {
+export function MarkdownMenu({
+  markdownUrl,
+  onCopyMarkdown,
+}: MarkdownMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -53,7 +56,7 @@ export function MarkdownMenu({ markdownUrl, onCopyMarkdown }: MarkdownMenuProps)
               <button
                 onClick={handleCopy}
                 className={cn(
-                  'flex w-full items-center gap-2 px-4 py-2 text-sm text-left',
+                  'flex w-full items-center gap-2 px-4 py-2 text-left text-sm',
                   'text-neutral-700 hover:bg-neutral-100',
                   'dark:text-neutral-300 dark:hover:bg-neutral-800',
                 )}

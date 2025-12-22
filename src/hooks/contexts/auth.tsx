@@ -51,7 +51,7 @@
 
 "use client";
 
-import { LoginResponse } from '@/types/responses';
+import { LoginResponse } from "@/types/responses";
 import {
   createContext,
   useContext,
@@ -59,11 +59,11 @@ import {
   useEffect,
   useMemo,
   useCallback,
-  ReactNode
-} from 'react';
+  ReactNode,
+} from "react";
 
 // Định nghĩa key cho localStorage để tránh magic string và typo
-const STORAGE_KEY = 'user_session';
+const STORAGE_KEY = "user_session";
 
 interface AuthContextType {
   user: string | null;
@@ -75,7 +75,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // State user chỉ lưu username (theo logic gốc), 
+  // State user chỉ lưu username (theo logic gốc),
   // nhưng có thể mở rộng lưu cả object User nếu cần.
   const [user, setUser] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -117,24 +117,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // 4. Memoize context value để tránh re-render không cần thiết cho consumers
-  const contextValue = useMemo(() => ({
-    user,
-    isLoading,
-    login,
-    logout
-  }), [user, isLoading, login, logout]);
+  const contextValue = useMemo(
+    () => ({
+      user,
+      isLoading,
+      login,
+      logout,
+    }),
+    [user, isLoading, login, logout],
+  );
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

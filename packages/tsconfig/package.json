@@ -1,17 +1,17 @@
 {
-    "name": "@origini/tsconfig",
-    "version": "0.1.0",
-    "private": true,
-    "license": "MIT",
-    "files": [
-        "./"
-    ],
-    "exports": {
-        "./base.json": "./base.json",
-        "./nextjs.json": "./nextjs.json",
-        "./react-library.json": "./react-library.json"
-    },
-    "publishConfig": {
-        "access": "public"
-    }
+  "name": "@origini/tsconfig",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "files": [
+    "./"
+  ],
+  "exports": {
+    "./base.json": "./base.json",
+    "./nextjs.json": "./nextjs.json",
+    "./react-library.json": "./react-library.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
