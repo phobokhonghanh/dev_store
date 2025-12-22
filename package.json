@@ -15,6 +15,7 @@
     "prepare": "husky",
     "format": "prettier --write \"**/*.{js,ts,tsx,jsx,json,md,toml,yaml,yml,css,scss}\" --ignore-path .gitignore",
     "fmt": "dotenv -- turbo fmt",
+    "cz": "cz",
     "lint": "dotenv -- turbo lint",
     "prettier-check": "prettier --check \"**/*.{ts,tsx,md}\"",
     "start": "dotenv -- turbo start",
@@ -23,11 +24,18 @@
   "lint-staged": {
     "*": "prettier -w --ignore-unknown"
   },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
   "devDependencies": {
     "@commitlint/cli": "^20.2.0",
     "@commitlint/config-conventional": "^20.2.0",
     "@origini/tsconfig": "*",
     "@tailwindcss/postcss": "^4.1.6",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
     "dotenv-cli": "^11.0.0",
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.1.0",
