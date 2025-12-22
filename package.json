@@ -14,7 +14,7 @@
     "cz": "cz",
     "dev": "dotenv -- turbo dev --parallel",
     "format": "prettier --write \"**/*.{js,ts,tsx,jsx,json,md,toml,yaml,yml,css,scss}\" --ignore-path .gitignore",
-    "fmt": "dotenv -- turbo format",
+    "fmt": "dotenv -- turbo fmt",
     "lint": "dotenv -- turbo lint",
     "prettier-check": "prettier --check \"**/*.{ts,tsx,md}\"",
     "test": "dotenv -- turbo test",
@@ -37,7 +37,7 @@
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.3.0",
     "dotenv-cli": "^11.0.0",
-    "eslint": "^9.39.2",
+    "eslint": "^9.26.0",
     "eslint-config-next": "^16.1.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-config-turbo": "^2.5.3",
@@ -51,5 +51,5 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1"
   },
-  "packageManager": "yarn@1.22.22"
+  "packageManager": "yarn@4.12.0"
 }

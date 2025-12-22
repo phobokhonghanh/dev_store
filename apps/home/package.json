@@ -8,7 +8,7 @@
     "dev": "next dev --turbopack -p 3001",
     "fmt": "yarn format",
     "format": "prettier --write \"**/*.{js,ts,tsx,jsx,json,md,toml,yaml,yml,css,scss}\" --ignore-path ../../.gitignore .",
-    "lint": "next lint",
+    "lint": "eslint . && echo 'Lint Finished'",
     "prettier-check": "prettier --check .",
     "start": "next start"
   },

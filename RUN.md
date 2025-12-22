@@ -4,14 +4,11 @@ Dưới đây là danh sách các câu lệnh điều khiển dự án được 
 
 ### Setup
 
-| Lệnh           | Chức năng                                                                        |
-| -------------- | -------------------------------------------------------------------------------- |
-| `yarn prepare` | Khởi tạo **Husky** để tự động thiết lập Git Hooks ngay sau khi cài đặt thư viện. |
-| `echo "yarn lint && yarn prettier-check" > .husky/pre-commit && chmod +x .husky/pre-commit` | Cấu hình Git Hook để kiểm tra mã nguồn trước khi commit. |
-| `echo 'npx --no -- commitlint --edit "$1"' > .husky/commit-msg && chmod +x .husky/commit-msg` | Cấu hình Git Hook để kiểm tra định dạng commit message. |
-
-
-
+| Lệnh                                                                                          | Chức năng                                                                        |
+| --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `yarn prepare`                                                                                | Khởi tạo **Husky** để tự động thiết lập Git Hooks ngay sau khi cài đặt thư viện. |
+| `echo "yarn lint && yarn prettier-check" > .husky/pre-commit && chmod +x .husky/pre-commit`   | Cấu hình Git Hook để kiểm tra mã nguồn trước khi commit.                         |
+| `echo 'npx --no -- commitlint --edit "$1"' > .husky/commit-msg && chmod +x .husky/commit-msg` | Cấu hình Git Hook để kiểm tra định dạng commit message.                          |
 
 ### Development
 
