@@ -237,7 +237,7 @@ export function getAppUrls(urls: UrlsConfig): AppUrls {
  * @example
  * ```ts
  * const blogUrl = getAppUrl(originiUrls, "blog")
- * // "https://blog.origini.net"
+ * // "https://blog.pho.net"
  * ```
  */
 export function getAppUrl(

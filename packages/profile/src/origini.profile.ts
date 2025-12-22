@@ -21,8 +21,8 @@ import type { Profile } from "./index";
  */
 export const originiProfile: Profile = {
   personal: {
-    name: "Phở",
-    shortName: "pho",
+    name: "Nguyen",
+    shortName: "Pho",
     email: "pho@gmail.com",
     title: "Data Engineer",
     bio: "Data Engineering, life led me here...",

@@ -1,5 +1,7 @@
 import { ContentCard, LinkCard } from '@origini/components'
+import { originiUrls } from '@origini/urls'
 import Link from 'next/link'
+
 // import { nodes } from '../../homelab/lib/data/nodes'
 
 export const dynamic = 'force-static'
@@ -16,24 +18,54 @@ const buildDate = new Date().toISOString().split('T')[0] // Format: YYYY-MM-DD
 /**
  * Add UTM tracking parameters to URL
  */
+// function addUtmParams(
+//   url: string,
+//   campaign: string = 'homepage',
+//   content?: string,
+// ): string {
+//   // Don't add UTM params to internal routes
+//   if (url.startsWith('/')) return url
+
+//   const urlObj = new URL(url)
+//   urlObj.searchParams.set('utm_source', 'home')
+//   urlObj.searchParams.set('utm_medium', 'website')
+//   urlObj.searchParams.set('utm_campaign', campaign)
+//   if (content) {
+//     urlObj.searchParams.set('utm_content', content)
+//   }
+//   return urlObj.toString()
+// }
+/**
+ * Add UTM tracking parameters to URL
+ */
 function addUtmParams(
-  url: string,
+  url: string | undefined | null,
   campaign: string = 'homepage',
   content?: string,
 ): string {
-  // Don't add UTM params to internal routes
+  // 1. Trả về fallback nếu URL rỗng hoặc không tồn tại
+  if (!url) return '#'
+
+  // 2. Không xử lý URL nội bộ (internal routes)
   if (url.startsWith('/')) return url
 
-  const urlObj = new URL(url)
-  urlObj.searchParams.set('utm_source', 'home')
-  urlObj.searchParams.set('utm_medium', 'website')
-  urlObj.searchParams.set('utm_campaign', campaign)
-  if (content) {
-    urlObj.searchParams.set('utm_content', content)
+  try {
+    // 3. Sử dụng try-catch để ngăn chặn crash nếu url không đúng định dạng (thiếu http://)
+    const urlObj = new URL(url)
+    urlObj.searchParams.set('utm_source', 'home')
+    urlObj.searchParams.set('utm_medium', 'website')
+    urlObj.searchParams.set('utm_campaign', campaign)
+    if (content) {
+      urlObj.searchParams.set('utm_content', content)
+    }
+    return urlObj.toString()
+  } catch {
+    // Nếu URL lỗi (ví dụ: chỉ có chữ "google.com" mà thiếu "https://")
+    // Trả về chính nó để tránh trắng trang
+    console.error('Invalid URL passed to addUtmParams:', url)
+    return url
   }
-  return urlObj.toString()
 }
-
 export default function HomePage() {
   return (
     <div className="flex min-h-screen items-center bg-neutral-50">
@@ -41,7 +73,7 @@ export default function HomePage() {
         {/* Header */}
         <div className="mb-8 text-center sm:mb-12">
           <h1 className="mb-4 font-serif text-5xl font-normal text-neutral-900 sm:text-6xl">
-            Origini
+            Nguyên
           </h1>
           <p className="text-base leading-relaxed text-neutral-700 sm:text-lg">
             Data Engineering
@@ -53,7 +85,7 @@ export default function HomePage() {
           <ContentCard
             title="Blog"
             href={addUtmParams(
-              process.env.NEXT_PUBLIC_BLOG_URL || '',
+              process.env.NEXT_PUBLIC_BLOG_URL || originiUrls.apps.blog || '',
               'homepage',
               'blog_card',
             )}
@@ -66,7 +98,7 @@ export default function HomePage() {
           <ContentCard
             title="Resume"
             href={addUtmParams(
-              process.env.NEXT_PUBLIC_CV_URL || '',
+              process.env.NEXT_PUBLIC_CV_URL || originiUrls.apps.cv || '',
               'homepage',
               'resume_card',
             )}
@@ -79,7 +111,9 @@ export default function HomePage() {
           <ContentCard
             title="Insights"
             href={addUtmParams(
-              process.env.NEXT_PUBLIC_INSIGHTS_URL || '',
+              process.env.NEXT_PUBLIC_INSIGHTS_URL ||
+                originiUrls.apps.insights ||
+                '',
               'homepage',
               'insights_card',
             )}
@@ -92,8 +126,8 @@ export default function HomePage() {
           {/* <ContentCard
             title="Homelab"
             href={addUtmParams(
-              process.env.NEXT_PUBLIC_HOMELAB_URL ||
-              'https://homelab.origini.net',
+              process.env.NEXT_PUBLIC_HOMELAB_URL | || ''|
+              'https://homelab.pho.net',
               'homepage',
               'homelab_card'
             )}
@@ -106,7 +140,9 @@ export default function HomePage() {
           <LinkCard
             title="Photos"
             href={addUtmParams(
-              process.env.NEXT_PUBLIC_PHOTOS_URL || '',
+              process.env.NEXT_PUBLIC_PHOTOS_URL ||
+                originiUrls.apps.photos ||
+                '',
               'homepage',
               'photos_card',
             )}
@@ -115,16 +151,16 @@ export default function HomePage() {
             backgroundImage="https://images.unsplash.com/photo-1766068968931-0af2cdf805f7?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           />
 
-          <LinkCard
+          {/* <LinkCard
             title="Chat"
             href={addUtmParams(
-              process.env.NEXT_PUBLIC_AI_URL || '',
+              process.env.NEXT_PUBLIC_AI_URL || '' || '',
               'homepage',
               'ai_card',
             )}
-            description="Experimental @originibot LLM base for questions about origini.net and related topics."
+            description="Experimental @originibot LLM base for questions about pho.net and related topics."
             color="sage"
-          />
+          /> */}
 
           <LinkCard
             title="About"
