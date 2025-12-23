@@ -2,39 +2,12 @@ import { ContentCard, LinkCard } from '@origini/components'
 import { originiUrls } from '@origini/urls'
 import Link from 'next/link'
 
-// import { nodes } from '../../homelab/lib/data/nodes'
-
 export const dynamic = 'force-static'
 export const revalidate = 3600
-
-// Extract node names from homelab data (limit to 3, add "..." if more exist)
-// const homelabNodes = nodes.length > 3
-//   ? [...nodes.slice(0, 3).map((node) => node.name), '...']
-//   : nodes.map((node) => node.name)
 
 // Build date for resume card
 const buildDate = new Date().toISOString().split('T')[0] // Format: YYYY-MM-DD
 
-/**
- * Add UTM tracking parameters to URL
- */
-// function addUtmParams(
-//   url: string,
-//   campaign: string = 'homepage',
-//   content?: string,
-// ): string {
-//   // Don't add UTM params to internal routes
-//   if (url.startsWith('/')) return url
-
-//   const urlObj = new URL(url)
-//   urlObj.searchParams.set('utm_source', 'home')
-//   urlObj.searchParams.set('utm_medium', 'website')
-//   urlObj.searchParams.set('utm_campaign', campaign)
-//   if (content) {
-//     urlObj.searchParams.set('utm_content', content)
-//   }
-//   return urlObj.toString()
-// }
 /**
  * Add UTM tracking parameters to URL
  */
@@ -89,9 +62,9 @@ export default function HomePage() {
               'homepage',
               'blog_card',
             )}
-            description="Technical writings on data engineering, distributed systems, and open source."
-            color="terracotta"
-            illustration="blob"
+            description="Phở’s blog on data engineering, distributed systems, and system design — where I write about techniques and my real-world perspectives from building and operating data systems."
+            illustration="geometric"
+            color="amber"
             featured
           />
 
@@ -103,12 +76,12 @@ export default function HomePage() {
               'resume_card',
             )}
             category={`Updated ${buildDate}`}
-            description="Experience building scalable data infrastructure and leading engineering teams."
-            color="oat"
+            description="Experience working with data engineering concepts, best practices, and modern data and cloud technologies."
+            color="orange"
             illustration="wavy"
           />
 
-          <ContentCard
+          {/* <ContentCard
             title="Insights"
             href={addUtmParams(
               process.env.NEXT_PUBLIC_INSIGHTS_URL ||
@@ -123,20 +96,6 @@ export default function HomePage() {
             illustration="wavy"
           />
 
-          {/* <ContentCard
-            title="Homelab"
-            href={addUtmParams(
-              process.env.NEXT_PUBLIC_HOMELAB_URL | || ''|
-              'https://homelab.pho.net',
-              'homepage',
-              'homelab_card'
-            )}
-            description="Homelab monitoring dashboard (beta)."
-            color="lavender"
-            tags={homelabNodes}
-            illustration="geometric"
-          /> */}
-
           <LinkCard
             title="Photos"
             href={addUtmParams(
@@ -149,24 +108,14 @@ export default function HomePage() {
             description="Photography portfolio and visual stories from travels and daily life."
             color="cream"
             backgroundImage="https://images.unsplash.com/photo-1766068968931-0af2cdf805f7?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-          />
-
-          {/* <LinkCard
-            title="Chat"
-            href={addUtmParams(
-              process.env.NEXT_PUBLIC_AI_URL || '' || '',
-              'homepage',
-              'ai_card',
-            )}
-            description="Experimental @originibot LLM base for questions about pho.net and related topics."
-            color="sage"
           /> */}
 
           <LinkCard
             title="About"
             href="/about"
             description="Learn more about my experience, skills, and professional background."
-            color="ivory"
+            color="lavender"
+            className="lg:col-span-3"
           />
         </div>
 
@@ -200,19 +149,13 @@ export default function HomePage() {
           >
             Short URLs
           </Link>
-          <a
-            href="/llms.txt"
-            className="transition-colors duration-200 hover:text-neutral-900"
-          >
-            llms.txt
-          </a>
-          <Link
+          {/* <Link
             href={addUtmParams('', 'homepage', 'footer_status')}
             target="_blank"
             className="transition-colors duration-200 hover:text-neutral-900"
           >
             Status
-          </Link>
+          </Link> */}
         </div>
       </div>
     </div>

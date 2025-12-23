@@ -31,5 +31,5 @@ module.exports = {
       },
     },
   },
-  ignorePatterns: ["node_modules/", "dist/"],
+  ignorePatterns: [".next/", "node_modules/", "dist/"],
 };

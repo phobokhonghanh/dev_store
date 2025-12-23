@@ -3,7 +3,7 @@ import { ReactNode, ReactElement } from "react";
 import type { Profile } from "@origini/profile";
 import { originiProfile } from "@origini/profile";
 import type { UrlsConfig } from "@origini/urls";
-import { originiUrls, createNavigation } from "@origini/urls";
+import { originiUrls } from "@origini/urls";
 
 import { cn } from "@origini/libs/utils";
 import Container from "./Container";

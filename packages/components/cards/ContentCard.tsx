@@ -22,6 +22,15 @@ interface ContentCardProps {
     | "lavender"
     | "terracotta"
     | "coral"
+    | "sand"
+    | "sky"
+    | "mist"
+    | "clay"
+    | "blush"
+    | "mint"
+    | "slate"
+    | "orange"
+    | "amber"
     | "white";
   illustration?: "wavy" | "geometric" | "blob" | "none";
   className?: string;
@@ -37,6 +46,18 @@ const colorClasses = {
   lavender: "bg-lavender-light text-neutral-900",
   terracotta: "bg-terracotta-light text-neutral-900",
   coral: "bg-coral-light text-neutral-900",
+
+  // đậm hơn (still classy)
+  sand: "bg-sand text-neutral-900", // be rõ hơn, editorial
+  sky: "bg-sky-200 text-neutral-900", // xanh trời rõ màu hơn
+  mist: "bg-slate-200 text-neutral-900", // xám xanh, techy
+  clay: "bg-clay text-neutral-900", // nâu đất rõ, ấm
+  blush: "bg-rose-200 text-neutral-900", // hồng rõ nhưng không gắt
+  mint: "bg-emerald-200 text-neutral-900", // mint đậm, modern
+  slate: "bg-slate-200 text-neutral-900", // neutral nhưng chắc
+  orange: "bg-orange-100/50 text-neutral-900", // cam nhẹ, energetic
+  amber: "bg-amber-100/50 text-neutral-900", // vàng nhẹ, cheerful
+
   white:
     "border border-neutral-200 bg-white text-neutral-900 hover:border-neutral-300",
 };
@@ -45,11 +66,23 @@ const illustrationColorClasses = {
   ivory: "text-neutral-400",
   oat: "text-neutral-400",
   cream: "text-neutral-400",
+
   cactus: "text-cactus",
   sage: "text-sage",
   lavender: "text-lavender",
   terracotta: "text-terracotta",
   coral: "text-coral",
+
+  sand: "text-neutral-500", // neutral đậm hơn, vẫn editorial
+  sky: "text-sky-500", // xanh trời rõ màu
+  mist: "text-slate-600", // xám xanh đậm, tech vibe
+  clay: "text-clay-600", // nâu đất rõ, cozy
+  blush: "text-rose-500", // hồng rõ hơn nhưng vẫn mềm
+  mint: "text-emerald-500", // mint đậm, modern
+  slate: "text-slate-600", // neutral chắc tay
+  orange: "text-orange-500", // cam rõ, energetic
+  amber: "text-amber-500", // vàng rõ, cheerful
+
   white: "text-neutral-400",
 };
 

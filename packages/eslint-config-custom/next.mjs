@@ -7,22 +7,19 @@ import reactPlugin from 'eslint-plugin-react'
 // It includes basic TypeScript and React rules.
 const eslintConfig = tseslint.config(
     ...turboConfig,
-
-    // Base TypeScript rules
     ...tseslint.configs.recommended,
+
+    // Ignore .next folder
+    {
+        ignores: ['.next/**/*', 'node_modules/**/*', 'dist/**/*', 'build/**/*', 'out/**/*'],
+    },
 
     // React rules
     {
         files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
-        plugins: {
-            react: reactPlugin,
-        },
+        plugins: { react: reactPlugin },
         languageOptions: {
-            parserOptions: {
-                ecmaFeatures: {
-                    jsx: true,
-                },
-            },
+            parserOptions: { ecmaFeatures: { jsx: true } },
         },
         rules: {
             ...reactPlugin.configs.recommended.rules,
@@ -30,22 +27,16 @@ const eslintConfig = tseslint.config(
             'react/prop-types': 'off',
             'react/no-unescaped-entities': 'off',
         },
-        settings: {
-            react: {
-                version: 'detect',
-            },
-        },
+        settings: { react: { version: 'detect' } },
     },
 
     // Allow require() in js/cjs files
     {
         files: ['**/*.{js,cjs}'],
-        rules: {
-            '@typescript-eslint/no-require-imports': 'off',
-        },
+        rules: { '@typescript-eslint/no-require-imports': 'off' },
     },
 
-    // Prettier config should be last to override other formatting rules.
+    // Prettier last
     eslintConfigPrettier,
 )
 

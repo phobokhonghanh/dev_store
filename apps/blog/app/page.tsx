@@ -4,18 +4,12 @@ import Container from '@origini/components/Container'
 import Header from '@origini/components/Header'
 import { getAllTags, getPostsByAllYear } from '@origini/libs/getPost'
 import { getAllSeries } from '@origini/libs/getSeries'
-import type { UrlsConfig } from '@origini/urls'
-import { originiUrls } from '@origini/urls'
 import { HomeCards } from '../components/home-cards'
 import { YearPost } from '../components/year-post'
 
 export type NavigationItem = {
   name: string
   href: string
-}
-
-export function createDefaultNavigation(urls: UrlsConfig): NavigationItem[] {
-  return [{ name: 'About', href: `${urls.apps.blog}/about` }]
 }
 
 export default async function Page() {
@@ -38,10 +32,7 @@ export default async function Page() {
 
   return (
     <div className="bg-cream-warm min-h-screen pb-10">
-      <Header
-        longText="Data Engineering"
-        navigationItems={createDefaultNavigation(originiUrls)}
-      />
+      <Header longText="Data Engineering" />
       <Container>
         <div className="mb-12 text-center">
           <p className="text-lg leading-relaxed text-neutral-700">
