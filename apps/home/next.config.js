@@ -2,7 +2,7 @@
  * @type {import('next').NextConfig}
  */
 const config = {
-  output: 'export',
+  // output: 'export',
   trailingSlash: false,
   transpilePackages: ['@origini/components', '@origini/libs'],
   images: {
