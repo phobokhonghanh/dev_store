@@ -6578,7 +6578,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^9.26.0":
+"eslint@npm:*, eslint@npm:^9.26.0":
   version: 9.39.2
   resolution: "eslint@npm:9.39.2"
   dependencies:
