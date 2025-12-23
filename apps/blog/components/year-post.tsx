@@ -43,7 +43,7 @@ export function YearPost({ year, posts, className }: YearPostProps) {
               <IsFeatured featured={post.featured} />
             </Link>
             <hr className="shrink grow border-dotted border-neutral-300" />
-            <time className="flex-shrink-0 whitespace-nowrap text-sm text-neutral-500">
+            <time className="flex-shrink-0 text-sm whitespace-nowrap text-neutral-500">
               {dateFormat(post.date, 'MMM dd')}
             </time>
           </article>

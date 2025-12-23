@@ -7,7 +7,6 @@ type TimeBlockProps = {
 };
 
 export default function TimeBlock({ label, value }: TimeBlockProps) {
-  
   return (
     <Box
       p="clamp(10px, 2vw, 20px)"
@@ -15,7 +14,7 @@ export default function TimeBlock({ label, value }: TimeBlockProps) {
       ta="center"
       style={{
         border: `${rem(1)} solid light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-3))`,
-        
+
         borderRadius: rem(16),
         display: "flex",
         flexDirection: "column",
@@ -35,7 +34,7 @@ export default function TimeBlock({ label, value }: TimeBlockProps) {
         fz="clamp(10px, 2.3vw, 16px)"
         c="dimmed"
         mt={rem(4)}
-        style={{ letterSpacing: '0.5px' }}
+        style={{ letterSpacing: "0.5px" }}
       >
         {label}
       </Text>

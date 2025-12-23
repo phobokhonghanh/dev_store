@@ -1,9 +1,9 @@
 // src/components/common/AsyncContentWrapper.tsx
-'use client';
+"use client";
 
-import { Group, Loader, Alert, Text } from '@mantine/core';
-import { IconAlertCircle } from '@tabler/icons-react';
-import { ReactNode } from 'react';
+import { Group, Loader, Alert, Text } from "@mantine/core";
+import { IconAlertCircle } from "@tabler/icons-react";
+import { ReactNode } from "react";
 
 interface AsyncContentWrapperProps {
   isLoading: boolean;
@@ -18,18 +18,26 @@ export function AsyncContentWrapper({
   error,
   data,
   children,
-  emptyMessage = "Không tìm thấy dữ liệu." // Tin nhắn mặc định
+  emptyMessage = "Không tìm thấy dữ liệu.", // Tin nhắn mặc định
 }: AsyncContentWrapperProps) {
-
   // 1. Trạng thái Đang Tải
   if (isLoading) {
-    return <Group justify="center" mt="xl"><Loader /></Group>;
+    return (
+      <Group justify="center" mt="xl">
+        <Loader />
+      </Group>
+    );
   }
 
   // 2. Trạng thái Lỗi
   if (error) {
     return (
-      <Alert icon={<IconAlertCircle size="1rem" />} title="Lỗi!" color="red" mt="xl">
+      <Alert
+        icon={<IconAlertCircle size="1rem" />}
+        title="Lỗi!"
+        color="red"
+        mt="xl"
+      >
         Không thể tải dữ liệu. Vui lòng thử lại sau.
         {/* Bạn có thể thêm: {error.message} nếu muốn */}
       </Alert>
@@ -38,7 +46,11 @@ export function AsyncContentWrapper({
 
   // 3. Trạng thái Thành Công nhưng Rỗng
   if (data.length === 0) {
-    return <Text ta="center" mt="xl">{emptyMessage}</Text>;
+    return (
+      <Text ta="center" mt="xl">
+        {emptyMessage}
+      </Text>
+    );
   }
 
   // 4. Trạng thái Thành Công (Có dữ liệu)

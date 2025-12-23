@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Box,
@@ -13,48 +13,48 @@ import {
   Stack,
   Text,
   Title,
-} from '@mantine/core';
-import { useRef, useState } from 'react';
+} from "@mantine/core";
+import { useRef, useState } from "react";
 
-import FileUploader from '@/components/common/FileUpload';
-import Fullscreen from '@/components/common/FullscreenWrapper';
-import { AutoBreadcrumbs } from '@/components/layout/breadcrumb/AutoBreadcrumbs';
-import { toolsRoutes } from '@/components/layout/data/tools';
-import QRCode from '@/components/tools/qrcode/QRCode';
-import QRCodeTabs, { QRType } from '@/components/tools/qrcode/QRCodeTabs';
-import { useDownload } from '@/hooks/tools/io/useDownload';
-import { useFileUpload } from '@/hooks/tools/io/useFileUpload';
-import { useClipboard } from '@mantine/hooks';
-import { IconCheck, IconCopy, IconDownload } from '@tabler/icons-react';
+import FileUploader from "@/components/common/FileUpload";
+import Fullscreen from "@/components/common/FullscreenWrapper";
+import { AutoBreadcrumbs } from "@/components/layout/breadcrumb/AutoBreadcrumbs";
+import { toolsRoutes } from "@/components/layout/data/tools";
+import QRCode from "@/components/tools/qrcode/QRCode";
+import QRCodeTabs, { QRType } from "@/components/tools/qrcode/QRCodeTabs";
+import { useDownload } from "@/hooks/tools/io/useDownload";
+import { useFileUpload } from "@/hooks/tools/io/useFileUpload";
+import { useClipboard } from "@mantine/hooks";
+import { IconCheck, IconCopy, IconDownload } from "@tabler/icons-react";
 
 export default function QRCodeToolPage() {
   // State: QR Content
-  const { 
-    file: logoFile, 
+  const {
+    file: logoFile,
     fileContent: logoSrc, // Đây là base64 string
-    handleFileSelect: onSelectLogo, 
+    handleFileSelect: onSelectLogo,
     clearFile: onClearLogo,
-    error: logoError 
-  } = useFileUpload({ 
-    accept: "image/*", 
-    readAs: "DataURL" // Quan trọng: Đọc để hiển thị lên QR
+    error: logoError,
+  } = useFileUpload({
+    accept: "image/*",
+    readAs: "DataURL", // Quan trọng: Đọc để hiển thị lên QR
   });
-  const [qrValue, setQrValue] = useState('');
-  const [qrType, setQrType] = useState<QRType>('url');
+  const [qrValue, setQrValue] = useState("");
+  const [qrType, setQrType] = useState<QRType>("url");
 
   // State: Appearance Config
   const [size, setSize] = useState<number>(256);
-  const [fgColor, setFgColor] = useState<string>('#000000');
-  const [bgColor, setBgColor] = useState<string>('#ffffff');
-  const [level, setLevel] = useState<'L' | 'M' | 'Q' | 'H'>('M');
+  const [fgColor, setFgColor] = useState<string>("#000000");
+  const [bgColor, setBgColor] = useState<string>("#ffffff");
+  const [level, setLevel] = useState<"L" | "M" | "Q" | "H">("M");
 
   const clipboard = useClipboard({ timeout: 2000 });
   const { downloadCanvas } = useDownload();
   const qrRef = useRef<HTMLDivElement>(null);
   const handleDownload = () => {
-    const canvas = qrRef.current?.querySelector('canvas');
+    const canvas = qrRef.current?.querySelector("canvas");
     if (canvas) {
-      downloadCanvas(canvas, `qrcode-${qrType}}-${Date.now()}`, 'png');
+      downloadCanvas(canvas, `qrcode-${qrType}}-${Date.now()}`, "png");
     }
   };
   return (
@@ -68,13 +68,13 @@ export default function QRCodeToolPage() {
           QR Code Generator
         </Title>
         <Text c="dimmed" mt={4}>
-          Generate customized QR codes for URLs, WiFi networks, VCards, and more.
+          Generate customized QR codes for URLs, WiFi networks, VCards, and
+          more.
         </Text>
       </Box>
 
       {/* Main Tool Container */}
       <Box>
-
         <Card shadow="sm" padding="lg" radius="md" withBorder>
           <Grid gutter="xl">
             {/* LEFT COLUMN: Inputs & Config */}
@@ -88,7 +88,11 @@ export default function QRCodeToolPage() {
                   }}
                 />
 
-                <Divider my="sm" label="Cấu hình hiển thị" labelPosition="center" />
+                <Divider
+                  my="sm"
+                  label="Cấu hình hiển thị"
+                  labelPosition="center"
+                />
 
                 {/* 2. Configuration */}
                 <Group grow align="flex-start">
@@ -107,12 +111,12 @@ export default function QRCodeToolPage() {
                   <Select
                     label="Độ khó (Error Correction)"
                     value={level}
-                    onChange={(v) => setLevel(v as 'L' | 'M' | 'Q' | 'H')}
+                    onChange={(v) => setLevel(v as "L" | "M" | "Q" | "H")}
                     data={[
-                      { value: 'L', label: 'Low (7%)' },
-                      { value: 'M', label: 'Medium (15%)' },
-                      { value: 'Q', label: 'Quartile (25%)' },
-                      { value: 'H', label: 'High (30%)' },
+                      { value: "L", label: "Low (7%)" },
+                      { value: "M", label: "Medium (15%)" },
+                      { value: "Q", label: "Quartile (25%)" },
+                      { value: "H", label: "High (30%)" },
                     ]}
                   />
                 </Group>
@@ -129,7 +133,7 @@ export default function QRCodeToolPage() {
                     onChange={setBgColor}
                   />
                 </Group>
-                <FileUploader 
+                <FileUploader
                   label="Logo / Icon trung tâm"
                   description="Logo sẽ hiển thị giữa mã QR"
                   file={logoFile}
@@ -143,9 +147,14 @@ export default function QRCodeToolPage() {
             </Grid.Col>
 
             {/* RIGHT COLUMN: Display */}
-            <Grid.Col ref={qrRef} span={{ base: 12, md: 5 }}  id="qrcode-tool-root" style={{ position: 'relative' }}>
+            <Grid.Col
+              ref={qrRef}
+              span={{ base: 12, md: 5 }}
+              id="qrcode-tool-root"
+              style={{ position: "relative" }}
+            >
               <Fullscreen targetId="qrcode-tool-root" />
-              <QRCode 
+              <QRCode
                 value={qrValue}
                 size={size}
                 fgColor={fgColor}
@@ -170,11 +179,17 @@ export default function QRCodeToolPage() {
               <Button
                 variant="default"
                 fullWidth
-                leftSection={clipboard.copied ? <IconCheck size={18} /> : <IconCopy size={18} />}
+                leftSection={
+                  clipboard.copied ? (
+                    <IconCheck size={18} />
+                  ) : (
+                    <IconCopy size={18} />
+                  )
+                }
                 onClick={() => clipboard.copy(qrValue)}
                 disabled={!qrValue}
               >
-                {clipboard.copied ? 'Đã copy' : 'Copy nội dung'}
+                {clipboard.copied ? "Đã copy" : "Copy nội dung"}
               </Button>
             </Group>
           </Grid>

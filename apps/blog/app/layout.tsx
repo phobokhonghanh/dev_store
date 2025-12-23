@@ -1,5 +1,4 @@
 import '@origini/components/styles.css'
-import './globals.css'
 
 // import Analytics from '@origini/components/Analytics'
 import Footer from '@origini/components/Footer'

@@ -1,8 +1,8 @@
 // src/components/account/profile/ProfileNavbar.tsx
-'use client';
+"use client";
 
-import { NavLink } from '@mantine/core';
-import { IconUserCircle, IconDevices } from '@tabler/icons-react';
+import { NavLink } from "@mantine/core";
+import { IconUserCircle, IconDevices } from "@tabler/icons-react";
 
 interface ProfileNavbarProps {
   activeCategory: string;
@@ -11,19 +11,22 @@ interface ProfileNavbarProps {
 
 const navItems = [
   {
-    key: 'information',
-    label: 'Thông tin cá nhân',
+    key: "information",
+    label: "Thông tin cá nhân",
     icon: IconUserCircle,
   },
   {
-    key: 'devices',
-    label: 'Quản lý thiết bị',
+    key: "devices",
+    label: "Quản lý thiết bị",
     icon: IconDevices,
   },
   // Thêm các mục khác ở đây nếu cần
 ];
 
-export function ProfileNavbar({ activeCategory, onCategoryChange }: ProfileNavbarProps) {
+export function ProfileNavbar({
+  activeCategory,
+  onCategoryChange,
+}: ProfileNavbarProps) {
   return (
     <div>
       {navItems.map((item) => (

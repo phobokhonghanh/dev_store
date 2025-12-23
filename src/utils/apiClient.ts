@@ -6,19 +6,22 @@ export class ApiError extends Error {
   constructor(
     public message: string,
     public status: number,
-    public data?: unknown
+    public data?: unknown,
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 }
 
 // Lấy Base URL, fallback về empty string để tránh lỗi undefined khi nối chuỗi
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 // Định nghĩa kiểu dữ liệu an toàn cho Query Params
 // Cho phép null/undefined để tiện lợi khi truyền biến optional (sẽ bị lọc bỏ khi build string)
-export type QueryParams = Record<string, string | number | boolean | null | undefined>;
+export type QueryParams = Record<
+  string,
+  string | number | boolean | null | undefined
+>;
 
 // Mở rộng RequestInit nhưng giữ tính tương thích
 interface ApiOptions extends RequestInit {
@@ -30,8 +33,8 @@ interface ApiOptions extends RequestInit {
  * Helper để nối URL an toàn, tránh lỗi double slash (//)
  */
 const normalizeUrl = (endpoint: string): string => {
-  const cleanBase = BASE_URL.replace(/\/+$/, '');
-  const cleanEndpoint = endpoint.replace(/^\/+/, '');
+  const cleanBase = BASE_URL.replace(/\/+$/, "");
+  const cleanEndpoint = endpoint.replace(/^\/+/, "");
   return cleanBase ? `${cleanBase}/${cleanEndpoint}` : endpoint;
 };
 
@@ -61,17 +64,17 @@ export const buildQueryString = (params: QueryParams): string => {
  */
 export const handleCallAPI = async (
   endpoint: string,
-  options: ApiOptions = {}
+  options: ApiOptions = {},
 ): Promise<Response> => {
   const { headers, params, ...customConfig } = options;
 
   const config: RequestInit = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...headers,
     },
-    credentials: 'include',
+    credentials: "include",
     ...customConfig,
   };
 
@@ -92,7 +95,7 @@ export const handleCallAPI = async (
  */
 export const callAPI = async <T = unknown>(
   endpoint: string,
-  options?: ApiOptions
+  options?: ApiOptions,
 ): Promise<T> => {
   try {
     const response = await handleCallAPI(endpoint, options);
@@ -104,8 +107,9 @@ export const callAPI = async <T = unknown>(
       } catch {
         errorData = null;
       }
-      
-      const errorMessage = (errorData as ApiError)?.message || response.statusText || 'API Error';
+
+      const errorMessage =
+        (errorData as ApiError)?.message || response.statusText || "API Error";
       throw new ApiError(errorMessage, response.status, errorData);
     }
 
@@ -119,9 +123,9 @@ export const callAPI = async <T = unknown>(
       throw error;
     }
     throw new ApiError(
-      error instanceof Error ? error.message : 'Network Error',
+      error instanceof Error ? error.message : "Network Error",
       0,
-      null
+      null,
     );
   }
 };

@@ -3,26 +3,34 @@
 
 export interface CategoryMetadata {
   description: string
-  color: 'ivory' | 'oat' | 'cream' | 'cactus' | 'sage' | 'lavender' | 'terracotta' | 'coral'
+  color:
+    | 'ivory'
+    | 'oat'
+    | 'cream'
+    | 'cactus'
+    | 'sage'
+    | 'lavender'
+    | 'terracotta'
+    | 'coral'
   illustration: 'wavy' | 'geometric' | 'blob' | 'none'
 }
 
 // Rotating color and illustration scheme
 const colorRotation: Array<CategoryMetadata['color']> = [
-  'cactus',
-  'sage',
-  'lavender',
-  'oat',
   'ivory',
   'cream',
   'terracotta',
   'coral',
+  'cactus',
+  'sage',
+  'lavender',
+  'oat',
 ]
 
 const illustrationRotation: Array<CategoryMetadata['illustration']> = [
-  'wavy',
-  'geometric',
   'blob',
+  'geometric',
+  'wavy',
 ]
 
 /**
@@ -52,9 +60,15 @@ export function getCategoryMetadata(
 /**
  * Generate a contextual description for any category
  */
-function generateCategoryDescription(categoryName: string, postCount: number): string {
+function generateCategoryDescription(
+  categoryName: string,
+  postCount: number,
+): string {
   const lowerName = categoryName.toLowerCase()
-  const countText = postCount > 0 ? ` ${postCount} ${postCount === 1 ? 'post' : 'posts'} about` : ''
+  const countText =
+    postCount > 0
+      ? ` ${postCount} ${postCount === 1 ? 'post' : 'posts'} about`
+      : ''
 
   return `Explore${countText} ${lowerName}`
 }

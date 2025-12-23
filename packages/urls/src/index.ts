@@ -27,12 +27,7 @@ export type {
 } from "./types";
 
 // Export utilities
-export {
-  createUrls,
-  createNavigation,
-  getAppUrls,
-  getAppUrl,
-} from "./utils";
+export { createUrls, createNavigation, getAppUrls, getAppUrl } from "./utils";
 
 // Export origini's configuration
 export { originiUrls } from "./origini.urls";

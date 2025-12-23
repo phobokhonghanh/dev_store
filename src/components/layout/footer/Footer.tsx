@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { SOCIAL } from '@/constants/social';
+import { SOCIAL } from "@/constants/social";
 import {
   ActionIcon,
   Box,
@@ -11,14 +11,13 @@ import {
   SimpleGrid,
   Stack,
   Text,
-  TextInput
-} from '@mantine/core';
-import Link from 'next/link';
-import { footerLinks } from './data';
-import classes from './footer.module.css';
+  TextInput,
+} from "@mantine/core";
+import Link from "next/link";
+import { footerLinks } from "./data";
+import classes from "./footer.module.css";
 
 export function Footer() {
-
   const groups = footerLinks.map((group) => {
     const links = group.links.map((link, index) => (
       <Link key={index} href={link.link} className={classes.link}>
@@ -29,37 +28,46 @@ export function Footer() {
     return (
       <div className={classes.wrapper} key={group.title}>
         <Text className={classes.title}>{group.title}</Text>
-        <Stack gap="xs">
-            {links}
-        </Stack>
+        <Stack gap="xs">{links}</Stack>
       </div>
     );
   });
 
   const social = SOCIAL.map((socialItem, index) => (
-      <ActionIcon key={index} size="lg" color="gray" variant="subtle" component="a" href={socialItem.url} target="_blank">
-          <socialItem.icon style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
-      </ActionIcon>
+    <ActionIcon
+      key={index}
+      size="lg"
+      color="gray"
+      variant="subtle"
+      component="a"
+      href={socialItem.url}
+      target="_blank"
+    >
+      <socialItem.icon
+        style={{ width: rem(18), height: rem(18) }}
+        stroke={1.5}
+      />
+    </ActionIcon>
   ));
 
   return (
     <footer className={classes.footer}>
       <Container className={classes.inner} size="lg">
         <div className={classes.logoSection}>
-           <Box style={{ fontWeight: 'bold', fontSize: '1.8rem' }}>LOGO</Box>
-           <Text size="xs" c="dimmed" className={classes.description}>
-                Xây dựng thương hiệu của bạn với một trang web hiện đại và đáng tin cậy.
-           </Text>
-           <div className={classes.newsletter}>
-            <Text fw={500} mb="xs">Đăng ký nhận bản tin</Text>
+          <Box style={{ fontWeight: "bold", fontSize: "1.8rem" }}>LOGO</Box>
+          <Text size="xs" c="dimmed" className={classes.description}>
+            Xây dựng thương hiệu của bạn với một trang web hiện đại và đáng tin
+            cậy.
+          </Text>
+          <div className={classes.newsletter}>
+            <Text fw={500} mb="xs">
+              Đăng ký nhận bản tin
+            </Text>
             <Group>
-                 <TextInput 
-                    placeholder="Email của bạn"
-                    style={{ flex: 1 }}
-                />
-                <Button>Đăng ký</Button>
+              <TextInput placeholder="Email của bạn" style={{ flex: 1 }} />
+              <Button>Đăng ký</Button>
             </Group>
-           </div>
+          </div>
         </div>
         <div className={classes.linksSection}>
           <SimpleGrid cols={{ base: 2, sm: 3 }}>{groups}</SimpleGrid>

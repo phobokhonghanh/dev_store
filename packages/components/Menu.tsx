@@ -3,7 +3,7 @@ import { cn } from "@origini/libs/utils";
 import type { Profile } from "@origini/profile";
 import { originiProfile } from "@origini/profile";
 import type { UrlsConfig } from "@origini/urls";
-import { originiUrls, createNavigation } from "@origini/urls";
+import { originiUrls } from "@origini/urls";
 
 export type NavigationItem = {
   name: string;
@@ -15,8 +15,8 @@ export type NavigationItem = {
  */
 export function createDefaultNavigation(urls: UrlsConfig): NavigationItem[] {
   return [
-    { name: "Home", href: urls.apps.home },
-    { name: "About", href: `${urls.apps.home}/about` },
+    { name: "Home", href: `/` },
+    { name: "About", href: `/about` },
     { name: "Photos", href: urls.apps.photos },
     { name: "Insights", href: urls.apps.insights },
     { name: "CV", href: urls.apps.cv },

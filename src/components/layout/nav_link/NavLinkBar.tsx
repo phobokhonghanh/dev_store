@@ -46,9 +46,7 @@ export function NavLinkBar({ data }: NavLinkBarProps) {
 
         {/* Drawer */}
         <Drawer opened={opened} onClose={close} size="75%" padding="md">
-          <ScrollArea h="100vh">
-            {renderNav(data, close)}
-          </ScrollArea>
+          <ScrollArea h="100vh">{renderNav(data, close)}</ScrollArea>
         </Drawer>
       </>
     );
@@ -60,8 +58,7 @@ export function NavLinkBar({ data }: NavLinkBarProps) {
   return (
     // 1. position: sticky giúp box bám lại trên màn hình khi cuộn
     // top: rem(20) tạo khoảng cách 20px so với mép trên cùng
-    <Box style={{ position: 'sticky', top: rem(20) }}>
-
+    <Box style={{ position: "sticky", top: rem(20) }}>
       {/* 2. ScrollArea giới hạn chiều cao (ví dụ: viewport height - 40px padding)
              type="hover" chỉ hiện thanh scroll khi di chuột vào giúp giao diện gọn hơn
              overscrollBehavior: 'contain' ngăn chặn việc cuộn trang chính khi danh sách cuộn kịch */}
@@ -69,7 +66,7 @@ export function NavLinkBar({ data }: NavLinkBarProps) {
         h={`calc(100vh - ${rem(40)})`}
         type="hover"
         offsetScrollbars
-        viewportProps={{ style: { overscrollBehavior: 'contain' } }}
+        viewportProps={{ style: { overscrollBehavior: "contain" } }}
       >
         {renderNav(data)}
       </ScrollArea>

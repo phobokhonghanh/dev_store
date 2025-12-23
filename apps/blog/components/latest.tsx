@@ -32,16 +32,21 @@ export async function Latest({ className }: LatestProps) {
   }
 
   return (
-    <div className={cn('flex flex-col sm:flex-row justify-stretch gap-4', className)}>
+    <div
+      className={cn(
+        'flex flex-col justify-stretch gap-4 sm:flex-row',
+        className,
+      )}
+    >
       {posts.map((post: Post) => (
         <Link
           as={post.slug}
           key={post.slug}
-          className="text-md flex-1 sm:basis-1/3 overflow-hidden truncate"
+          className="text-md flex-1 truncate overflow-hidden sm:basis-1/3"
           href="/[...slug]"
         >
           <article className="flex h-full flex-col items-center gap-2 overflow-hidden">
-            <span className="w-full truncate text-wrap font-bold text-muted-foreground">
+            <span className="text-muted-foreground w-full truncate font-bold text-wrap">
               {post.title}
             </span>
             {post.thumbnail ? (

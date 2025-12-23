@@ -1,11 +1,11 @@
 export interface LoginResponse {
-    username: string;
-    roles: string[];
+  username: string;
+  roles: string[];
 }
 
 export interface RegisterResponse {
-    username: string;
-    email: string;
-    fullName: string;
-    avatar?: string;
+  username: string;
+  email: string;
+  fullName: string;
+  avatar?: string;
 }

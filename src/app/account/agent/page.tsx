@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Button, Stack, Title } from '@mantine/core';
+import { Button, Stack, Title } from "@mantine/core";
 
 /**
  * Renders the Agent Page component.
@@ -11,9 +11,9 @@ export default function AgentPage() {
       <Title order={2} ta="center">
         Agent Page
       </Title>
-        <Button type="submit" mt="xl" fullWidth>
-          Agent Page
-        </Button>
+      <Button type="submit" mt="xl" fullWidth>
+        Agent Page
+      </Button>
     </Stack>
   );
 }

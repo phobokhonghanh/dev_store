@@ -3,7 +3,7 @@ import { ReactNode, ReactElement } from "react";
 import type { Profile } from "@origini/profile";
 import { originiProfile } from "@origini/profile";
 import type { UrlsConfig } from "@origini/urls";
-import { originiUrls, createNavigation } from "@origini/urls";
+import { originiUrls } from "@origini/urls";
 
 import { cn } from "@origini/libs/utils";
 import Container from "./Container";
@@ -58,7 +58,7 @@ function createFooterNavigation(urls: UrlsConfig, profile: Profile) {
       { name: "/archives", href: `${urls.apps.blog}/archives` },
       { name: "/series", href: `${urls.apps.blog}/series` },
       { name: "/tags", href: `${urls.apps.blog}/tags` },
-      { name: "Status", href: "https://status.origini.net" },
+      { name: "Status", href: "https://status.pho.net" },
     ].filter(Boolean) as Array<{ name: string; href: string }>,
     profile: [
       { name: "About", href: `${urls.apps.home}/about` },

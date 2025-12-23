@@ -70,7 +70,7 @@ function deepMerge<T extends object>(target: T, source: DeepPartial<T>): T {
  */
 export function createUrls(
   base: UrlsConfig,
-  overrides?: DeepPartial<UrlsConfig>
+  overrides?: DeepPartial<UrlsConfig>,
 ): UrlsConfig {
   if (!overrides) return base;
   return deepMerge(base, overrides);
@@ -100,7 +100,7 @@ export function createUrls(
  */
 export function createNavigation(
   urls: UrlsConfig,
-  profile: Profile
+  profile: Profile,
 ): Navigation {
   return {
     main: [
@@ -237,12 +237,12 @@ export function getAppUrls(urls: UrlsConfig): AppUrls {
  * @example
  * ```ts
  * const blogUrl = getAppUrl(originiUrls, "blog")
- * // "https://blog.origini.net"
+ * // "https://blog.pho.net"
  * ```
  */
 export function getAppUrl(
   urls: UrlsConfig,
-  app: keyof AppUrls
+  app: keyof AppUrls,
 ): string | undefined {
   return urls.apps[app];
 }

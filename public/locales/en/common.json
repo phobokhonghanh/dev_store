@@ -41,7 +41,6 @@
       "usernameLength": "username must be at least 3 characters",
       "invalidEmail": "Invalid email",
       "passwordRequired": "Passwords is required"
-      
     },
     "alert": {
       "success": "Login successful!",

@@ -1,12 +1,12 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import { MantineProvider, Box } from '@mantine/core';
+import { MantineProvider, Box } from "@mantine/core";
 import { AuthProvider } from "@/hooks/contexts/auth";
 import { Header } from "@/components/layout/header/Header";
-import { I18nProvider } from '@/components/common/I18nProvider';
+import { I18nProvider } from "@/components/common/I18nProvider";
 
 import "./globals.css";
-import '@mantine/core/styles.css';
-import '@mantine/carousel/styles.css';
+import "@mantine/core/styles.css";
+import "@mantine/carousel/styles.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-import { siteMetadata } from '../data/metadata';
+import { siteMetadata } from "../data/metadata";
 import { Footer } from "@/components/layout/footer/Footer";
 import { Notifications } from "@mantine/notifications";
 import { LoadingProvider } from "@/components/common/LoadingProvider";
@@ -45,24 +45,30 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <MantineProvider
-            theme={{
-              components: {
-                Container: {
-                  defaultProps: {
-                    fluid: true,
-                  },
+          theme={{
+            components: {
+              Container: {
+                defaultProps: {
+                  fluid: true,
                 },
               },
-            }}
-          >
+            },
+          }}
+        >
           <LoadingProvider>
             <AuthProvider>
-              <Box style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+              <Box
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  minHeight: "100vh",
+                }}
+              >
                 <Header />
                 <Box style={{ flex: 1 }}>
                   <I18nProvider>
-                      <Notifications />
-                      {children}
+                    <Notifications />
+                    {children}
                   </I18nProvider>
                 </Box>
                 <Footer />

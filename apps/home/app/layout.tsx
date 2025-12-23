@@ -4,6 +4,7 @@ import './globals.css'
 // import Analytics from '@origini/components/Analytics'
 import Head from '@origini/components/Head'
 import ThemeProvider from '@origini/components/ThemeProvider'
+import { homeConfig } from '@origini/config'
 import { cn } from '@origini/libs/utils'
 import { Inter, Libre_Baskerville } from 'next/font/google'
 
@@ -21,11 +22,7 @@ const libreBaskerville = Libre_Baskerville({
   display: 'swap',
 })
 
-export const metadata = {
-  title: 'Origini - Data Engineer',
-  description:
-    'Data Engineer. I build data infrastructure and explore my true strengths.',
-}
+export const metadata = homeConfig.metadata
 
 export default function RootLayout({
   children,

@@ -7,6 +7,11 @@ import { getAllSeries } from '@origini/libs/getSeries'
 import { HomeCards } from '../components/home-cards'
 import { YearPost } from '../components/year-post'
 
+export type NavigationItem = {
+  name: string
+  href: string
+}
+
 export default async function Page() {
   const postsByYear = getPostsByAllYear(['slug', 'title', 'date', 'category'])
   const postCount = Object.values(postsByYear).reduce(
@@ -15,7 +20,8 @@ export default async function Page() {
   )
 
   const years = Object.keys(postsByYear).map(Number)
-  const pastYears = new Date().getFullYear() - Math.min(...years)
+  const pastYears =
+    years.length > 0 ? new Date().getFullYear() - Math.min(...years) : 0
 
   const seriesList = getAllSeries().slice(0, 3)
   const allTags = getAllTags()

@@ -21,21 +21,21 @@ import type { Profile } from "./index";
  */
 export const originiProfile: Profile = {
   personal: {
-    name: "origini Le",
-    shortName: "Duyệt",
-    email: "me@origini.net",
-    title: "Sr. Data Engineer",
-    bio: "Data Engineering, Rustacean at night",
-    experience: "6+ years",
+    name: "Nguyen",
+    shortName: "Pho",
+    email: "pho@gmail.com",
+    title: "Data Engineer",
+    bio: "Data Engineering, life led me here...",
+    experience: "2+ years",
     location: "Vietnam",
   },
 
   social: {
-    github: "https://github.com/origini",
-    twitter: "https://x.com/_origini",
-    linkedin: "https://linkedin.com/in/origini",
-    unsplash: "https://unsplash.com/@_origini",
-    tiktok: "https://www.tiktok.com/@origini.net",
+    github: "https://github.com/phobokhonghanh/",
+    twitter: "https://x.com/",
+    linkedin: "https://www.linkedin.com/in/phobo/",
+    unsplash: "https://unsplash.com/",
+    tiktok: "https://www.tiktok.com/",
   },
 
   appearance: {

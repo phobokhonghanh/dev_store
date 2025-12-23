@@ -8,7 +8,7 @@ export default function Error(_props: { error?: Error; reset?: () => void }) {
         className="absolute h-full w-full object-cover"
         height={800}
         priority
-        src="https://i.imgur.com/cszuWOs.jpg"
+        src="https://i.imgur.com/rkCiryy.gif"
         width={1200}
       />
       <div className="inset-0 bg-black opacity-25 absolute" />

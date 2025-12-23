@@ -1,17 +1,19 @@
-import { useRouter } from 'next/navigation';
-import { useTranslation } from 'react-i18next';
-import useSWRMutation, { SWRMutationConfiguration } from 'swr/mutation';
+import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import useSWRMutation, { SWRMutationConfiguration } from "swr/mutation";
 
-import { showNotification } from '@/components/layout/notification/Notification';
-import { API_ROUTES, APP_ROUTES } from '@/constants';
-import { loginServices } from '@/services/auth/login';
-import { LoginRequest } from '@/types/requests';
-import { LoginResponse } from '@/types/responses';
-import { useAuth } from '../contexts/auth';
-import { ApiError } from '@/utils/apiClient';
+import { showNotification } from "@/components/layout/notification/Notification";
+import { API_ROUTES, APP_ROUTES } from "@/constants";
+import { loginServices } from "@/services/auth/login";
+import { LoginRequest } from "@/types/requests";
+import { LoginResponse } from "@/types/responses";
+import { useAuth } from "../contexts/auth";
+import { ApiError } from "@/utils/apiClient";
 
-
-async function loginFetcher(url: string, { arg }: { arg: LoginRequest }): Promise<LoginResponse> {
+async function loginFetcher(
+  url: string,
+  { arg }: { arg: LoginRequest },
+): Promise<LoginResponse> {
   return loginServices(arg);
 }
 
@@ -23,13 +25,22 @@ interface UseLoginOptions {
   shouldRedirect?: boolean;
 }
 
-export function useLogin({ onSuccess, onError, shouldRedirect = true }: UseLoginOptions = {}) {
+export function useLogin({
+  onSuccess,
+  onError,
+  shouldRedirect = true,
+}: UseLoginOptions = {}) {
   const { login } = useAuth();
   const router = useRouter();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   // Cấu hình SWR Mutation
-  const config: SWRMutationConfiguration<LoginResponse, ApiError, string, LoginRequest> = {
+  const config: SWRMutationConfiguration<
+    LoginResponse,
+    ApiError,
+    string,
+    LoginRequest
+  > = {
     onSuccess: (data) => {
       // 1. Cập nhật Auth Context
       login(data);
@@ -53,9 +64,9 @@ export function useLogin({ onSuccess, onError, shouldRedirect = true }: UseLogin
 
       // 2. Mặc định hiển thị notification
       showNotification({
-        type: 'error',
-        title: t('loginPage.alert.failure'),
-        message: err?.message || t('loginPage.alert.unknownError'),
+        type: "error",
+        title: t("loginPage.alert.failure"),
+        message: err?.message || t("loginPage.alert.unknownError"),
       });
     },
   };
@@ -63,7 +74,7 @@ export function useLogin({ onSuccess, onError, shouldRedirect = true }: UseLogin
   const { trigger, isMutating, error, reset } = useSWRMutation(
     API_ROUTES.LOGIN,
     loginFetcher,
-    config
+    config,
   );
 
   return {

@@ -42,7 +42,7 @@ export default function AnalyticWrapper() {
           !function(e,n,t){e.onload=function(){
           let e=n.createElement("script");
           e.src=t,n.body.appendChild(e)}}
-          (window,document,"//pageview.origini.net/pageview.js");
+          (window,document,"//pageview.pho.net/pageview.js");
         `}
       </Script>
 
@@ -68,7 +68,7 @@ export default function AnalyticWrapper() {
       <Script
         id="jitsu"
         strategy="afterInteractive"
-        src="https://j.origini.net/p.js"
+        src="https://j.pho.net/p.js"
       />
     </>
   );

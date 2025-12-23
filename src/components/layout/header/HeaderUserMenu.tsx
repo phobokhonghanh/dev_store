@@ -1,7 +1,7 @@
-import { useAuth } from '@/hooks/contexts/auth';
-import { Avatar, Group, Menu, Text } from '@mantine/core';
-import { IconUser } from '@tabler/icons-react';
-import Link from 'next/link';
+import { useAuth } from "@/hooks/contexts/auth";
+import { Avatar, Group, Menu, Text } from "@mantine/core";
+import { IconUser } from "@tabler/icons-react";
+import Link from "next/link";
 
 export function HeaderUserMenu() {
   const { user, logout } = useAuth();
@@ -11,7 +11,7 @@ export function HeaderUserMenu() {
   return (
     <Menu shadow="md" width={200}>
       <Menu.Target>
-        <Group style={{ cursor: 'pointer' }}>
+        <Group style={{ cursor: "pointer" }}>
           <Avatar color="blue" radius="xl" size={30}>
             <IconUser size={16} />
           </Avatar>
@@ -23,12 +23,12 @@ export function HeaderUserMenu() {
 
       <Menu.Dropdown>
         <Menu.Item>
-        <Link href="/user/info" passHref legacyBehavior>
-            <Group style={{ cursor: 'pointer' }}>
-            <IconUser size={14} />
-            <span>Profile</span>
+          <Link href="/user/info" passHref legacyBehavior>
+            <Group style={{ cursor: "pointer" }}>
+              <IconUser size={14} />
+              <span>Profile</span>
             </Group>
-        </Link>
+          </Link>
         </Menu.Item>
         <Menu.Item color="red" onClick={logout}>
           Logout

@@ -1,5 +1,5 @@
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
+import { notFound } from "next/navigation";
+import Link from "next/link";
 import {
   Box,
   Title,
@@ -11,22 +11,26 @@ import {
   SimpleGrid,
   ThemeIcon,
   Container,
-} from '@mantine/core';
-import { IconFolder, IconFileText, IconChevronRight } from '@tabler/icons-react';
-import Markdown from 'react-markdown';
+} from "@mantine/core";
+import {
+  IconFolder,
+  IconFileText,
+  IconChevronRight,
+} from "@tabler/icons-react";
+import Markdown from "react-markdown";
 
 // Import các hàm helper
-import { getContentBySlug } from '@/utils/common';
-import { getBlogRoutes } from '@/components/layout/data/blogs';
-import { AutoBreadcrumbs } from '@/components/layout/breadcrumb/AutoBreadcrumbs';
-import { CodeBlock } from '@/components/blogs/CodeBlock'; // Import component hiển thị code
+import { getContentBySlug } from "@/utils/common";
+import { getBlogRoutes } from "@/components/layout/data/blogs";
+import { AutoBreadcrumbs } from "@/components/layout/breadcrumb/AutoBreadcrumbs";
+import { CodeBlock } from "@/components/blogs/CodeBlock"; // Import component hiển thị code
 
 // 1. Helper Format Label (Tự viết hoa chữ cái đầu)
 function formatLabel(slug: string): string {
   return slug
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 // 2. Props Definition (Next.js 15+ yêu cầu params là Promise)
@@ -41,12 +45,12 @@ export default async function BlogDynamicPage({ params }: PageProps) {
   const result = getContentBySlug(slug);
   const blogRoutes = getBlogRoutes();
 
-  if (result.type === '404') {
+  if (result.type === "404") {
     return notFound();
   }
 
   // --- TRƯỜNG HỢP 1: HIỂN THỊ NỘI DUNG BÀI VIẾT (.md) ---
-  if (result.type === 'post') {
+  if (result.type === "post") {
     const { data } = result;
     return (
       <Container size="lg" py="md">
@@ -63,11 +67,11 @@ export default async function BlogDynamicPage({ params }: PageProps) {
             </Group>
           )}
 
-          <Box style={{ lineHeight: 1.7, fontSize: '1.05rem' }}>
+          <Box style={{ lineHeight: 1.7, fontSize: "1.05rem" }}>
             {/* Tích hợp component CodeBlock vào react-markdown */}
-            <Markdown 
+            <Markdown
               components={{
-                code: CodeBlock
+                code: CodeBlock,
               }}
             >
               {data.content}
@@ -86,7 +90,7 @@ export default async function BlogDynamicPage({ params }: PageProps) {
   }
 
   // --- TRƯỜNG HỢP 2: HIỂN THỊ DANH SÁCH THƯ MỤC (FOLDER VIEW) ---
-  if (result.type === 'folder') {
+  if (result.type === "folder") {
     const { folders, posts } = result.items;
     const currentFolderTitle = slug[slug.length - 1];
 
@@ -114,7 +118,7 @@ export default async function BlogDynamicPage({ params }: PageProps) {
               Folders
             </Title>
             <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
-              {folders.map(folder => (
+              {folders.map((folder) => (
                 <Anchor
                   component={Link}
                   href={`/blogs/${folder.slug}`}
@@ -126,10 +130,15 @@ export default async function BlogDynamicPage({ params }: PageProps) {
                     padding="md"
                     radius="md"
                     withBorder
-                    style={{ transition: 'all 0.2s', cursor: 'pointer' }}
+                    style={{ transition: "all 0.2s", cursor: "pointer" }}
                   >
                     <Group>
-                      <ThemeIcon color="yellow" variant="light" size="lg" radius="md">
+                      <ThemeIcon
+                        color="yellow"
+                        variant="light"
+                        size="lg"
+                        radius="md"
+                      >
                         <IconFolder size={20} stroke={1.5} />
                       </ThemeIcon>
                       <Text fw={600} size="md" c="inherit">
@@ -157,7 +166,7 @@ export default async function BlogDynamicPage({ params }: PageProps) {
               Articles
             </Title>
             <Stack gap="md">
-              {posts.map(post => (
+              {posts.map((post) => (
                 <Anchor
                   component={Link}
                   href={`/blogs/${post.slug}`}
@@ -169,23 +178,38 @@ export default async function BlogDynamicPage({ params }: PageProps) {
                     padding="lg"
                     radius="md"
                     withBorder
-                    style={{ transition: 'transform 0.2s', cursor: 'pointer' }}
+                    style={{ transition: "transform 0.2s", cursor: "pointer" }}
                   >
                     <Group align="flex-start" gap="md" wrap="nowrap">
-                      <ThemeIcon color="blue" variant="light" size="lg" radius="md" mt={4}>
+                      <ThemeIcon
+                        color="blue"
+                        variant="light"
+                        size="lg"
+                        radius="md"
+                        mt={4}
+                      >
                         <IconFileText size={20} stroke={1.5} />
                       </ThemeIcon>
 
                       <Box style={{ flex: 1 }}>
                         <Group justify="space-between" align="center" mb={4}>
-                          <Text fw={600} size="lg" c="inherit" style={{ lineHeight: 1.3 }}>
+                          <Text
+                            fw={600}
+                            size="lg"
+                            c="inherit"
+                            style={{ lineHeight: 1.3 }}
+                          >
                             {formatLabel(post.title)}
                           </Text>
-                          <IconChevronRight size={18} color="var(--mantine-color-dimmed)" />
+                          <IconChevronRight
+                            size={18}
+                            color="var(--mantine-color-dimmed)"
+                          />
                         </Group>
 
                         <Text size="sm" c="dimmed" lineClamp={2} mb={8}>
-                          {post.excerpt || 'No description available for this article.'}
+                          {post.excerpt ||
+                            "No description available for this article."}
                         </Text>
                       </Box>
                     </Group>

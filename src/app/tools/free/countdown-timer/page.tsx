@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Box,
@@ -8,22 +8,22 @@ import {
   LoadingOverlay,
   NumberInput,
   Text,
-  Title
-} from '@mantine/core';
-import { useCallback, useEffect, useState } from 'react';
+  Title,
+} from "@mantine/core";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   IconPlayerPause,
   IconPlayerPlay,
   IconRotate,
   IconX,
-} from '@tabler/icons-react';
+} from "@tabler/icons-react";
 
-import Fullscreen from '@/components/common/FullscreenWrapper';
-import { AutoBreadcrumbs } from '@/components/layout/breadcrumb/AutoBreadcrumbs';
-import { toolsRoutes } from '@/components/layout/data/tools';
-import Timer, { TimeData } from '@/components/tools/time/Timer';
-import classes from './tools-countdown.module.css';
+import Fullscreen from "@/components/common/FullscreenWrapper";
+import { AutoBreadcrumbs } from "@/components/layout/breadcrumb/AutoBreadcrumbs";
+import { toolsRoutes } from "@/components/layout/data/tools";
+import Timer, { TimeData } from "@/components/tools/time/Timer";
+import classes from "./tools-countdown.module.css";
 
 export default function ToolsPage() {
   const [isLoading] = useState(false);
@@ -54,11 +54,14 @@ export default function ToolsPage() {
     return () => clearInterval(interval);
   }, [running]);
 
-  const calcSeconds = useCallback(() =>
-    target.days * 86400 +
-    target.hours * 3600 +
-    target.minutes * 60 +
-    target.seconds, [target]);
+  const calcSeconds = useCallback(
+    () =>
+      target.days * 86400 +
+      target.hours * 3600 +
+      target.minutes * 60 +
+      target.seconds,
+    [target],
+  );
 
   const start = useCallback(() => {
     const sec = calcSeconds();
@@ -94,7 +97,7 @@ export default function ToolsPage() {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
+      if (e.code === "Space") {
         e.preventDefault();
         if (running) {
           pause();
@@ -102,11 +105,11 @@ export default function ToolsPage() {
           start();
         }
       }
-      if (e.key.toLowerCase() === 'r') reset();
+      if (e.key.toLowerCase() === "r") reset();
     };
 
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, [running, start, pause, reset]);
 
   // Convert seconds → TimeData object
@@ -131,14 +134,14 @@ export default function ToolsPage() {
   const timeObj =
     !running && timeLeft === 0
       ? {
-        y: 0,
-        mo: 0,
-        d: target.days,
-        h: target.hours,
-        m: target.minutes,
-        s: target.seconds,
-        ms: 0,
-      }
+          y: 0,
+          mo: 0,
+          d: target.days,
+          h: target.hours,
+          m: target.minutes,
+          s: target.seconds,
+          ms: 0,
+        }
       : formatTime(timeLeft);
 
   return (
@@ -148,7 +151,9 @@ export default function ToolsPage() {
         <AutoBreadcrumbs routes={toolsRoutes} />
       </Box>
       <Box mb="md">
-        <Title order={2} c="green">Countdown Timer</Title>
+        <Title order={2} c="green">
+          Countdown Timer
+        </Title>
         <Text c="dimmed" mt={4}>
           Set any duration and count down in real time.
         </Text>

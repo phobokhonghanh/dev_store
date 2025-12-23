@@ -5,7 +5,6 @@ import {
 } from "@tabler/icons-react";
 import { NavRoute, RawNav } from "../nav_link/type";
 
-
 // raw structure: clean, no repeating path
 const rawRoutes: RawNav[] = [
   {
@@ -16,7 +15,7 @@ const rawRoutes: RawNav[] = [
   {
     label: "Premium",
     slug: "premium",
-    opened: false,  
+    opened: false,
     icon: <IconFingerprint size={16} stroke={1.5} />,
     children: [
       { label: "First tools", slug: "first" },
@@ -37,7 +36,7 @@ const rawRoutes: RawNav[] = [
     label: "Free",
     slug: "tools/free",
     icon: <IconMoodSmile size={16} stroke={1.5} />,
-    opened: true,  
+    opened: true,
     children: [
       { label: "Countdown Timer", slug: "countdown-timer" },
       { label: "QR Code Generator", slug: "qrcode" },
@@ -56,7 +55,9 @@ function buildRoutes(nav: RawNav[], parent = ""): NavRoute[] {
       icon: item.icon,
       href: currentPath === "/" ? "/" : currentPath,
       opened: item.opened ?? false,
-      children: item.children ? buildRoutes(item.children, currentPath) : undefined,
+      children: item.children
+        ? buildRoutes(item.children, currentPath)
+        : undefined,
     };
   });
 }

@@ -31,32 +31,32 @@ export const originiUrls: UrlsConfig = {
     blog:
       process.env.NEXT_PUBLIC_BLOG_URL ||
       process.env.NEXT_PUBLIC_APP_BLOG ||
-      "https://blog.origini.net",
+      "https://blog.pho.net",
     cv:
       process.env.NEXT_PUBLIC_CV_URL ||
       process.env.NEXT_PUBLIC_APP_CV ||
-      "https://cv.origini.net",
+      "https://cv.pho.net",
     insights:
       process.env.NEXT_PUBLIC_INSIGHTS_URL ||
       process.env.NEXT_PUBLIC_APP_INSIGHTS ||
-      "https://insights.origini.net",
+      "https://insights.pho.net",
     home:
-      process.env.NEXT_PUBLIC_origini_HOME_URL ||
+      process.env.NEXT_PUBLIC_HOME_URL ||
       process.env.NEXT_PUBLIC_APP_HOME ||
-      "https://origini.net",
+      "https://pho.net",
     photos:
-      process.env.NEXT_PUBLIC_origini_PHOTOS_URL ||
+      process.env.NEXT_PUBLIC_PHOTOS_URL ||
       process.env.NEXT_PUBLIC_APP_PHOTOS ||
-      "https://photos.origini.net",
+      "https://photos.pho.net",
     homelab:
-      process.env.NEXT_PUBLIC_origini_HOMELAB_URL ||
+      process.env.NEXT_PUBLIC_HOMELAB_URL ||
       process.env.NEXT_PUBLIC_APP_HOMELAB ||
-      "https://homelab.origini.net",
+      "https://homelab.pho.net",
   },
   external: {
     // rust: "https://rust-tieng-viet.github.io",
     // clickhouse: "https://clickhouse-monitoring.vercel.app",
-    // mcp: "https://mcp.origini.net",
+    // mcp: "https://mcp.pho.net",
     // monica: "https://monica.im/invitation?c=RJF8T7RT",
     // googleScript:
     //   "https://script.google.com/macros/s/AKfycbyRLwRpcBUlE1Iw2mhSN1zQNHLT7EQsnFVPaduKyEUJMQwaBhEuKXJfWjzUZc20F7sR/exec",

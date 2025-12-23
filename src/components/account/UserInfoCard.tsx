@@ -1,9 +1,19 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Avatar, Text, Card, Group, Stack, Title, Button, TextInput, Box } from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { User } from '@/types/models/user';
+import { useState } from "react";
+import {
+  Avatar,
+  Text,
+  Card,
+  Group,
+  Stack,
+  Title,
+  Button,
+  TextInput,
+  Box,
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { User } from "@/types/models/user";
 
 /**
  * Renders a card displaying user information and allows editing of certain fields.
@@ -19,8 +29,10 @@ export function UserInfoCard({ user }: { user: User }) {
     },
 
     validate: {
-      name: (value) => (value.length < 2 ? 'Tên phải có ít nhất 2 ký tự' : null),
-      phone: (value) => (/^\d{10}$/.test(value) ? null : 'Số điện thoại không hợp lệ'),
+      name: (value) =>
+        value.length < 2 ? "Tên phải có ít nhất 2 ký tự" : null,
+      phone: (value) =>
+        /^\d{10}$/.test(value) ? null : "Số điện thoại không hợp lệ",
     },
   });
 
@@ -33,19 +45,22 @@ export function UserInfoCard({ user }: { user: User }) {
     const dirtyFields: Partial<typeof values> = {};
 
     // Chỉ lấy các trường đã bị thay đổi (actioned)
-    if (form.isDirty('name')) {
+    if (form.isDirty("name")) {
       dirtyFields.name = values.name;
     }
-    if (form.isDirty('phone')) {
+    if (form.isDirty("phone")) {
       dirtyFields.phone = values.phone;
     }
 
     if (Object.keys(dirtyFields).length > 0) {
-      alert('Đang lưu các trường đã thay đổi:\n' + JSON.stringify(dirtyFields, null, 2));
+      alert(
+        "Đang lưu các trường đã thay đổi:\n" +
+          JSON.stringify(dirtyFields, null, 2),
+      );
       // Trong thực tế, bạn sẽ gọi API để cập nhật chỉ các trường này
       // await api.updateUser(user.id, dirtyFields);
     } else {
-      alert('Không có gì thay đổi để lưu.');
+      alert("Không có gì thay đổi để lưu.");
     }
 
     setIsEditing(false);
@@ -64,37 +79,48 @@ export function UserInfoCard({ user }: { user: User }) {
     <Card withBorder padding="xl" radius="md">
       <form onSubmit={form.onSubmit(handleSave)}>
         <Group justify="space-between" align="flex-start" mb="md">
-            <Title order={4}>Thông tin chung</Title>
-            {!isEditing ? (
-                <Button variant="light" size="xs" onClick={() => setIsEditing(true)}>
-                    Chỉnh sửa
-                </Button>
-            ) : (
-                <Group>
-                    <Button variant="default" size="xs" onClick={handleCancel}>
-                        Hủy
-                    </Button>
-                    <Button type="submit" size="xs">
-                        Lưu thay đổi
-                    </Button>
-                </Group>
-            )}
+          <Title order={4}>Thông tin chung</Title>
+          {!isEditing ? (
+            <Button
+              variant="light"
+              size="xs"
+              onClick={() => setIsEditing(true)}
+            >
+              Chỉnh sửa
+            </Button>
+          ) : (
+            <Group>
+              <Button variant="default" size="xs" onClick={handleCancel}>
+                Hủy
+              </Button>
+              <Button type="submit" size="xs">
+                Lưu thay đổi
+              </Button>
+            </Group>
+          )}
         </Group>
 
         <Group align="flex-start">
-          <Avatar src={user.avatar} size={120} radius="50%" alt={`${user.username}'s avatar`} />
+          <Avatar
+            src={user.avatar}
+            size={120}
+            radius="50%"
+            alt={`${user.username}'s avatar`}
+          />
           <Box style={{ flex: 1 }}>
             <Stack gap="md">
               {isEditing ? (
                 <TextInput
                   label="Họ và tên"
                   placeholder="Nhập họ và tên của bạn"
-                  {...form.getInputProps('name')}
+                  {...form.getInputProps("name")}
                 />
               ) : (
                 <Box>
-                    <Text fz="sm" c="dimmed">Họ và tên</Text>
-                    <Text>{form.values.name}</Text>
+                  <Text fz="sm" c="dimmed">
+                    Họ và tên
+                  </Text>
+                  <Text>{form.values.name}</Text>
                 </Box>
               )}
 
@@ -102,19 +128,23 @@ export function UserInfoCard({ user }: { user: User }) {
                 <TextInput
                   label="Số điện thoại"
                   placeholder="Nhập số điện thoại của bạn"
-                  {...form.getInputProps('phone')}
+                  {...form.getInputProps("phone")}
                 />
               ) : (
                 <Box>
-                    <Text fz="sm" c="dimmed">Số điện thoại</Text>
-                    <Text>{form.values.phone}</Text>
+                  <Text fz="sm" c="dimmed">
+                    Số điện thoại
+                  </Text>
+                  <Text>{form.values.phone}</Text>
                 </Box>
               )}
 
-                <Box>
-                    <Text fz="sm" c="dimmed">Email (không thể thay đổi)</Text>
-                    <Text>{user.email}</Text>
-                </Box>
+              <Box>
+                <Text fz="sm" c="dimmed">
+                  Email (không thể thay đổi)
+                </Text>
+                <Text>{user.email}</Text>
+              </Box>
             </Stack>
           </Box>
         </Group>

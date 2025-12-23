@@ -2,8 +2,12 @@
   margin-top: rem(120px);
   padding-top: calc(var(--mantine-spacing-xl) * 2);
   padding-bottom: calc(var(--mantine-spacing-xl) * 2);
-  background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8));
-  border-top: rem(1px) solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
+  background-color: light-dark(
+    var(--mantine-color-gray-0),
+    var(--mantine-color-dark-8)
+  );
+  border-top: rem(1px) solid
+    light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
 }
 
 .inner {
@@ -16,33 +20,33 @@
 }
 
 .logoSection {
-    max-width: rem(300px);
+  max-width: rem(300px);
 
-    @media (max-width: 960px) {
-        max-width: 100%;
-        margin-bottom: var(--mantine-spacing-xl);
-    }
+  @media (max-width: 960px) {
+    max-width: 100%;
+    margin-bottom: var(--mantine-spacing-xl);
+  }
 }
 
 .description {
-    margin-top: var(--mantine-spacing-xs);
+  margin-top: var(--mantine-spacing-xs);
 }
 
 .newsletter {
-    margin-top: var(--mantine-spacing-lg);
+  margin-top: var(--mantine-spacing-lg);
 }
 
 .linksSection {
-    flex: 1;
-    margin-left: calc(var(--mantine-spacing-xl) * 2);
-    
-    @media (max-width: 960px) {
-        margin-left: 0;
-    }
+  flex: 1;
+  margin-left: calc(var(--mantine-spacing-xl) * 2);
+
+  @media (max-width: 960px) {
+    margin-left: 0;
+  }
 }
 
 .wrapper {
-    width: rem(160px);
+  width: rem(160px);
 }
 
 .title {
@@ -73,7 +77,8 @@
   align-items: center;
   margin-top: var(--mantine-spacing-xl);
   padding-top: var(--mantine-spacing-xl);
-  border-top: rem(1px) solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
+  border-top: rem(1px) solid
+    light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
 
   @media (max-width: 755px) {
     flex-direction: column;

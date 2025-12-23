@@ -57,21 +57,18 @@ export interface AppUrls {
 
 // Environment-aware URL configuration
 export const appUrls: AppUrls = {
-  blog: process.env.NEXT_PUBLIC_BLOG_URL || "https://blog.origini.net",
-  cv: process.env.NEXT_PUBLIC_CV_URL || "https://cv.origini.net",
-  insights:
-    process.env.NEXT_PUBLIC_INSIGHTS_URL || "https://insights.origini.net",
-  home: process.env.NEXT_PUBLIC_HOME_URL || "https://origini.net",
-  photos:
-    process.env.NEXT_PUBLIC_PHOTOS_URL || "https://photos.origini.net",
-  homelab:
-    process.env.NEXT_PUBLIC_HOMELAB_URL || "https://homelab.origini.net",
+  blog: process.env.NEXT_PUBLIC_BLOG_URL || "https://blog.pho.net",
+  cv: process.env.NEXT_PUBLIC_CV_URL || "https://cv.pho.net",
+  insights: process.env.NEXT_PUBLIC_INSIGHTS_URL || "https://insights.pho.net",
+  home: process.env.NEXT_PUBLIC_HOME_URL || "https://pho.net",
+  photos: process.env.NEXT_PUBLIC_PHOTOS_URL || "https://photos.pho.net",
+  homelab: process.env.NEXT_PUBLIC_HOMELAB_URL || "https://homelab.pho.net",
 };
 
 // Blog app configuration
 export const blogConfig = {
   metadata: {
-    title: "Origini Din",
+    title: "Blogs | Pho Bo",
     description: "Data Engineer. I blog about Data Engineering and more",
     lang: "en",
   } as AppMetadata,
@@ -98,8 +95,8 @@ export const blogConfig = {
 // Insights app configuration
 export const insightsConfig = {
   metadata: {
-    title: "Insights | origini.net",
-    description: "Insights for origini.net",
+    title: "Insights | Pho",
+    description: "Insights for Pho",
     lang: "en",
   } as AppMetadata,
   fonts: {
@@ -120,7 +117,7 @@ export const insightsConfig = {
 // CV app configuration
 export const cvConfig = {
   metadata: {
-    title: "Origini Din - Résumé",
+    title: "Pho - Résumé",
     description:
       "Data Engineer with 2+ years of experience in modern data warehousing, distributed systems, and cloud computing",
     lang: "en",
@@ -139,7 +136,7 @@ export const cvConfig = {
 // Home app configuration
 export const homeConfig = {
   metadata: {
-    title: "origini.net",
+    title: "Home | Pho",
     description: "Personal website and URL shortener",
     lang: "en",
   } as AppMetadata,
@@ -157,8 +154,8 @@ export const homeConfig = {
 // Photos app configuration
 export const photosConfig = {
   metadata: {
-    title: "Photos | origini.net",
-    description: "Photography portfolio by Origini Din",
+    title: "Photos | Pho",
+    description: "Photography portfolio by Pho",
     lang: "en",
   } as AppMetadata,
   fonts: {
@@ -175,17 +172,17 @@ export const photosConfig = {
 // Homelab app configuration
 // export const homelabConfig = {
 //   metadata: {
-//     title: "Homelab | origini.net",
+//     title: "Homelab | pho.net",
 //     description: "MicroK8s cluster monitoring dashboard - Real-time metrics, service status, and network analytics for a 5-node heterogeneous homelab",
 //     lang: "en",
 //     openGraph: {
-//       title: "Homelab Dashboard | origini.net",
+//       title: "Homelab Dashboard | pho.net",
 //       description: "MicroK8s cluster monitoring dashboard - Real-time metrics, service status, and network analytics",
-//       url: "https://homelab.origini.net",
-//       siteName: "origini.net",
+//       url: "https://homelab.pho.net",
+//       siteName: "pho.net",
 //       images: [
 //         {
-//           url: "https://homelab.origini.net/og-image.svg",
+//           url: "https://homelab.pho.net/og-image.svg",
 //           width: 1200,
 //           height: 630,
 //           alt: "Homelab Dashboard - MicroK8s Cluster Monitoring",
@@ -196,10 +193,10 @@ export const photosConfig = {
 //     },
 //     twitter: {
 //       card: "summary_large_image",
-//       title: "Homelab Dashboard | origini.net",
+//       title: "Homelab Dashboard | pho.net",
 //       description: "MicroK8s cluster monitoring - Real-time metrics and service status",
-//       images: ["https://homelab.origini.net/og-image.svg"],
-//       creator: "@originidev",
+//       images: ["https://homelab.pho.net/og-image.svg"],
+//       creator: "@pho.netdev",
 //     },
 //     icons: {
 //       icon: "/favicon.svg",
