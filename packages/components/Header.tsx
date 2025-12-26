@@ -62,7 +62,7 @@ export default function Header({
   return (
     <header
       className={cn(
-        "py-10",
+        "py-10 dark:bg-neutral-950",
         center ? "md:flex md:justify-center md:my-10" : "",
         className,
       )}
@@ -91,7 +91,7 @@ export default function Header({
             >
               {displayShortText && displayLongText ? (
                 <>
-                  <span className="block sm:hidden">{displayShortText}</span>
+                  {/* <span className="block sm:hidden">{displayShortText}</span> */}
                   <span
                     className={cn(
                       "hidden sm:block",

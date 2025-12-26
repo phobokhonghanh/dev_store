@@ -34,7 +34,7 @@ export default async function Page() {
     <div className="bg-cream-warm min-h-screen pb-10">
       <Header longText="Data Engineering" />
       <Container>
-        <div className="mb-12 text-center">
+        <div className="m-12 text-center">
           <p className="text-lg leading-relaxed text-neutral-700">
             Lists all{' '}
             <strong className="font-semibold text-neutral-900">
