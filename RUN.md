@@ -1,4 +1,4 @@
-# Guide to Running the Project
+# Guide to Running DEV the Project
 
 Dưới đây là danh sách các câu lệnh điều khiển dự án được định nghĩa trong `package.json`.
 
@@ -52,3 +52,19 @@ Dưới đây là danh sách các câu lệnh điều khiển dự án được 
 ---
 
 > **NOTE:** Luôn tuân thủ quy trình trên để duy trì chất lượng mã nguồn và hiệu suất dự án.
+
+# Guide to Running PROD the Project
+
+1. **check yarn**
+   ```bash
+   yarn -v
+   ```
+   ###
+2. **build**
+   ```
+   yarn build --filter=home
+   ```
+3. **start**
+   ```
+   yarn turbo run start --filter=home
+   ```
