@@ -180,7 +180,7 @@ export default function Footer({
   return (
     <footer
       className={cn(
-        "bg-[#FAFAFA] pb-[env(safe-area-inset-bottom)] relative dark:bg-slate-900",
+        "bg-[#FAFAFA] pb-[env(safe-area-inset-bottom)] relative dark:bg-neutral-950",
         className,
       )}
     >
