@@ -91,6 +91,32 @@ export const blogConfig = {
   fontFamily:
     "var(--font-inter), -apple-system, BlinkMacSystemFont, ui-sans-serif, system-ui, sans-serif",
 };
+// Tool app configuration
+export const toolConfig = {
+  metadata: {
+    title: "Tool | Phở",
+    description: "Collection of useful developer tools by Phở",
+    lang: "en",
+  } as AppMetadata,
+  fonts: {
+    inter: {
+      name: "Inter",
+      weights: ["400", "700"] as const,
+      subsets: ["latin", "vietnamese"] as const,
+      variable: "--font-inter",
+      display: "swap",
+    } as const,
+    libreBaskerville: {
+      name: "Libre Baskerville",
+      weights: ["400", "700"] as const,
+      subsets: ["latin", "latin-ext"] as const,
+      variable: "--font-serif",
+      display: "swap",
+    } as const,
+  },
+  fontFamily:
+    "var(--font-inter), -apple-system, BlinkMacSystemFont, ui-sans-serif, system-ui, sans-serif",
+};
 
 // Insights app configuration
 export const insightsConfig = {
