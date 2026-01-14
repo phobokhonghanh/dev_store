@@ -12,6 +12,7 @@ module.exports = {
         // App changes
         "home",
         "blog",
+        "tool",
         // CI-related changes
         "ci",
         // UI-related changes

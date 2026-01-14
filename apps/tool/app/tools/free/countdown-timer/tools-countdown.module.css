@@ -1,0 +1,32 @@
+.timerDisplay {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 4rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.timeBlock {
+  width: 100px;
+  display: flex;
+  justify-content: center;
+}
+
+.sep {
+  width: 40px;
+  text-align: center;
+}
+
+.inputClean input {
+  box-shadow: none !important;
+  transition: all 0.2s ease;
+}
+
+.inputClean input:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--mantine-color-green-6);
+}
