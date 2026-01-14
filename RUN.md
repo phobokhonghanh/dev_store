@@ -43,6 +43,7 @@ Dưới đây là danh sách các câu lệnh điều khiển dự án được 
 
 ## Standard Workflow
 
+0. **Install:** `yarn install`
 1. **Start:** `yarn dev`
 2. **Format:** `yarn fmt`
 3. **Check:** `yarn lint` & `yarn test`
@@ -63,8 +64,12 @@ Dưới đây là danh sách các câu lệnh điều khiển dự án được 
 2. **build**
    ```
    yarn build --filter=home
+   yarn build --filter=blog
+   yarn build --filter=tool
    ```
 3. **start**
    ```
    yarn turbo run start --filter=home
+   yarn turbo run start --filter=blog
+   yarn turbo run start --filter=tool
    ```

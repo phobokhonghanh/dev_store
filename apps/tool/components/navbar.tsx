@@ -1,5 +1,6 @@
 'use client'
 
+import { Header } from '@origini/components'
 import { Sidebar } from './layout/Sidebar'
 
 export default function NavbarLayout({
@@ -10,7 +11,17 @@ export default function NavbarLayout({
   return (
     <div className="bg-background flex min-h-screen w-full">
       {/* Fixed Sidebar */}
-      <Sidebar />
+      <Sidebar
+        header={
+          <Header
+            className="py-4"
+            longText=""
+            shortText=""
+            center={true}
+            navigationItems={[]}
+          />
+        }
+      />
 
       {/* Main Content Area */}
       <main className="flex min-w-0 flex-1 flex-col">

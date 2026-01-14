@@ -1,5 +1,5 @@
 import { AutoBreadcrumbs } from '@/components/layout/AutoBreadcrumbs'
-import { toolsRoutes } from '@/data/tools'
+import { toolsRoutes } from '@/lib/tools'
 
 export default function ToolsFreePage() {
   return (

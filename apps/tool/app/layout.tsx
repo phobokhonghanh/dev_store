@@ -1,5 +1,4 @@
 import NavbarLayout from '@/components/navbar'
-import { Header } from '@origini/components'
 import Footer from '@origini/components/Footer'
 import Head from '@origini/components/Head'
 import '@origini/components/styles.css'
@@ -46,7 +45,6 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider>
-          <Header />
           <NavbarLayout>{children}</NavbarLayout>
           <Footer />
         </ThemeProvider>

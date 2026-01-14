@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from 'react'
 import Fullscreen from '@/components/common/FullscreenWrapper'
 import { AutoBreadcrumbs } from '@/components/layout/AutoBreadcrumbs'
 import Timer, { TimeData } from '@/components/tools/time/Timer'
-import { toolsRoutes } from '@/data/tools'
+import { toolsRoutes } from '@/lib/tools'
 
 export default function ToolsCountdownPage() {
   const [isLoading] = useState(false)

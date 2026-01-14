@@ -1,7 +1,6 @@
 'use client'
 
-import { toolsRoutes } from '@/data/tools'
-import { NavRoute } from '@/types/nav'
+import { NavRoute, toolsRoutes } from '@/lib/tools'
 import { Search } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'

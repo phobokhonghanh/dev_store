@@ -1,9 +1,9 @@
 'use client'
 
+import { NavRoute } from '@/lib/tools'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { NavRoute } from '../../types/nav'
 
 interface AutoBreadcrumbsProps {
   routes: NavRoute[]

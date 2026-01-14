@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @config './tailwind.config.mjs';
+
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -28,7 +29,7 @@
 
   :root.dark {
     /* Dark mode colors - consistent across blog, cv, insights */
-    --background: #0f172a;
+    --background: #1b1b1b85;
     /* slate-900 */
     --foreground: #f8fafc;
     /* slate-50 */

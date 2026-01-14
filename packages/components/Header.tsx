@@ -62,8 +62,8 @@ export default function Header({
   return (
     <header
       className={cn(
-        "py-10 dark:bg-neutral-950",
-        center ? "md:flex md:justify-center md:my-10" : "",
+        "py-10 bg-background",
+        center ? "md:flex md:justify-center" : "",
         className,
       )}
     >

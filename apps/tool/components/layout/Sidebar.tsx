@@ -1,7 +1,6 @@
 'use client'
 
-import { toolsRoutes } from '@/data/tools'
-import { NavRoute } from '@/types/nav'
+import { NavRoute, toolsRoutes } from '@/lib/tools'
 import { cn } from '@origini/libs/utils'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
@@ -64,15 +63,15 @@ const NavItem = ({ route, depth = 0 }: { route: NavRoute; depth?: number }) => {
   )
 }
 
-export function Sidebar() {
+interface SidebarProps {
+  header?: React.ReactNode
+}
+
+export function Sidebar({ header }: SidebarProps) {
   return (
-    <nav className="bg-card hidden h-full w-64 shrink-0 overflow-y-auto border-r px-3 py-6 md:block">
-      <div className="mb-6 px-3">
-        <span className="text-primary text-lg font-bold tracking-tight">
-          Toolbox
-        </span>
-      </div>
+    <nav className="bg-card sticky top-0 hidden h-screen w-64 shrink-0 overflow-y-auto border-r px-3 py-6 md:block">
       <div className="space-y-1">
+        {header && <div className="mb-6 px-3">{header}</div>}
         {toolsRoutes.map((route) => (
           <NavItem key={route.href} route={route} />
         ))}
