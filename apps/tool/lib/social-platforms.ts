@@ -40,7 +40,7 @@ export const SOCIAL_PLATFORMS: SocialPlatform[] = [
     name: 'GitHub',
     domain: 'github.com',
     pattern: /(?:www\.)?github\.com/,
-    logo: 'https://cdn-icons-png.flaticon.com/512/25/25231.png',
+    logo: 'https://cdn-icons-png.flaticon.com/128/2504/2504911.png',
   },
   {
     name: 'TikTok',
@@ -58,7 +58,7 @@ export const SOCIAL_PLATFORMS: SocialPlatform[] = [
     name: 'Zalo',
     domain: 'zalo.me',
     pattern: /(?:www\.)?zalo\.me/,
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_Zalo.svg',
+    logo: 'https://img.icons8.com/?size=96&id=0m71tmRjlxEe&format=png',
   },
   {
     name: 'Pinterest',
@@ -76,7 +76,7 @@ export const SOCIAL_PLATFORMS: SocialPlatform[] = [
     name: 'Spotify',
     domain: 'spotify.com',
     pattern: /(?:www\.)?spotify\.com/,
-    logo: 'https://cdn-icons-png.flaticon.com/512/174/174868.png',
+    logo: 'https://cdn-icons-png.flaticon.com/128/3669/3669986.png',
   },
   {
     name: 'WhatsApp',
@@ -94,7 +94,7 @@ export const SOCIAL_PLATFORMS: SocialPlatform[] = [
     name: 'Twitch',
     domain: 'twitch.tv',
     pattern: /(?:www\.)?twitch\.tv/,
-    logo: 'https://cdn-icons-png.flaticon.com/512/5969/5969165.png',
+    logo: 'https://cdn-icons-png.flaticon.com/128/2111/2111668.png',
   },
   {
     name: 'Google',
@@ -130,7 +130,7 @@ export const SOCIAL_PLATFORMS: SocialPlatform[] = [
     name: 'Zoom',
     domain: 'zoom.us',
     pattern: /(?:www\.)?(?:zoom\.us|zoom\.com)/,
-    logo: 'https://cdn-icons-png.flaticon.com/512/4406/4406167.png',
+    logo: 'https://cdn-icons-png.flaticon.com/128/4401/4401470.png',
   },
   {
     name: 'Medium',

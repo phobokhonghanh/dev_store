@@ -127,7 +127,8 @@ function QRCodeToolContent() {
     bgColor,
   })
 
-  const effectiveLogo = showLogo ? logoSrc || customLogoUrl : undefined
+  const effectiveLogo =
+    qrType === 'url' && showLogo ? logoSrc || customLogoUrl : undefined
 
   const qrRef = useRef<HTMLDivElement>(null)
 
@@ -221,28 +222,32 @@ function QRCodeToolContent() {
               </Label>
             </div>
 
-            <LogoManager
-              showLogo={showLogo}
-              onToggleShowLogo={setShowLogo}
-              autoDetectEnabled={autoDetectEnabled}
-              onToggleAutoDetect={setAutoDetectEnabled}
-              currentLogo={effectiveLogo as string}
-              onSelectLogo={(url) => {
-                setCustomLogoUrl(url)
-                if (url) setAutoDetectEnabled(false) // Disable auto-detect if user manually selects
-              }}
-            />
+            {qrType === 'url' && (
+              <>
+                <LogoManager
+                  showLogo={showLogo}
+                  onToggleShowLogo={setShowLogo}
+                  autoDetectEnabled={autoDetectEnabled}
+                  onToggleAutoDetect={setAutoDetectEnabled}
+                  currentLogo={effectiveLogo as string}
+                  onSelectLogo={(url) => {
+                    setCustomLogoUrl(url)
+                    if (url) setAutoDetectEnabled(false) // Disable auto-detect if user manually selects
+                  }}
+                />
 
-            <FileUploader
-              label="Custom Logo Upload"
-              description="Upload your own image to use as the QR code logo"
-              file={logoFile}
-              previewSrc={logoSrc as string}
-              accept="image/*"
-              onFileSelect={onSelectLogo}
-              onClear={onClearLogo}
-              error={logoError}
-            />
+                <FileUploader
+                  label="Custom Logo Upload"
+                  description="Upload your own image to use as the QR code logo"
+                  file={logoFile}
+                  previewSrc={logoSrc as string}
+                  accept="image/*"
+                  onFileSelect={onSelectLogo}
+                  onClear={onClearLogo}
+                  error={logoError}
+                />
+              </>
+            )}
           </div>
 
           {/* RIGHT COLUMN: Display */}
