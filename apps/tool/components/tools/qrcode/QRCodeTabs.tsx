@@ -1,11 +1,12 @@
 import {
   CustomField,
-  PaymentData,
-  WiFiData,
   generatePaymentString,
   generateVCardString,
   generateWifiString,
+  PaymentData,
+  WiFiData,
 } from '@/lib/qrcode-utils'
+import { detectPlatform, SocialPlatform } from '@/lib/social-platforms'
 import { BANKS } from '@/lib/vietqr'
 import {
   CreditCard as IconCreditCard,
@@ -66,7 +67,7 @@ interface QRCodeTabsProps {
     type: QRType,
     displayText?: string,
     rawData?:
-      | { url: string }
+      | { url: string; platform: SocialPlatform | null }
       | WiFiData
       | { fields: TabCustomField[] }
       | PaymentData
@@ -132,7 +133,7 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
     let result = ''
     let display = ''
     let rawData:
-      | { url: string }
+      | { url: string; platform: SocialPlatform | null }
       | WiFiData
       | { fields: TabCustomField[] }
       | PaymentData
@@ -141,7 +142,7 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
       case 'url':
         result = urlValue
         display = urlValue
-        rawData = { url: urlValue }
+        rawData = { url: urlValue, platform: detectPlatform(urlValue) }
         break
       case 'wifi':
         result = generateWifiString(wifiData)

@@ -6,6 +6,7 @@ import FileUploader from '@/components/FileUpload'
 import { Label } from '@/components/Form'
 import Fullscreen from '@/components/FullscreenWrapper'
 import { Toast } from '@/components/Toast'
+import { LogoManager } from '@/components/tools/qrcode/LogoManager'
 import { QRAppearanceForm } from '@/components/tools/qrcode/QRAppearanceForm'
 import QRCode from '@/components/tools/qrcode/QRCode'
 import QRCodeTabs, { QRType } from '@/components/tools/qrcode/QRCodeTabs'
@@ -49,6 +50,14 @@ function QRCodeToolContent() {
   const [qrType, setQrType] = useState<QRType>('url')
   /** Whether to render the descriptive text below the QR code */
   const [renderText, setRenderText] = useState(true)
+
+  // --- State: Logo Management ---
+  /** Whether to show any logo at all */
+  const [showLogo, setShowLogo] = useState(true)
+  /** Whether to automatically detect logo from URL */
+  const [autoDetectEnabled, setAutoDetectEnabled] = useState(true)
+  /** Logo selected from presets or auto-detected */
+  const [customLogoUrl, setCustomLogoUrl] = useState<string | null>(null)
 
   /** Initialize state from URL search parameters */
   useEffect(() => {
@@ -118,6 +127,8 @@ function QRCodeToolContent() {
     bgColor,
   })
 
+  const effectiveLogo = showLogo ? logoSrc || customLogoUrl : undefined
+
   const qrRef = useRef<HTMLDivElement>(null)
 
   /** Triggers PNG download of the current QR code */
@@ -150,12 +161,23 @@ function QRCodeToolContent() {
             {/* 1. Input Tabs */}
             <QRCodeTabs
               onCodeChange={useCallback(
-                (code: string, type: QRType, display?: string) => {
+                (
+                  code: string,
+                  type: QRType,
+                  display?: string,
+                  rawData?: unknown,
+                ) => {
+                  const data = rawData as any // eslint-disable-line @typescript-eslint/no-explicit-any
                   setQrValue(code)
                   setQrType(type)
                   setDisplayText(display || code)
+
+                  // Auto-detect platform logo if enabled and on URL tab
+                  if (type === 'url' && autoDetectEnabled) {
+                    setCustomLogoUrl(data?.platform?.logo || null)
+                  }
                 },
-                [],
+                [autoDetectEnabled],
               )}
             />
 
@@ -199,9 +221,21 @@ function QRCodeToolContent() {
               </Label>
             </div>
 
+            <LogoManager
+              showLogo={showLogo}
+              onToggleShowLogo={setShowLogo}
+              autoDetectEnabled={autoDetectEnabled}
+              onToggleAutoDetect={setAutoDetectEnabled}
+              currentLogo={effectiveLogo as string}
+              onSelectLogo={(url) => {
+                setCustomLogoUrl(url)
+                if (url) setAutoDetectEnabled(false) // Disable auto-detect if user manually selects
+              }}
+            />
+
             <FileUploader
-              label="Center Logo"
-              description="Logo will be displayed in the center of the QR code"
+              label="Custom Logo Upload"
+              description="Upload your own image to use as the QR code logo"
               file={logoFile}
               previewSrc={logoSrc as string}
               accept="image/*"
@@ -227,7 +261,7 @@ function QRCodeToolContent() {
               bgColor={bgColor}
               level={level}
               includeMargin={true}
-              imageSrc={logoSrc as string | undefined}
+              imageSrc={effectiveLogo as string | undefined}
             />
 
             <div className="relative mt-8 flex gap-3">
