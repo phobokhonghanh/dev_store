@@ -8,13 +8,20 @@ import {
 } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 
-import Fullscreen from '@/components/common/FullscreenWrapper'
-import { AutoBreadcrumbs } from '@/components/layout/AutoBreadcrumbs'
+import { AutoBreadcrumbs } from '@/components/AutoBreadcrumbs'
+import { Field, Input } from '@/components/Form'
+import Fullscreen from '@/components/FullscreenWrapper'
 import Timer, { TimeData } from '@/components/tools/time/Timer'
-import { toolsRoutes } from '@/lib/tools'
+import { toolsRoutes } from '@/lib/tools-routes'
 
+/**
+ * Countdown Timer Tool Page.
+ * Allows users to set a specific duration and count down, with keyboard shortcuts support.
+ */
 export default function ToolsCountdownPage() {
   const [isLoading] = useState(false)
+
+  /** Target duration set by the user */
   const [target, setTarget] = useState({
     days: 0,
     hours: 0,
@@ -22,9 +29,12 @@ export default function ToolsCountdownPage() {
     seconds: 0,
   })
 
+  /** Remaining seconds in the active countdown */
   const [timeLeft, setTimeLeft] = useState(0)
+  /** Whether the timer is currently ticking */
   const [running, setRunning] = useState(false)
 
+  /** Core timer effect: decrements timeLeft every second when running */
   useEffect(() => {
     if (!running) return
 
@@ -42,6 +52,7 @@ export default function ToolsCountdownPage() {
     return () => clearInterval(interval)
   }, [running])
 
+  /** Calculates total seconds from the 'target' state object */
   const calcSeconds = useCallback(
     () =>
       target.days * 86400 +
@@ -51,6 +62,7 @@ export default function ToolsCountdownPage() {
     [target],
   )
 
+  /** Starts or resumes the countdown */
   const start = useCallback(() => {
     const sec = calcSeconds()
     if (sec <= 0) return
@@ -64,13 +76,16 @@ export default function ToolsCountdownPage() {
     setRunning(true)
   }, [calcSeconds, timeLeft])
 
+  /** Pauses the active countdown */
   const pause = useCallback(() => setRunning(false), [])
 
+  /** Resets the timer to the beginning of the last set duration */
   const reset = useCallback(() => {
     setRunning(false)
     setTimeLeft(0)
   }, [])
 
+  /** Clears all target inputs and resets the timer */
   const clear = () => {
     setTarget({
       days: 0,
@@ -83,6 +98,7 @@ export default function ToolsCountdownPage() {
     setTimeLeft(0)
   }
 
+  /** Register global keyboard shortcuts for the timer */
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
@@ -100,7 +116,11 @@ export default function ToolsCountdownPage() {
     return () => window.removeEventListener('keydown', handler)
   }, [running, start, pause, reset])
 
-  // Convert seconds -> TimeData object
+  /**
+   * Converts raw seconds into a structured TimeData object for the Timer component.
+   * @param sec Total seconds
+   * @returns Structured TimeData
+   */
   const formatTime = (sec: number): TimeData => {
     const d = Math.floor(sec / 86400)
     const h = Math.floor((sec % 86400) / 3600)
@@ -118,6 +138,7 @@ export default function ToolsCountdownPage() {
     }
   }
 
+  /** The time object passed to the visual Timer display */
   const timeObj =
     !running && timeLeft === 0
       ? {
@@ -145,30 +166,27 @@ export default function ToolsCountdownPage() {
         <h2 className="text-2xl font-bold text-green-600 dark:text-green-500">
           Countdown Timer
         </h2>
-        <p className="text-muted-foreground mt-1">
+        <p className="text-muted-foreground mt-1 text-sm">
           Set any duration and count down in real time.
         </p>
       </div>
 
-      <div className="bg-card text-card-foreground mb-6 rounded-lg border p-6 shadow">
-        <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium">Days</label>
-            <input
+      {/* Target Settings */}
+      <div className="bg-card text-card-foreground mb-8 rounded-xl border p-6 shadow-sm">
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+          <Field label="Days">
+            <Input
               type="number"
-              className="border-input bg-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
               value={target.days}
               onChange={(e) =>
                 setTarget({ ...target, days: Number(e.target.value) || 0 })
               }
               min={0}
             />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium">Hours</label>
-            <input
+          </Field>
+          <Field label="Hours">
+            <Input
               type="number"
-              className="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm"
               value={target.hours}
               onChange={(e) =>
                 setTarget({ ...target, hours: Number(e.target.value) || 0 })
@@ -176,12 +194,10 @@ export default function ToolsCountdownPage() {
               min={0}
               max={23}
             />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium">Minutes</label>
-            <input
+          </Field>
+          <Field label="Minutes">
+            <Input
               type="number"
-              className="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm"
               value={target.minutes}
               onChange={(e) =>
                 setTarget({ ...target, minutes: Number(e.target.value) || 0 })
@@ -189,12 +205,10 @@ export default function ToolsCountdownPage() {
               min={0}
               max={59}
             />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium">Seconds</label>
-            <input
+          </Field>
+          <Field label="Seconds">
+            <Input
               type="number"
-              className="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm"
               value={target.seconds}
               onChange={(e) =>
                 setTarget({ ...target, seconds: Number(e.target.value) || 0 })
@@ -202,34 +216,36 @@ export default function ToolsCountdownPage() {
               min={0}
               max={59}
             />
-          </div>
+          </Field>
         </div>
       </div>
 
+      {/* Visual Timer & Controls */}
       <div
         id="timer-root"
-        className="bg-card text-card-foreground relative flex min-h-[300px] flex-col items-center justify-center rounded-lg border p-6 shadow"
+        className="bg-card text-card-foreground relative flex min-h-[400px] flex-col items-center justify-center rounded-xl border p-8 shadow-md"
       >
         <Fullscreen targetId="timer-root" />
-        <div className="mt-4">
+
+        <div className="mb-4 scale-110 sm:scale-125 md:scale-150">
           <Timer time={timeObj} />
         </div>
 
-        <div className="mt-8 flex flex-wrap justify-center gap-4">
+        <div className="mt-12 flex flex-wrap justify-center gap-4">
           {!running && timeLeft === 0 && (
             <>
               <button
                 onClick={start}
-                className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border border-green-200 px-4 py-2 text-sm font-medium text-green-600 transition-colors hover:bg-green-50 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-12 min-w-[120px] items-center justify-center rounded-full px-8 text-sm font-bold shadow-lg transition-all hover:scale-105"
               >
-                <IconPlayerPlay className="mr-2 h-4 w-4" /> Start
+                <IconPlayerPlay className="mr-2 h-5 w-5" /> Start
               </button>
 
               <button
                 onClick={clear}
-                className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                className="border-border bg-background hover:bg-accent inline-flex h-12 min-w-[120px] items-center justify-center rounded-full border px-8 text-sm font-bold shadow-sm transition-all hover:scale-105"
               >
-                <IconX className="mr-2 h-4 w-4" /> Clear
+                <IconX className="mr-2 h-5 w-5" /> Clear
               </button>
             </>
           )}
@@ -238,15 +254,15 @@ export default function ToolsCountdownPage() {
             <>
               <button
                 onClick={start}
-                className="border-input bg-background inline-flex h-10 items-center justify-center rounded-md border border-green-200 px-4 py-2 text-sm font-medium text-green-600 transition-colors hover:bg-green-50"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-12 min-w-[120px] items-center justify-center rounded-full px-8 text-sm font-bold shadow-lg transition-all hover:scale-105"
               >
-                <IconPlayerPlay className="mr-2 h-4 w-4" /> Continue
+                <IconPlayerPlay className="mr-2 h-5 w-5" /> Continue
               </button>
               <button
                 onClick={reset}
-                className="border-input bg-background hover:bg-accent inline-flex h-10 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors"
+                className="border-border bg-background hover:bg-accent inline-flex h-12 min-w-[120px] items-center justify-center rounded-full border px-8 text-sm font-bold shadow-sm transition-all hover:scale-105"
               >
-                <IconRotate className="mr-2 h-4 w-4" /> Reset
+                <IconRotate className="mr-2 h-5 w-5" /> Reset
               </button>
             </>
           )}
@@ -255,23 +271,35 @@ export default function ToolsCountdownPage() {
             <>
               <button
                 onClick={pause}
-                className="focus-visible:ring-ring border-input bg-background inline-flex h-10 items-center justify-center rounded-md border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                className="bg-background inline-flex h-12 min-w-[120px] items-center justify-center rounded-full border border-red-200 px-8 text-sm font-bold text-red-600 shadow-sm transition-all hover:scale-105 hover:bg-red-50"
               >
-                <IconPlayerPause className="mr-2 h-4 w-4" /> Pause
+                <IconPlayerPause className="mr-2 h-5 w-5" /> Pause
               </button>
               <button
                 onClick={reset}
-                className="border-input bg-background hover:bg-accent inline-flex h-10 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors"
+                className="border-border bg-background hover:bg-accent inline-flex h-12 min-w-[120px] items-center justify-center rounded-full border px-8 text-sm font-bold shadow-sm transition-all hover:scale-105"
               >
-                <IconRotate className="mr-2 h-4 w-4" /> Reset
+                <IconRotate className="mr-2 h-5 w-5" /> Reset
               </button>
             </>
           )}
         </div>
 
-        <p className="text-muted-foreground mt-6 text-center text-sm">
-          Shortcuts: <b>Space</b> (Start/Pause), <b>R</b> (Reset)
-        </p>
+        <div className="mt-8 flex flex-col items-center gap-1">
+          <p className="text-muted-foreground text-center text-[10px] font-bold tracking-widest uppercase">
+            Keyboard Shortcuts
+          </p>
+          <p className="text-muted-foreground text-center text-xs">
+            <span className="bg-muted rounded border px-1.5 py-0.5 text-[10px]">
+              Space
+            </span>{' '}
+            Toggle Start/Pause •{' '}
+            <span className="bg-muted rounded border px-1.5 py-0.5 text-[10px]">
+              R
+            </span>{' '}
+            Reset
+          </p>
+        </div>
       </div>
     </div>
   )

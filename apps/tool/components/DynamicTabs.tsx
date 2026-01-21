@@ -14,6 +14,10 @@ interface DynamicTabsProps {
   grow?: boolean
 }
 
+/**
+ * A reusable tabbed interface component that renders navigation buttons and content.
+ * Supports growing to full width or inline sizing.
+ */
 export default function DynamicTabs({
   items,
   defaultValue,
@@ -50,7 +54,7 @@ export default function DynamicTabs({
         ))}
       </div>
 
-      <div className="mt-4">{activeContent}</div>
+      {activeContent && <div className="mt-4">{activeContent}</div>}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { NavRoute } from '@/lib/tools'
+import { NavRoute } from '@/lib/tools-routes'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'

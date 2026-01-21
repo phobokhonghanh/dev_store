@@ -1,19 +1,35 @@
 'use client'
 
-import FileUploader from '@/components/common/FileUpload'
-import Fullscreen from '@/components/common/FullscreenWrapper'
-import { AutoBreadcrumbs } from '@/components/layout/AutoBreadcrumbs'
+import { AutoBreadcrumbs } from '@/components/AutoBreadcrumbs'
+import { EmbedSection } from '@/components/EmbedSection'
+import FileUploader from '@/components/FileUpload'
+import { Label } from '@/components/Form'
+import Fullscreen from '@/components/FullscreenWrapper'
+import { Toast } from '@/components/Toast'
+import { QRAppearanceForm } from '@/components/tools/qrcode/QRAppearanceForm'
 import QRCode from '@/components/tools/qrcode/QRCode'
 import QRCodeTabs, { QRType } from '@/components/tools/qrcode/QRCodeTabs'
-import { useDownload } from '@/lib/hooks/tools/io/useDownload'
-import { useFileUpload } from '@/lib/hooks/tools/io/useFileUpload'
 import { useClipboard } from '@/lib/hooks/useClipboard'
-import { toolsRoutes } from '@/lib/tools'
-import { Check, Copy, Download } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useDownload } from '@/lib/hooks/useDownload'
+import { useFileUpload } from '@/lib/hooks/useFileUpload'
+import { useQRAppearance } from '@/lib/hooks/useQRAppearance'
+import { useQREmbed } from '@/lib/hooks/useQREmbed'
+import { toolsRoutes } from '@/lib/tools-routes'
+import { ChevronDown, Copy, Download, HelpCircle, Zap } from 'lucide-react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 
-export default function QRCodeToolPage() {
-  // State: QR Content
+/**
+ * Main Content Component for the QR Code Tool.
+ * Handles state management for QR data, appearance, and integration options.
+ */
+function QRCodeToolContent() {
+  const searchParams = useSearchParams()
+
+  // --- State: QR Content ---
+
+  /** Hook for handling logo file uploads */
   const {
     file: logoFile,
     fileContent: logoSrc,
@@ -24,23 +40,90 @@ export default function QRCodeToolPage() {
     accept: 'image/*',
     readAs: 'DataURL',
   })
+
+  /** The generated QR value/string */
   const [qrValue, setQrValue] = useState('')
+  /** The text displayed below the QR code (if enabled) */
+  const [displayText, setDisplayText] = useState('')
+  /** The active QR type (url, wifi, vcard, etc.) */
   const [qrType, setQrType] = useState<QRType>('url')
+  /** Whether to render the descriptive text below the QR code */
+  const [renderText, setRenderText] = useState(true)
 
-  // State: Appearance Config
-  const [size, setSize] = useState<number>(256)
-  const [fgColor, setFgColor] = useState<string>('#000000')
-  const [bgColor, setBgColor] = useState<string>('#ffffff')
-  const [level, setLevel] = useState<'L' | 'M' | 'Q' | 'H'>('M')
+  /** Initialize state from URL search parameters */
+  useEffect(() => {
+    const text = searchParams.get('text')
+    const url = searchParams.get('url')
 
-  const clipboard = useClipboard({ timeout: 2000 })
-  const { downloadCanvas } = useDownload()
-  const qrRef = useRef<HTMLDivElement>(null)
-  const handleDownload = () => {
-    const canvas = qrRef.current?.querySelector('canvas')
-    if (canvas) {
-      downloadCanvas(canvas, `qrcode-${qrType}-${Date.now()}`, 'png')
+    if (text) {
+      setQrValue(text)
+      setDisplayText(text)
+    } else if (url) {
+      setQrValue(url)
+      setDisplayText(url)
     }
+  }, [searchParams])
+
+  // --- State: Appearance & Config (Refactored to Hook) ---
+  const {
+    size,
+    setSize,
+    fgColor,
+    setFgColor,
+    bgColor,
+    setBgColor,
+    level,
+    setLevel,
+  } = useQRAppearance()
+
+  /** Toast notification state */
+  const [toast, setToast] = useState<{ message: string; visible: boolean }>({
+    message: '',
+    visible: false,
+  })
+
+  const { downloadCanvas } = useDownload()
+
+  /** Displays a transient toast message */
+  const showToast = useCallback((message: string) => {
+    setToast({ message, visible: true })
+  }, [])
+
+  /** Clipboard hook with toast integration */
+  const { copy: copyToClipboard } = useClipboard({
+    onSuccess: () => showToast('Content copied to clipboard!'),
+    onError: () => showToast('Failed to copy content.'),
+    timeout: 1500,
+  })
+
+  /** Hides the active toast */
+  const hideToast = useCallback(() => {
+    setToast((prev) => ({ ...prev, visible: false }))
+  }, [])
+
+  // Updated handleCopy to use the hook
+  const handleCopy = useCallback(
+    (text: string) => {
+      copyToClipboard(text)
+    },
+    [copyToClipboard],
+  )
+
+  // --- Embed Logic (Refactored to Hook) ---
+  const { embedUrl, sheetsFormula } = useQREmbed({
+    value: qrValue,
+    type: qrType,
+    size,
+    fgColor,
+    bgColor,
+  })
+
+  const qrRef = useRef<HTMLDivElement>(null)
+
+  /** Triggers PNG download of the current QR code */
+  const handleDownload = () => {
+    const canvas = qrRef.current?.querySelector('canvas') || null
+    downloadCanvas(canvas, `qrcode-${qrType}-${Date.now()}`, 'png')
   }
 
   return (
@@ -66,89 +149,54 @@ export default function QRCodeToolPage() {
           <div className="space-y-6 md:col-span-7">
             {/* 1. Input Tabs */}
             <QRCodeTabs
-              onCodeChange={(code, type) => {
-                setQrValue(code)
-                setQrType(type)
-              }}
+              onCodeChange={useCallback(
+                (code: string, type: QRType, display?: string) => {
+                  setQrValue(code)
+                  setQrType(type)
+                  setDisplayText(display || code)
+                },
+                [],
+              )}
             />
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="border-border w-full border-t"></div>
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background text-muted-foreground px-2">
+              <div className="relative flex justify-center text-[10px] font-bold tracking-widest uppercase">
+                <span className="bg-background text-muted-foreground px-4">
                   Display Settings
                 </span>
               </div>
             </div>
 
             {/* 2. Configuration */}
-            <div className="flex gap-4">
-              <div className="flex-1 space-y-1">
-                <label className="text-sm font-medium">Size: {size}px</label>
-                <input
-                  type="range"
-                  min="128"
-                  max="1024"
-                  step="32"
-                  value={size}
-                  onChange={(e) => setSize(Number(e.target.value))}
-                  className="w-full"
-                />
-              </div>
-              <div className="flex-1 space-y-1">
-                <label className="text-sm font-medium">Error Correction</label>
-                <select
-                  className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-2 py-1 text-sm focus-visible:ring-2 focus-visible:outline-none"
-                  value={level}
-                  onChange={(e) =>
-                    setLevel(e.target.value as 'L' | 'M' | 'Q' | 'H')
-                  }
-                >
-                  <option value="L">Low (7%)</option>
-                  <option value="M">Medium (15%)</option>
-                  <option value="Q">Quartile (25%)</option>
-                  <option value="H">High (30%)</option>
-                </select>
-              </div>
+            <div className="mb-6">
+              <QRAppearanceForm
+                appearance={{
+                  size,
+                  setSize,
+                  fgColor,
+                  setFgColor,
+                  bgColor,
+                  setBgColor,
+                  level,
+                  setLevel,
+                }}
+              />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium">Foreground Color</label>
-                <div className="flex gap-2">
-                  <input
-                    type="color"
-                    value={fgColor}
-                    onChange={(e) => setFgColor(e.target.value)}
-                    className="h-10 w-16 cursor-pointer rounded border p-1"
-                  />
-                  <input
-                    type="text"
-                    value={fgColor}
-                    onChange={(e) => setFgColor(e.target.value)}
-                    className="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm uppercase"
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium">Background Color</label>
-                <div className="flex gap-2">
-                  <input
-                    type="color"
-                    value={bgColor}
-                    onChange={(e) => setBgColor(e.target.value)}
-                    className="h-10 w-16 cursor-pointer rounded border p-1"
-                  />
-                  <input
-                    type="text"
-                    value={bgColor}
-                    onChange={(e) => setBgColor(e.target.value)}
-                    className="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm uppercase"
-                  />
-                </div>
-              </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="renderText"
+                className="h-4 w-4 rounded border-gray-300 accent-green-600 focus:ring-green-500"
+                checked={renderText}
+                onChange={(e) => setRenderText(e.target.checked)}
+              />
+              <Label htmlFor="renderText" className="cursor-pointer">
+                Show details below QR Code
+              </Label>
             </div>
 
             <FileUploader
@@ -172,6 +220,8 @@ export default function QRCodeToolPage() {
             <Fullscreen targetId="qrcode-tool-root" />
             <QRCode
               value={qrValue}
+              displayText={displayText}
+              renderText={renderText}
               size={size}
               fgColor={fgColor}
               bgColor={bgColor}
@@ -180,7 +230,7 @@ export default function QRCodeToolPage() {
               imageSrc={logoSrc as string | undefined}
             />
 
-            <div className="mt-8 flex gap-3">
+            <div className="relative mt-8 flex gap-3">
               <button
                 className="border-input bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 flex-1 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors"
                 onClick={handleDownload}
@@ -189,22 +239,123 @@ export default function QRCodeToolPage() {
                 <Download size={18} className="mr-2" /> Download PNG
               </button>
 
-              <button
-                className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 flex-1 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors"
-                onClick={() => clipboard.copy(qrValue)}
-                disabled={!qrValue}
-              >
-                {clipboard.copied ? (
-                  <Check size={18} className="mr-2 text-green-500" />
-                ) : (
+              <div className="group relative flex-1">
+                <button
+                  className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 w-full items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors"
+                  disabled={!qrValue}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleCopy(qrValue)
+                  }}
+                >
                   <Copy size={18} className="mr-2" />
-                )}
-                {clipboard.copied ? 'Copied' : 'Copy'}
-              </button>
+                  Copy
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Section: FAQ & Embed Parallel */}
+        <div className="mt-12 border-t pt-12">
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
+            {/* FAQ Side */}
+            <div>
+              <h5 className="mb-4 flex items-center gap-2 text-[10px] font-bold tracking-widest text-green-600 uppercase dark:text-green-500">
+                <HelpCircle
+                  size={14}
+                  className="text-green-600 dark:text-green-500"
+                />{' '}
+                FAQ & Integration
+              </h5>
+              <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {[
+                  {
+                    q: 'How to use in Google Sheets?',
+                    h: '/tools/free/qrcode/guide',
+                  },
+                  {
+                    q: 'Can I change QR colors?',
+                    h: '/tools/free/qrcode/guide',
+                  },
+                  {
+                    q: 'Integration with other apps?',
+                    h: '/tools/free/qrcode/guide',
+                  },
+                  {
+                    q: 'Commercial usage allowed?',
+                    h: '/tools/free/qrcode/guide',
+                  },
+                ].map((faq, i) => (
+                  <li key={i}>
+                    <Link
+                      href={faq.h}
+                      className="group bg-card hover:border-primary/50 hover:bg-primary/5 flex h-full flex-col justify-between rounded-xl border p-4 shadow-sm transition-all hover:shadow-md"
+                    >
+                      <span className="group-hover:text-primary text-xs leading-snug font-bold transition-colors">
+                        {faq.q}
+                      </span>
+                      <div className="text-muted-foreground group-hover:text-primary/70 mt-2 flex items-center text-[10px] transition-colors">
+                        View Guide{' '}
+                        <ChevronDown
+                          size={12}
+                          className="ml-1 rotate-[-90deg]"
+                        />
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Embed Side (Refactored to Component) */}
+            <div>
+              <h4 className="text-muted-foreground mb-4 flex items-center gap-1.5 text-[10px] font-bold tracking-wider uppercase">
+                <Zap size={10} className="text-yellow-500" /> Embed Integration
+              </h4>
+              <div className="space-y-4">
+                {/* Google Sheets Formula */}
+                <EmbedSection
+                  title="Sheet Formula"
+                  content={sheetsFormula}
+                  onToast={showToast}
+                />
+
+                {/* Direct URL */}
+                <EmbedSection
+                  title="Direct URL"
+                  content={embedUrl}
+                  onToast={showToast}
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Toast Component */}
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        onClose={hideToast}
+      />
     </div>
+  )
+}
+
+/**
+ * QR Code Generator Page Wrapper with Suspense helper.
+ */
+export default function QRCodeToolPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-screen items-center justify-center">
+          Loading...
+        </div>
+      }
+    >
+      <QRCodeToolContent />
+    </Suspense>
   )
 }

@@ -1,4 +1,5 @@
 import NavbarLayout from '@/components/navbar'
+import VersionBadge from '@/components/VersionBadge'
 import Footer from '@origini/components/Footer'
 import Head from '@origini/components/Head'
 import '@origini/components/styles.css'
@@ -6,6 +7,7 @@ import ThemeProvider from '@origini/components/ThemeProvider'
 import { toolConfig } from '@origini/config'
 import { cn } from '@origini/libs/utils'
 import { Inter, Libre_Baskerville } from 'next/font/google'
+import './globals.css'
 
 const inter = Inter({
   weight: ['400', '700'],
@@ -45,6 +47,7 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider>
+          <VersionBadge />
           <NavbarLayout>{children}</NavbarLayout>
           <Footer />
         </ThemeProvider>

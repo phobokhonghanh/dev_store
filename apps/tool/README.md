@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛠️ Developer Tools Hub
 
-## Getting Started
+> **Simple. Fast. 100% Free & Open Source.**
+> A collection of powerful utilities designed to boost your productivity, wrapped in a beautiful, modern interface.
 
-First, run the development server:
+![Version](https://img.shields.io/badge/version-1.0_LIVE-green?style=for-the-badge)
+![Tech](https://img.shields.io/badge/built_with-Next.js_15-black?style=for-the-badge)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Why Use This Tool?
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+We believe developer tools should be **accessible**, **fast**, and **delightful to use**. No ads, no paywalls, just pure utility.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **🎨 Premium UI/UX:** Built with a focus on aesthetics and user experience. Dark mode support, glassmorphism effects, and smooth animations.
+- **⚡ Blazing Fast:** Powered by [Next.js 15](https://nextjs.org/) and [Turbo](https://turbo.build/), ensuring instant load times.
+- **🔌 Developer Ready:** Every tool is designed with API integrations and embeddability in mind.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🌟 Featured Tools
 
-To learn more about Next.js, take a look at the following resources:
+### 1. Advanced QR Code Generator
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Generate fully customizable QR codes for various use cases. Unlike basic generators, we offer deep integration features.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Supported Types:**
+  - 🔗 **URL:** Instant deep links.
+  - 📶 **WiFi:** Share network credentials securely.
+  - 💳 **Payment (VietQR):** Generate standardized payment QRs compatible with all Vietnamese banking apps (Napas 247).
+  - 👤 **VCard:** Share contact details instantly.
+- **Key Capabilities:**
+  - **Customization:** Adjust size, error correction levels, and custom colors (foreground/background).
+  - **Logo Embedding:** Upload your brand logo to be placed automatically in the center.
+  - **📊 Google Sheets Integration:** Use our unique **Embed API** (e.g., `=IMAGE(...)`) to generate QR codes dynamically directly inside your spreadsheets.
+  - **High-Res Export:** Download high-quality PNGs for print/web.
 
-## Deploy on Vercel
+### 2. Precision Countdown Timer
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+_(Coming Soon)_ A productivity focused timer for events, pomodoros, and deadlines.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 💻 Tech Stack
+
+This project is built using the latest modern web technologies:
+
+- **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
+- **Styling:** [TailwindCSS](https://tailwindcss.com/)
+- **Icons:** [Lucide React](https://lucide.dev/)
+- **State Management:** React Hooks
+- **Language:** TypeScript (Strict)
+
+---
+
+## 🛠️ Getting Started
+
+Want to run this locally or contribute?
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone https://github.com/phobokhonghanh/dev_store.git
+    cd dev_store
+    ```
+
+2.  **Install dependencies:**
+
+    ```bash
+    yarn install
+    ```
+
+3.  **Run the Tools app:**
+
+    ```bash
+    yarn dev --filter=tool
+    ```
+
+4.  Open [http://localhost:3003](http://localhost:3003) to see the magic!
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! If you have an idea for a new tool or want to improve an existing one, please fork the repo and submit a PR.
+
+**Ideas for new tools:**
+
+- JSON Formatter/Validator
+- Base64 Encoder/Decoder
+- JWT Debugger
+- CSS Gradient Generator
+
+---
+
+made with ❤️ by [itc]
