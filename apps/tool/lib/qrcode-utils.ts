@@ -45,6 +45,50 @@ export interface CustomField {
 }
 
 /**
+ * Interface for Calendar Event data
+ */
+export interface EventData {
+  title: string
+  startDate: string
+  endDate: string
+  location: string
+  description: string
+}
+
+/**
+ * Interface for Email data
+ */
+export interface EmailData {
+  email: string
+  subject: string
+  body: string
+}
+
+/**
+ * Interface for SMS data
+ */
+export interface SmsData {
+  phone: string
+  message: string
+}
+
+/**
+ * Interface for Location data
+ */
+export interface LocationData {
+  lat: string
+  lng: string
+}
+
+/**
+ * Interface for App Store data
+ */
+export interface AppStoreData {
+  iosUrl: string
+  androidUrl: string
+}
+
+/**
  * Promotion footer added to generated text-based QR codes
  */
 const QR_PROMOTION_TEXT =
@@ -53,9 +97,6 @@ const QR_PROMOTION_TEXT =
 /**
  * Generates a WiFi configuration string compatible with QR scanners
  * Format: WIFI:T:WPA;S:MyNetwork;P:password123;H:false;;
- *
- * @param data - The configuration for the WiFi network
- * @returns A formatted WiFi string or an empty string if SSID is missing
  */
 export const generateWifiString = (data: WiFiData): string => {
   if (!data.ssid) return ''
@@ -64,9 +105,6 @@ export const generateWifiString = (data: WiFiData): string => {
 
 /**
  * Generates a formatted string for VCard or simple key-value lists
- *
- * @param fields - Array of custom fields to include
- * @returns A newline-separated string of key-value pairs with promotion footer
  */
 export const generateVCardString = (fields: CustomField[]): string => {
   const activeFields = fields.filter((f) => f.value.trim())
@@ -79,24 +117,7 @@ export const generateVCardString = (fields: CustomField[]): string => {
 }
 
 /**
- * Helper to generate newline-separated content without the promotion footer
- * Useful for internal logic or API responses where clean data is needed
- *
- * @param fields - Array of custom fields
- * @returns A formatted string of active key-value pairs
- */
-export const generateCustomContent = (fields: CustomField[]): string => {
-  return fields
-    .filter((f) => f.value.trim())
-    .map((f) => `${f.label || f.key}: ${f.value}`)
-    .join('\n')
-}
-
-/**
  * Generates a VietQR compatible string for bank transfers
- *
- * @param data - The payment transfer data
- * @returns A formatted EMVCo-compatible QR string or empty if core data is missing
  */
 export const generatePaymentString = (data: PaymentData): string => {
   if (!data.bankBin || !data.account) return ''
@@ -106,4 +127,63 @@ export const generatePaymentString = (data: PaymentData): string => {
     amount: data.amount,
     content: data.content,
   })
+}
+
+/**
+ * Generates an iCal format string for Calendar Events
+ * Format: BEGIN:VCALENDAR...
+ */
+export const generateEventString = (data: EventData): string => {
+  if (!data.title) return ''
+  const format = (d: string) => d.replace(/[-:]/g, '').split('.')[0] + 'Z'
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'BEGIN:VEVENT',
+    `SUMMARY:${data.title}`,
+    `DTSTART:${format(data.startDate)}`,
+    `DTEND:${format(data.endDate)}`,
+    `LOCATION:${data.location}`,
+    `DESCRIPTION:${data.description}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\n')
+}
+
+/**
+ * Generates a mailto: link for Email
+ */
+export const generateEmailString = (data: EmailData): string => {
+  if (!data.email) return ''
+  const params = new URLSearchParams()
+  if (data.subject) params.append('subject', data.subject)
+  if (data.body) params.append('body', data.body)
+  const qs = params.toString()
+  return `mailto:${data.email}${qs ? '?' + qs : ''}`
+}
+
+/**
+ * Generates an sms: link for SMS
+ */
+export const generateSmsString = (data: SmsData): string => {
+  if (!data.phone) return ''
+  return `sms:${data.phone}${data.message ? '?body=' + encodeURIComponent(data.message) : ''}`
+}
+
+/**
+ * Generates a geo: link for Location
+ */
+export const generateLocationString = (data: LocationData): string => {
+  if (!data.lat || !data.lng) return ''
+  return `geo:${data.lat},${data.lng}`
+}
+
+/**
+ * Helper to generate newline-separated content without the promotion footer
+ */
+export const generateCustomContent = (fields: CustomField[]): string => {
+  return fields
+    .filter((f) => f.value.trim())
+    .map((f) => `${f.label || f.key}: ${f.value}`)
+    .join('\n')
 }

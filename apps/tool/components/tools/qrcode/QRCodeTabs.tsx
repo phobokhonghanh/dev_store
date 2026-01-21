@@ -1,17 +1,31 @@
 import {
+  AppStoreData,
   CustomField,
+  EmailData,
+  EventData,
+  generateEmailString,
+  generateEventString,
+  generateLocationString,
   generatePaymentString,
+  generateSmsString,
   generateVCardString,
   generateWifiString,
+  LocationData,
   PaymentData,
+  SmsData,
   WiFiData,
 } from '@/lib/qrcode-utils'
 import { detectPlatform, SocialPlatform } from '@/lib/social-platforms'
 import { BANKS } from '@/lib/vietqr'
 import {
+  Calendar as IconCalendar,
   CreditCard as IconCreditCard,
   Link as IconLink,
+  Mail as IconMail,
+  MapPin as IconMapPin,
   Plus as IconPlus,
+  Search as IconSearch,
+  MessageSquare as IconSms,
   Trash as IconTrash,
   User as IconUser,
   Wifi as IconWifi,
@@ -21,7 +35,16 @@ import DynamicTabs, { TabItem } from '../../DynamicTabs'
 import { Field, Input, Label, Select } from '../../Form'
 
 /** Type representing the available QR code categories */
-export type QRType = 'url' | 'wifi' | 'vcard' | 'payment'
+export type QRType =
+  | 'url'
+  | 'wifi'
+  | 'vcard'
+  | 'payment'
+  | 'event'
+  | 'email'
+  | 'sms'
+  | 'location'
+  | 'appstore'
 
 /** Configuration constants for the QR Tabs interface */
 const TABS_CONFIG = {
@@ -57,6 +80,30 @@ const TABS_CONFIG = {
     { id: '1', key: 'FN', value: '', label: 'Full Name' },
     { id: '2', key: 'TEL', value: '', label: 'Phone' },
   ],
+  DEFAULT_EVENT: {
+    title: '',
+    startDate: new Date().toISOString().slice(0, 16),
+    endDate: new Date(Date.now() + 3600000).toISOString().slice(0, 16),
+    location: '',
+    description: '',
+  },
+  DEFAULT_EMAIL: {
+    email: '',
+    subject: '',
+    body: '',
+  },
+  DEFAULT_SMS: {
+    phone: '',
+    message: '',
+  },
+  DEFAULT_LOCATION: {
+    lat: '',
+    lng: '',
+  },
+  DEFAULT_APPSTORE: {
+    iosUrl: '',
+    androidUrl: '',
+  },
 }
 
 /** Component properties */
@@ -71,6 +118,11 @@ interface QRCodeTabsProps {
       | WiFiData
       | { fields: TabCustomField[] }
       | PaymentData
+      | EventData
+      | EmailData
+      | SmsData
+      | LocationData
+      | AppStoreData
       | null,
   ) => void
 }
@@ -113,6 +165,31 @@ const generatePaymentDisplay = (data: PaymentData): string => {
   return parts.join('\n')
 }
 
+const generateEventDisplay = (data: EventData): string => {
+  if (!data.title) return ''
+  return `Event: ${data.title}\nDate: ${data.startDate}\nLocation: ${data.location}`
+}
+
+const generateEmailDisplay = (data: EmailData): string => {
+  if (!data.email) return ''
+  return `Email: ${data.email}\nSubject: ${data.subject}`
+}
+
+const generateSmsDisplay = (data: SmsData): string => {
+  if (!data.phone) return ''
+  return `SMS: ${data.phone}\nMessage: ${data.message}`
+}
+
+const generateLocationDisplay = (data: LocationData): string => {
+  if (!data.lat || !data.lng) return ''
+  return `Location: ${data.lat}, ${data.lng}`
+}
+
+const generateAppStoreDisplay = (data: AppStoreData): string => {
+  if (!data.iosUrl && !data.androidUrl) return ''
+  return `iOS: ${data.iosUrl}\nAndroid: ${data.androidUrl}`
+}
+
 /**
  * Main Tabs component for the QR Code Generator.
  * Handles the different input forms (URL, WiFi, VCard, Payment) and orchestrates code generation.
@@ -127,6 +204,20 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
   const [customFields, setCustomFields] = useState<TabCustomField[]>(
     TABS_CONFIG.INITIAL_VCARD_FIELDS,
   )
+  const [eventData, setEventData] = useState<EventData>(
+    TABS_CONFIG.DEFAULT_EVENT,
+  )
+  const [emailData, setEmailData] = useState<EmailData>(
+    TABS_CONFIG.DEFAULT_EMAIL,
+  )
+  const [smsData, setSmsData] = useState<SmsData>(TABS_CONFIG.DEFAULT_SMS)
+  const [locationData, setLocationData] = useState<LocationData>(
+    TABS_CONFIG.DEFAULT_LOCATION,
+  )
+  const [appStoreData, setAppStoreData] = useState<AppStoreData>(
+    TABS_CONFIG.DEFAULT_APPSTORE,
+  )
+  const [isSearchingLocation, setIsSearchingLocation] = useState(false)
 
   // Synchronize generated code with parent whenever any input state changes
   useEffect(() => {
@@ -137,6 +228,11 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
       | WiFiData
       | { fields: TabCustomField[] }
       | PaymentData
+      | EventData
+      | EmailData
+      | SmsData
+      | LocationData
+      | AppStoreData
       | null = null
     switch (activeTab) {
       case 'url':
@@ -159,9 +255,48 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
         display = generatePaymentDisplay(paymentData)
         rawData = paymentData
         break
+      case 'event':
+        result = generateEventString(eventData)
+        display = generateEventDisplay(eventData)
+        rawData = eventData
+        break
+      case 'email':
+        result = generateEmailString(emailData)
+        display = generateEmailDisplay(emailData)
+        rawData = emailData
+        break
+      case 'sms':
+        result = generateSmsString(smsData)
+        display = generateSmsDisplay(smsData)
+        rawData = smsData
+        break
+      case 'location':
+        result = generateLocationString(locationData)
+        display = generateLocationDisplay(locationData)
+        rawData = locationData
+        break
+      case 'appstore':
+        // For appstore, we use a simple format or we can use the iOS one as default
+        // Standard is often to have a middleman URL, but we'll use iOS one for encoding
+        result = appStoreData.iosUrl || appStoreData.androidUrl
+        display = generateAppStoreDisplay(appStoreData)
+        rawData = appStoreData
+        break
     }
     onCodeChange(result, activeTab, display, rawData)
-  }, [activeTab, urlValue, wifiData, customFields, paymentData, onCodeChange])
+  }, [
+    activeTab,
+    urlValue,
+    wifiData,
+    customFields,
+    paymentData,
+    eventData,
+    emailData,
+    smsData,
+    locationData,
+    appStoreData,
+    onCodeChange,
+  ])
 
   /** Adds a new empty 'Note' field to the VCard list */
   const addCustomField = useCallback(() => {
@@ -401,6 +536,229 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
             </Field>
           </div>
         )
+      case 'event':
+        return (
+          <div className="space-y-4">
+            <Field label="Event Title">
+              <Input
+                placeholder="Birthday Party"
+                value={eventData.title}
+                onChange={(e) =>
+                  setEventData({ ...eventData, title: e.currentTarget.value })
+                }
+              />
+            </Field>
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="Start Date">
+                <Input
+                  type="datetime-local"
+                  value={eventData.startDate}
+                  onChange={(e) =>
+                    setEventData({
+                      ...eventData,
+                      startDate: e.currentTarget.value,
+                    })
+                  }
+                />
+              </Field>
+              <Field label="End Date">
+                <Input
+                  type="datetime-local"
+                  value={eventData.endDate}
+                  onChange={(e) =>
+                    setEventData({
+                      ...eventData,
+                      endDate: e.currentTarget.value,
+                    })
+                  }
+                />
+              </Field>
+            </div>
+            <Field label="Location">
+              <Input
+                placeholder="123 Party Lane"
+                value={eventData.location}
+                onChange={(e) =>
+                  setEventData({
+                    ...eventData,
+                    location: e.currentTarget.value,
+                  })
+                }
+              />
+            </Field>
+            <Field label="Description">
+              <Input
+                placeholder="Join us for fun!"
+                value={eventData.description}
+                onChange={(e) =>
+                  setEventData({
+                    ...eventData,
+                    description: e.currentTarget.value,
+                  })
+                }
+              />
+            </Field>
+          </div>
+        )
+      case 'email':
+        return (
+          <div className="space-y-4">
+            <Field label="Email Address">
+              <Input
+                placeholder="example@mail.com"
+                value={emailData.email}
+                onChange={(e) =>
+                  setEmailData({ ...emailData, email: e.currentTarget.value })
+                }
+              />
+            </Field>
+            <Field label="Subject">
+              <Input
+                placeholder="Inquiry"
+                value={emailData.subject}
+                onChange={(e) =>
+                  setEmailData({ ...emailData, subject: e.currentTarget.value })
+                }
+              />
+            </Field>
+            <Field label="Body">
+              <Input
+                placeholder="Hello..."
+                value={emailData.body}
+                onChange={(e) =>
+                  setEmailData({ ...emailData, body: e.currentTarget.value })
+                }
+              />
+            </Field>
+          </div>
+        )
+      case 'sms':
+        return (
+          <div className="space-y-4">
+            <Field label="Phone Number">
+              <Input
+                placeholder="+84 123 456 789"
+                value={smsData.phone}
+                onChange={(e) =>
+                  setSmsData({ ...smsData, phone: e.currentTarget.value })
+                }
+              />
+            </Field>
+            <Field label="Message">
+              <Input
+                placeholder="Hi there!"
+                value={smsData.message}
+                onChange={(e) =>
+                  setSmsData({ ...smsData, message: e.currentTarget.value })
+                }
+              />
+            </Field>
+          </div>
+        )
+      case 'location':
+        return (
+          <div className="space-y-4">
+            <div className="relative">
+              <Field label="Search Address">
+                <div className="relative">
+                  <Input
+                    placeholder="Search for address (e.g. Hoan Kiem Lake)"
+                    onKeyDown={async (e) => {
+                      if (e.key === 'Enter') {
+                        const q = e.currentTarget.value
+                        if (!q) return
+                        setIsSearchingLocation(true)
+                        try {
+                          const res = await fetch(
+                            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`,
+                          )
+                          const data = await res.json()
+                          if (data && data[0]) {
+                            setLocationData({
+                              lat: data[0].lat,
+                              lng: data[0].lon,
+                            })
+                          }
+                        } finally {
+                          setIsSearchingLocation(false)
+                        }
+                      }
+                    }}
+                  />
+                  <div className="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2">
+                    {isSearchingLocation ? (
+                      <div className="border-primary h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
+                    ) : (
+                      <IconSearch size={16} />
+                    )}
+                  </div>
+                </div>
+              </Field>
+              <p className="text-muted-foreground mt-1 text-[10px] italic">
+                Press Enter to search via OpenStreetMap
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="Latitude">
+                <Input
+                  placeholder="10.762622"
+                  value={locationData.lat}
+                  onChange={(e) =>
+                    setLocationData({
+                      ...locationData,
+                      lat: e.currentTarget.value,
+                    })
+                  }
+                />
+              </Field>
+              <Field label="Longitude">
+                <Input
+                  placeholder="106.660172"
+                  value={locationData.lng}
+                  onChange={(e) =>
+                    setLocationData({
+                      ...locationData,
+                      lng: e.currentTarget.value,
+                    })
+                  }
+                />
+              </Field>
+            </div>
+          </div>
+        )
+      case 'appstore':
+        return (
+          <div className="space-y-4">
+            <Field label="iOS App Store URL">
+              <Input
+                placeholder="https://apps.apple.com/..."
+                value={appStoreData.iosUrl}
+                onChange={(e) =>
+                  setAppStoreData({
+                    ...appStoreData,
+                    iosUrl: e.currentTarget.value,
+                  })
+                }
+              />
+            </Field>
+            <Field label="Android Play Store URL">
+              <Input
+                placeholder="https://play.google.com/store/..."
+                value={appStoreData.androidUrl}
+                onChange={(e) =>
+                  setAppStoreData({
+                    ...appStoreData,
+                    androidUrl: e.currentTarget.value,
+                  })
+                }
+              />
+            </Field>
+            <p className="text-muted-foreground text-[10px] italic">
+              Note: This tool currently encodes the iOS URL by default if both
+              are provided.
+            </p>
+          </div>
+        )
       default:
         return null
     }
@@ -431,6 +789,36 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
         value: 'payment',
         label: 'Transfer',
         icon: <IconCreditCard size={16} />,
+        content: null,
+      },
+      {
+        value: 'event',
+        label: 'Event',
+        icon: <IconCalendar size={16} />,
+        content: null,
+      },
+      {
+        value: 'email',
+        label: 'Email',
+        icon: <IconMail size={16} />,
+        content: null,
+      },
+      {
+        value: 'sms',
+        label: 'SMS',
+        icon: <IconSms size={16} />,
+        content: null,
+      },
+      {
+        value: 'location',
+        label: 'Map',
+        icon: <IconMapPin size={16} />,
+        content: null,
+      },
+      {
+        value: 'appstore',
+        label: 'App Store',
+        icon: <IconPlus size={16} />,
         content: null,
       },
     ],

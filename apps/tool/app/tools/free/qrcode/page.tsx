@@ -3,7 +3,6 @@
 import { AutoBreadcrumbs } from '@/components/AutoBreadcrumbs'
 import { EmbedSection } from '@/components/EmbedSection'
 import FileUploader from '@/components/FileUpload'
-import { Label } from '@/components/Form'
 import Fullscreen from '@/components/FullscreenWrapper'
 import { Toast } from '@/components/Toast'
 import { LogoManager } from '@/components/tools/qrcode/LogoManager'
@@ -50,6 +49,8 @@ function QRCodeToolContent() {
   const [qrType, setQrType] = useState<QRType>('url')
   /** Whether to render the descriptive text below the QR code */
   const [renderText, setRenderText] = useState(true)
+  /** Optional text for a frame (e.g., 'SCAN ME') */
+  const [frameText, setFrameText] = useState('')
 
   // --- State: Logo Management ---
   /** Whether to show any logo at all */
@@ -127,8 +128,9 @@ function QRCodeToolContent() {
     bgColor,
   })
 
-  const effectiveLogo =
-    qrType === 'url' && showLogo ? logoSrc || customLogoUrl : undefined
+  const effectiveLogo = showLogo
+    ? logoSrc || (qrType === 'url' ? customLogoUrl : undefined)
+    : undefined
 
   const qrRef = useRef<HTMLDivElement>(null)
 
@@ -192,9 +194,19 @@ function QRCodeToolContent() {
                 </span>
               </div>
             </div>
-
             {/* 2. Configuration */}
-            <div className="mb-6">
+            <div className="space-y-6">
+              {qrType === 'url' && showLogo && (
+                <LogoManager
+                  showLogo={showLogo}
+                  currentLogo={effectiveLogo as string}
+                  onSelectLogo={(url: string | null) => {
+                    setCustomLogoUrl(url)
+                    if (url) setAutoDetectEnabled(false)
+                  }}
+                />
+              )}
+
               <QRAppearanceForm
                 appearance={{
                   size,
@@ -206,48 +218,37 @@ function QRCodeToolContent() {
                   level,
                   setLevel,
                 }}
+                frameText={frameText}
+                onFrameTextChange={setFrameText}
+                showLogo={showLogo}
+                onToggleShowLogo={(val) => {
+                  setShowLogo(val)
+                  if (!val) setAutoDetectEnabled(false)
+                }}
+                renderText={renderText}
+                onToggleRenderText={setRenderText}
+                autoDetectEnabled={autoDetectEnabled}
+                onToggleAutoDetect={(val) => {
+                  setAutoDetectEnabled(val)
+                  if (val) setShowLogo(true)
+                }}
+                qrType={qrType}
+                advancedContent={
+                  showLogo && (
+                    <FileUploader
+                      label="Custom Logo Overlay"
+                      description="Upload a custom image for the center"
+                      file={logoFile}
+                      previewSrc={logoSrc as string}
+                      accept="image/*"
+                      onFileSelect={onSelectLogo}
+                      onClear={onClearLogo}
+                      error={logoError}
+                    />
+                  )
+                }
               />
             </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="renderText"
-                className="h-4 w-4 rounded border-gray-300 accent-green-600 focus:ring-green-500"
-                checked={renderText}
-                onChange={(e) => setRenderText(e.target.checked)}
-              />
-              <Label htmlFor="renderText" className="cursor-pointer">
-                Show details below QR Code
-              </Label>
-            </div>
-
-            {qrType === 'url' && (
-              <>
-                <LogoManager
-                  showLogo={showLogo}
-                  onToggleShowLogo={setShowLogo}
-                  autoDetectEnabled={autoDetectEnabled}
-                  onToggleAutoDetect={setAutoDetectEnabled}
-                  currentLogo={effectiveLogo as string}
-                  onSelectLogo={(url) => {
-                    setCustomLogoUrl(url)
-                    if (url) setAutoDetectEnabled(false) // Disable auto-detect if user manually selects
-                  }}
-                />
-
-                <FileUploader
-                  label="Custom Logo Upload"
-                  description="Upload your own image to use as the QR code logo"
-                  file={logoFile}
-                  previewSrc={logoSrc as string}
-                  accept="image/*"
-                  onFileSelect={onSelectLogo}
-                  onClear={onClearLogo}
-                  error={logoError}
-                />
-              </>
-            )}
           </div>
 
           {/* RIGHT COLUMN: Display */}
@@ -267,6 +268,7 @@ function QRCodeToolContent() {
               level={level}
               includeMargin={true}
               imageSrc={effectiveLogo as string | undefined}
+              frameText={frameText}
             />
 
             <div className="relative mt-8 flex gap-3">

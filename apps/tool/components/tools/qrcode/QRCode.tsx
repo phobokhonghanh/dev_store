@@ -36,6 +36,8 @@ interface QRCodeDisplayProps {
   imageSize?: number
   /** Whether to remove QR dots behind the logo */
   imageExcavate?: boolean
+  /** Optional text for a frame (e.g., 'SCAN ME') */
+  frameText?: string
 }
 
 /**
@@ -54,6 +56,7 @@ export default function QRCode({
   imageSrc,
   imageSize,
   imageExcavate = true,
+  frameText,
 }: QRCodeDisplayProps) {
   // Configure logo settings if an image source is provided
   const imageSettings = imageSrc
@@ -72,7 +75,14 @@ export default function QRCode({
       className="flex h-full flex-col items-center justify-center gap-4"
       style={{ minWidth: QR_CONFIG.MIN_CONTAINER_WIDTH }}
     >
-      <div className="border-border flex items-center justify-center rounded-lg border bg-gray-100 p-6">
+      <div className="border-border bg-background relative flex flex-col items-center justify-center rounded-lg border p-6 shadow-sm transition-all">
+        {frameText && (
+          <div className="bg-primary absolute -top-3 rounded-full px-3 py-1 shadow-sm">
+            <span className="text-primary-foreground text-[10px] font-black tracking-widest uppercase">
+              {frameText}
+            </span>
+          </div>
+        )}
         <QRCodeCanvas
           value={value}
           size={size}
@@ -88,6 +98,13 @@ export default function QRCode({
             maxHeight: QR_CONFIG.MAX_PREVIEW_SIZE,
           }}
         />
+        {frameText && (
+          <div className="mt-4 flex items-center justify-center">
+            <span className="text-muted-foreground/60 text-xs font-bold tracking-tight uppercase">
+              {frameText}
+            </span>
+          </div>
+        )}
       </div>
 
       {renderText && finalDisplayText && (

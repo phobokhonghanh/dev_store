@@ -19,12 +19,6 @@ interface LogoManagerProps {
   onSelectLogo: (logoUrl: string | null) => void
   /** Toggle for logo visibility */
   showLogo: boolean
-  /** Callback for visibility toggle */
-  onToggleShowLogo: (show: boolean) => void
-  /** Whether auto-detection is enabled */
-  autoDetectEnabled: boolean
-  /** Callback for auto-detect toggle */
-  onToggleAutoDetect: (enabled: boolean) => void
 }
 
 const ITEMS_PER_PAGE = 8
@@ -33,9 +27,6 @@ export function LogoManager({
   currentLogo,
   onSelectLogo,
   showLogo,
-  onToggleShowLogo,
-  autoDetectEnabled,
-  onToggleAutoDetect,
 }: LogoManagerProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [page, setPage] = useState(0)
@@ -59,31 +50,7 @@ export function LogoManager({
   }
 
   return (
-    <div className="bg-muted/20 space-y-4 rounded-xl border p-4">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <label className="flex cursor-pointer items-center gap-2">
-          <input
-            type="checkbox"
-            className="accent-primary h-4 w-4 rounded border-gray-300"
-            checked={showLogo}
-            onChange={(e) => onToggleShowLogo(e.target.checked)}
-          />
-          <span className="text-sm font-semibold">Show Logo in QR</span>
-        </label>
-
-        <label className="flex cursor-pointer items-center gap-2">
-          <input
-            type="checkbox"
-            className="accent-primary h-4 w-4 rounded border-gray-300"
-            checked={autoDetectEnabled}
-            onChange={(e) => onToggleAutoDetect(e.target.checked)}
-          />
-          <span className="text-muted-foreground text-sm font-semibold">
-            Auto-detect Logo
-          </span>
-        </label>
-      </div>
-
+    <div className="bg-muted/30 border-border space-y-4 rounded-xl border p-4">
       {showLogo && (
         <div className="space-y-4 pt-2">
           <div className="flex items-center gap-3">
