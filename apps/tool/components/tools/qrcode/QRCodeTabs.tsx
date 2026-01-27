@@ -24,7 +24,6 @@ import {
   Mail as IconMail,
   MapPin as IconMapPin,
   Plus as IconPlus,
-  Search as IconSearch,
   MessageSquare as IconSms,
   Trash as IconTrash,
   User as IconUser,
@@ -33,6 +32,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import DynamicTabs, { TabItem } from '../../DynamicTabs'
 import { Field, Input, Label, Select } from '../../Form'
+import { LocationForm } from './forms/LocationForm'
 
 /** Type representing the available QR code categories */
 export type QRType =
@@ -182,7 +182,7 @@ const generateSmsDisplay = (data: SmsData): string => {
 
 const generateLocationDisplay = (data: LocationData): string => {
   if (!data.lat || !data.lng) return ''
-  return `Location: ${data.lat}, ${data.lng}`
+  return `GEO Coordinate: ${data.lat}, ${data.lng}`
 }
 
 const generateAppStoreDisplay = (data: AppStoreData): string => {
@@ -217,7 +217,6 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
   const [appStoreData, setAppStoreData] = useState<AppStoreData>(
     TABS_CONFIG.DEFAULT_APPSTORE,
   )
-  const [isSearchingLocation, setIsSearchingLocation] = useState(false)
 
   // Synchronize generated code with parent whenever any input state changes
   useEffect(() => {
@@ -656,76 +655,7 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
           </div>
         )
       case 'location':
-        return (
-          <div className="space-y-4">
-            <div className="relative">
-              <Field label="Search Address">
-                <div className="relative">
-                  <Input
-                    placeholder="Search for address (e.g. Hoan Kiem Lake)"
-                    onKeyDown={async (e) => {
-                      if (e.key === 'Enter') {
-                        const q = e.currentTarget.value
-                        if (!q) return
-                        setIsSearchingLocation(true)
-                        try {
-                          const res = await fetch(
-                            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`,
-                          )
-                          const data = await res.json()
-                          if (data && data[0]) {
-                            setLocationData({
-                              lat: data[0].lat,
-                              lng: data[0].lon,
-                            })
-                          }
-                        } finally {
-                          setIsSearchingLocation(false)
-                        }
-                      }
-                    }}
-                  />
-                  <div className="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2">
-                    {isSearchingLocation ? (
-                      <div className="border-primary h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
-                    ) : (
-                      <IconSearch size={16} />
-                    )}
-                  </div>
-                </div>
-              </Field>
-              <p className="text-muted-foreground mt-1 text-[10px] italic">
-                Press Enter to search via OpenStreetMap
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Latitude">
-                <Input
-                  placeholder="10.762622"
-                  value={locationData.lat}
-                  onChange={(e) =>
-                    setLocationData({
-                      ...locationData,
-                      lat: e.currentTarget.value,
-                    })
-                  }
-                />
-              </Field>
-              <Field label="Longitude">
-                <Input
-                  placeholder="106.660172"
-                  value={locationData.lng}
-                  onChange={(e) =>
-                    setLocationData({
-                      ...locationData,
-                      lng: e.currentTarget.value,
-                    })
-                  }
-                />
-              </Field>
-            </div>
-          </div>
-        )
+        return <LocationForm data={locationData} onChange={setLocationData} />
       case 'appstore':
         return (
           <div className="space-y-4">

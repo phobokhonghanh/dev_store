@@ -67,3 +67,10 @@
   - Standard fonts: `Inter` (sans), `Libre Baskerville` (serif).
   - Subsets: Use `['latin', 'vietnamese']` for Inter and `['latin', 'latin-ext']` for Serif to match `blog`.
   - Literal weights: Always provide weights as an array of strings.
+
+## 6. Pre-Completion Safety Checks (MANDATORY)
+
+- **Linting Verification**:
+  - BEFORE marking any task as complete or requesting user review, checking for syntax errors is MANDATORY.
+  - Run `yarn lint --filter=<app-name>` or verify there are no red squiggles/errors in the IDE feedback for modified files.
+  - **Zero Error Policy**: Ensure no build-breaking TypeScript errors or ESLint errors remain in the changed files.

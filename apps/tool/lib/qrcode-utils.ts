@@ -171,7 +171,9 @@ export const generateSmsString = (data: SmsData): string => {
 }
 
 /**
- * Generates a geo: link for Location
+ * Generates a GEO URI for Location (RFC 5870)
+ * Format: geo:lat,lng - Opens native map apps (Google Maps, Apple Maps, etc.)
+ * Supports offline viewing if user has downloaded the area.
  */
 export const generateLocationString = (data: LocationData): string => {
   if (!data.lat || !data.lng) return ''
