@@ -1,7 +1,9 @@
 import { ColorPicker, Field, Input, Select, Switch } from '@/components/Form'
+import { DEFAULT_LOCALE, type SupportedLocale } from '@/lib/config'
 import { UseQRAppearanceResult } from '@/lib/hooks/useQRAppearance'
+import { getAppDict } from '@/lib/i18n'
 import { ChevronDown, ChevronUp, Settings2, Sparkles } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 interface QRAppearanceFormProps {
   appearance: UseQRAppearanceResult
@@ -16,6 +18,7 @@ interface QRAppearanceFormProps {
   qrType?: string
   advancedContent?: React.ReactNode
   className?: string
+  locale?: SupportedLocale
 }
 
 /**
@@ -35,7 +38,9 @@ export function QRAppearanceForm({
   qrType,
   advancedContent,
   className,
+  locale = DEFAULT_LOCALE,
 }: QRAppearanceFormProps) {
+  const dict = useMemo(() => getAppDict(locale).qrAppearance, [locale])
   const {
     size,
     setSize,
@@ -57,18 +62,18 @@ export function QRAppearanceForm({
         <Switch
           checked={showLogo}
           onCheckedChange={onToggleShowLogo}
-          label="Display Logo"
+          label={dict.displayLogo}
         />
         <Switch
           checked={renderText}
           onCheckedChange={onToggleRenderText}
-          label="Display Text"
+          label={dict.displayText}
         />
         {qrType === 'url' && onToggleAutoDetect && (
           <Switch
             checked={!!autoDetectEnabled}
             onCheckedChange={onToggleAutoDetect}
-            label="Auto Detect"
+            label={dict.autoDetect}
           />
         )}
       </div>
@@ -78,13 +83,13 @@ export function QRAppearanceForm({
         <div className="flex items-center gap-2">
           <Sparkles size={14} className="text-primary" />
           <h4 className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
-            Visual Frame
+            {dict.visualFrame}
           </h4>
         </div>
 
-        <Field label="Frame Text">
+        <Field label={dict.frameText}>
           <Input
-            placeholder="e.g. SCAN ME"
+            placeholder={dict.frameTextPlaceholder}
             value={frameText}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               onFrameTextChange(e.currentTarget.value)
@@ -111,7 +116,7 @@ export function QRAppearanceForm({
             onClick={() => onFrameTextChange('')}
             className="rounded-md border border-red-200 bg-red-50 px-3 py-1 text-[11px] font-bold text-red-600 hover:bg-red-100"
           >
-            Clear Frame
+            {dict.clearFrame}
           </button>
         </div>
       </div>
@@ -124,7 +129,7 @@ export function QRAppearanceForm({
         >
           <div className="flex items-center gap-2">
             <Settings2 size={18} className="text-primary" />
-            <span>Advanced Customization</span>
+            <span>{dict.advancedCustomization}</span>
           </div>
           {isAdvancedOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </button>
@@ -133,7 +138,7 @@ export function QRAppearanceForm({
           <div className="animate-in fade-in slide-in-from-top-2 border-border bg-muted/5 mt-4 space-y-8 rounded-lg border p-6 duration-200">
             {/* 1. Size & Colors Grouped */}
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              <Field label={`QR Code Size: ${size}px`}>
+              <Field label={`${dict.qrCodeSize}: ${size}px`}>
                 <input
                   type="range"
                   min="128"
@@ -146,10 +151,10 @@ export function QRAppearanceForm({
               </Field>
 
               <div className="flex gap-4">
-                <Field label="Dots Color" className="flex-1">
+                <Field label={dict.dotsColor} className="flex-1">
                   <ColorPicker value={fgColor} onChange={setFgColor} />
                 </Field>
-                <Field label="Background" className="flex-1">
+                <Field label={dict.background} className="flex-1">
                   <ColorPicker value={bgColor} onChange={setBgColor} />
                 </Field>
               </div>
@@ -159,7 +164,7 @@ export function QRAppearanceForm({
             {advancedContent && <div>{advancedContent}</div>}
 
             {/* 3. Error Correction Grouped */}
-            <Field label="Error Correction Precision">
+            <Field label={dict.errorCorrection}>
               <div className="space-y-2">
                 <Select
                   className="h-10"
@@ -168,14 +173,13 @@ export function QRAppearanceForm({
                     setLevel(e.target.value as 'L' | 'M' | 'Q' | 'H')
                   }
                 >
-                  <option value="L">Low (7% recovery)</option>
-                  <option value="M">Medium (15% recovery)</option>
-                  <option value="Q">Quartile (25% recovery)</option>
-                  <option value="H">High (30% recovery)</option>
+                  <option value="L">{dict.errorCorrectionLow}</option>
+                  <option value="M">{dict.errorCorrectionMedium}</option>
+                  <option value="Q">{dict.errorCorrectionQuartile}</option>
+                  <option value="H">{dict.errorCorrectionHigh}</option>
                 </Select>
                 <p className="text-muted-foreground text-[10px] italic">
-                  Higher precision allows the QR code to survive damage or large
-                  logos.
+                  {dict.errorCorrectionNote}
                 </p>
               </div>
             </Field>

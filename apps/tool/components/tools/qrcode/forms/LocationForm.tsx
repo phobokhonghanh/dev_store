@@ -1,62 +1,127 @@
 'use client'
 
-import { Field, Input } from '@/components/Form'
+import { Field, Input, Label } from '@/components/Form'
+import { CONFIG, DEFAULT_LOCALE } from '@/lib/config'
 import { useGoogleMaps } from '@/lib/hooks/useGoogleMaps'
+import { getDict } from '@/lib/i18n'
 import { LocationData } from '@/lib/qrcode-utils'
 import { Globe, Loader2, Map, MapPin, Navigation } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
-// Dynamically import LeafletMap with no SSR to avoid "window is not defined" error
+// Dynamically import LeafletMap with no SSR
 const LeafletMap = dynamic<{
   lat: number
   lng: number
   onPositionChange: (lat: number, lng: number) => void
 }>(() => import('../maps/LeafletMap'), {
-  loading: () => (
-    <div className="bg-muted/10 text-muted-foreground flex h-full w-full animate-pulse items-center justify-center text-xs">
-      Loading Map...
-    </div>
-  ),
+  loading: () => <MapLoadingPlaceholder />,
   ssr: false,
 })
 
+/** Map provider options */
 type MapProvider = 'google' | 'leaflet'
+
+/** Loading status for various operations */
+interface LoadingState {
+  detecting: boolean // Getting user location
+  searching: boolean // Searching address
+}
 
 interface LocationFormProps {
   data: LocationData
   onChange: (data: LocationData) => void
+  onToast?: (message: string) => void
+  locale?: 'vi' | 'en'
 }
 
-export function LocationForm({ data, onChange }: LocationFormProps) {
-  const [isSearching, setIsSearching] = useState(false)
-  const [searchError, setSearchError] = useState<string | null>(null)
+/** Reusable loading placeholder for map */
+const MapLoadingPlaceholder = () => (
+  <div className="bg-muted/10 text-muted-foreground flex h-full w-full animate-pulse items-center justify-center text-xs">
+    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+  </div>
+)
 
-  // Map provider toggle - detect default based on env var
-  const [mapProvider, setMapProvider] = useState<MapProvider>('leaflet') // default to free option
+export function LocationForm({
+  data,
+  onChange,
+  onToast,
+  locale = DEFAULT_LOCALE,
+}: LocationFormProps) {
+  const dict = useMemo(() => getDict(locale), [locale])
+
+  // Unified loading state
+  const [loading, setLoading] = useState<LoadingState>({
+    detecting: false,
+    searching: false,
+  })
+  const [error, setError] = useState<string | null>(null)
+
+  // Map provider state
+  const [mapProvider, setMapProvider] = useState<MapProvider>('leaflet')
   const [hasGoogleKey, setHasGoogleKey] = useState(false)
 
-  // Check for Google API Key on mount (client-side only)
+  // Check for Google API Key on mount
   useEffect(() => {
     const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
     if (key) {
       setHasGoogleKey(true)
-      setMapProvider('google') // Default to Google if key available
+      setMapProvider('google')
     }
   }, [])
 
-  // Current coordinates or default (Ho Chi Minh City)
-  const lat = parseFloat(data.lat) || 10.762622
-  const lng = parseFloat(data.lng) || 106.660172
+  // Auto-detect user location on mount
+  useEffect(() => {
+    // Only if no coordinates are set yet
+    if (data.lat || data.lng) return
+
+    if (!navigator.geolocation) {
+      onChange({
+        lat: String(CONFIG.DEFAULT_LAT),
+        lng: String(CONFIG.DEFAULT_LNG),
+      })
+      return
+    }
+
+    setLoading((prev) => ({ ...prev, detecting: true }))
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        onChange({
+          lat: position.coords.latitude.toFixed(7),
+          lng: position.coords.longitude.toFixed(7),
+        })
+        setLoading((prev) => ({ ...prev, detecting: false }))
+      },
+      () => {
+        // On error or denial, use default 0,0
+        onChange({
+          lat: String(CONFIG.DEFAULT_LAT),
+          lng: String(CONFIG.DEFAULT_LNG),
+        })
+        setLoading((prev) => ({ ...prev, detecting: false }))
+      },
+      {
+        timeout: CONFIG.GEOLOCATION.TIMEOUT,
+        maximumAge: CONFIG.GEOLOCATION.MAX_AGE,
+        enableHighAccuracy: CONFIG.GEOLOCATION.HIGH_ACCURACY,
+      },
+    )
+  }, [])
+
+  // Current coordinates
+  const lat = parseFloat(data.lat) || CONFIG.DEFAULT_LAT
+  const lng = parseFloat(data.lng) || CONFIG.DEFAULT_LNG
 
   const handlePositionChange = useCallback(
     (newLat: number, newLng: number) => {
       onChange({
+        ...data,
         lat: newLat.toFixed(7),
         lng: newLng.toFixed(7),
       })
     },
-    [onChange],
+    [onChange, data],
   )
 
   // Google Maps Hook
@@ -67,19 +132,12 @@ export function LocationForm({ data, onChange }: LocationFormProps) {
     error: googleError,
     setPosition,
   } = useGoogleMaps({
-    onPlaceSelected: (newLat, newLng) => {
-      handlePositionChange(newLat, newLng)
-    },
-    onMarkerDragEnd: (newLat, newLng) => {
-      handlePositionChange(newLat, newLng)
-    },
-    initialConfig: {
-      lat,
-      lng,
-    },
+    onPlaceSelected: handlePositionChange,
+    onMarkerDragEnd: handlePositionChange,
+    initialConfig: { lat, lng },
   })
 
-  // Sync manual input changes back to the Google map
+  // Sync manual input changes to Google map
   useEffect(() => {
     if (mapProvider === 'google') {
       const parsedLat = parseFloat(data.lat)
@@ -90,115 +148,135 @@ export function LocationForm({ data, onChange }: LocationFormProps) {
     }
   }, [data.lat, data.lng, setPosition, mapProvider])
 
-  // Nominatim Search for Leaflet
-  const handleNominatimSearch = async (q: string) => {
-    if (!q.trim()) return
+  // Nominatim Search for Leaflet/OSM
+  const handleNominatimSearch = useCallback(
+    async (query: string) => {
+      if (!query.trim()) return
 
-    setIsSearching(true)
-    setSearchError(null)
+      setLoading((prev) => ({ ...prev, searching: true }))
+      setError(null)
 
-    try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`,
-        {
-          headers: {
-            'User-Agent': 'DevStoreQR/1.0',
-          },
-        },
-      )
+      try {
+        const res = await fetch(
+          `${CONFIG.NOMINATIM_URL}?format=json&q=${encodeURIComponent(query)}&limit=1`,
+          { headers: { 'User-Agent': CONFIG.MAP.USER_AGENT } },
+        )
 
-      if (!res.ok) throw new Error('Search failed')
+        if (!res.ok) throw new Error('Search failed')
 
-      const results = await res.json()
+        const results = await res.json()
 
-      if (results && results.length > 0) {
-        const newLat = parseFloat(results[0].lat)
-        const newLon = parseFloat(results[0].lon)
-        handlePositionChange(newLat, newLon)
-      } else {
-        setSearchError('No results found')
-      }
-    } catch (err) {
-      console.error('Nominatim Search Error', err)
-      setSearchError('Search error. Please try again.')
-    } finally {
-      setIsSearching(false)
-    }
-  }
-
-  const handleGetCurrentLocation = () => {
-    if (navigator.geolocation) {
-      setIsSearching(true)
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
+        if (results?.length > 0) {
           handlePositionChange(
-            position.coords.latitude,
-            position.coords.longitude,
+            parseFloat(results[0].lat),
+            parseFloat(results[0].lon),
           )
-          setIsSearching(false)
-        },
-        (err) => {
-          console.error('Geolocation error', err)
-          setSearchError('Could not get current location.')
-          setIsSearching(false)
-        },
-      )
-    } else {
-      setSearchError('Geolocation is not supported by this browser.')
+        } else {
+          setError(dict.errorNoResults)
+        }
+      } catch {
+        setError(dict.errorSearchFailed)
+      } finally {
+        setLoading((prev) => ({ ...prev, searching: false }))
+      }
+    },
+    [handlePositionChange, dict],
+  )
+
+  const handleGetCurrentLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setError(dict.errorGeolocationNotSupported)
+      return
     }
-  }
+
+    setLoading((prev) => ({ ...prev, detecting: true }))
+    setError(null)
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        handlePositionChange(
+          position.coords.latitude,
+          position.coords.longitude,
+        )
+        setLoading((prev) => ({ ...prev, detecting: false }))
+      },
+      () => {
+        setError(dict.errorGeolocation)
+        setLoading((prev) => ({ ...prev, detecting: false }))
+      },
+      {
+        timeout: CONFIG.GEOLOCATION.TIMEOUT,
+        maximumAge: CONFIG.GEOLOCATION.MAX_AGE,
+        enableHighAccuracy: CONFIG.GEOLOCATION.HIGH_ACCURACY,
+      },
+    )
+  }, [handlePositionChange, dict])
+
+  const handleGoogleProviderClick = useCallback(() => {
+    if (hasGoogleKey) {
+      setMapProvider('google')
+    } else {
+      onToast?.(dict.comingSoon)
+      setError(dict.errorGoogleNotConfigured)
+    }
+  }, [hasGoogleKey, onToast, dict])
 
   const isGoogleMode = mapProvider === 'google'
+  const isLoading = loading.detecting || loading.searching
 
   return (
     <div className="space-y-4">
+      {/* Detecting Location Overlay */}
+      {loading.detecting && (
+        <div className="bg-primary/5 border-primary/20 flex items-center gap-2 rounded-lg border p-3 text-sm">
+          <Loader2 className="text-primary h-4 w-4 animate-spin" />
+          <span className="text-muted-foreground">
+            {dict.detectingLocation}
+          </span>
+        </div>
+      )}
+
       {/* Map Provider Toggle */}
       <div className="border-border bg-muted/10 flex items-center justify-between rounded-lg border p-2">
         <span className="text-muted-foreground text-xs font-medium">
-          Map Provider:
+          {dict.mapProvider}
         </span>
         <div className="bg-muted/20 flex gap-1 rounded-md p-0.5">
           <button
-            onClick={() => {
-              if (hasGoogleKey) {
-                setMapProvider('google')
-              } else {
-                setSearchError('Google Maps API Key is not configured.')
-              }
-            }}
-            className={`flex items-center gap-1.5 rounded px-2.5 py-1 text-xs transition-all ${
+            onClick={handleGoogleProviderClick}
+            className={`flex cursor-pointer items-center gap-1.5 rounded px-2.5 py-1 text-xs transition-all ${
               isGoogleMode
                 ? 'bg-primary text-primary-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             <Map size={12} />
-            Google
+            {dict.mapProviderGoogle}
           </button>
           <button
             onClick={() => setMapProvider('leaflet')}
-            className={`flex items-center gap-1.5 rounded px-2.5 py-1 text-xs transition-all ${
+            className={`flex cursor-pointer items-center gap-1.5 rounded px-2.5 py-1 text-xs transition-all ${
               !isGoogleMode
                 ? 'bg-primary text-primary-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             <Globe size={12} />
-            OSM (Free)
+            {dict.mapProviderOSM}
           </button>
         </div>
       </div>
 
       {/* Search Input */}
       <div className="relative">
-        <Field label="Search Location">
+        <Field label={dict.searchLabel}>
           <div className="relative">
             <Input
               ref={isGoogleMode ? inputRef : undefined}
               placeholder={
                 isGoogleMode
-                  ? 'Search with Google Maps...'
-                  : 'Search address (Press Enter)...'
+                  ? dict.searchPlaceholderGoogle
+                  : dict.searchPlaceholderOSM
               }
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !isGoogleMode) {
@@ -208,13 +286,13 @@ export function LocationForm({ data, onChange }: LocationFormProps) {
               className="pr-10"
             />
             <div className="text-muted-foreground absolute top-1/2 right-3 flex -translate-y-1/2 gap-2">
-              {isSearching ? (
+              {isLoading ? (
                 <Loader2 className="text-primary h-4 w-4 animate-spin" />
               ) : (
                 <button
                   onClick={handleGetCurrentLocation}
-                  title="Get Current Location"
-                  className="hover:text-primary transition-colors"
+                  title={dict.getCurrentLocation}
+                  className="hover:text-primary cursor-pointer transition-colors"
                 >
                   <Navigation size={16} />
                 </button>
@@ -222,10 +300,8 @@ export function LocationForm({ data, onChange }: LocationFormProps) {
             </div>
           </div>
         </Field>
-        {searchError && (
-          <p className="text-destructive mt-1 ml-1 text-[10px]">
-            {searchError}
-          </p>
+        {error && (
+          <p className="text-destructive mt-1 ml-1 text-[10px]">{error}</p>
         )}
       </div>
 
@@ -248,7 +324,7 @@ export function LocationForm({ data, onChange }: LocationFormProps) {
                   {googleError}
                 </p>
                 <p className="text-muted-foreground mt-1 text-[10px]">
-                  Try switching to OSM (Free) mode.
+                  {dict.switchToOSM}
                 </p>
               </div>
             )}
@@ -264,33 +340,63 @@ export function LocationForm({ data, onChange }: LocationFormProps) {
 
       <p className="text-muted-foreground border-border border-b pb-2 text-[10px] italic">
         <MapPin size={10} className="text-primary mr-1 inline" />
-        Tip: Click on map or drag marker to pinpoint location.
+        {dict.tip}
       </p>
+
+      {/* Google Maps Link Toggle */}
+      <div className="bg-muted/5 hover:bg-muted/10 flex flex-col gap-1.5 rounded-lg border border-dashed p-3 transition-all">
+        <div className="flex items-center gap-2">
+          <div className="relative inline-flex items-center">
+            <input
+              type="checkbox"
+              id="use-google-maps"
+              className="peer checked:border-primary checked:bg-primary h-4 w-4 cursor-pointer appearance-none rounded border border-gray-300 bg-white transition-all"
+              checked={!!data.useGoogleMaps}
+              onChange={(e) =>
+                onChange({ ...data, useGoogleMaps: e.currentTarget.checked })
+              }
+            />
+            <svg
+              className="pointer-events-none absolute h-4 w-4 scale-0 text-white transition-transform peer-checked:scale-100"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <Label
+            htmlFor="use-google-maps"
+            className="cursor-pointer text-xs font-semibold select-none"
+          >
+            {dict.googleMapsLink}
+          </Label>
+        </div>
+        <div className="ml-6 space-y-1">
+          <p className="text-muted-foreground text-[10px] leading-relaxed">
+            {dict.googleMapsDesc}
+          </p>
+        </div>
+      </div>
 
       {/* Coordinate Inputs */}
       <div className="grid grid-cols-2 gap-4">
-        <Field label="Latitude">
+        <Field label={dict.latitude}>
           <Input
-            placeholder="10.762622"
+            placeholder="0.0000000"
             value={data.lat}
-            onChange={(e) =>
-              onChange({
-                ...data,
-                lat: e.currentTarget.value,
-              })
-            }
+            onChange={(e) => onChange({ ...data, lat: e.currentTarget.value })}
           />
         </Field>
-        <Field label="Longitude">
+        <Field label={dict.longitude}>
           <Input
-            placeholder="106.660172"
+            placeholder="0.0000000"
             value={data.lng}
-            onChange={(e) =>
-              onChange({
-                ...data,
-                lng: e.currentTarget.value,
-              })
-            }
+            onChange={(e) => onChange({ ...data, lng: e.currentTarget.value })}
           />
         </Field>
       </div>

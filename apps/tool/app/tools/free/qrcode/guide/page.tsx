@@ -4,24 +4,32 @@ import { AutoBreadcrumbs } from '@/components/AutoBreadcrumbs'
 import { EmbedSection } from '@/components/EmbedSection'
 import { Toast } from '@/components/Toast'
 import { QRAppearanceForm } from '@/components/tools/qrcode/QRAppearanceForm'
+import { CONFIG } from '@/lib/config'
+import { useLocale } from '@/lib/hooks/useLocale'
 import { useQRAppearance } from '@/lib/hooks/useQRAppearance'
-import { useQREmbed } from '@/lib/hooks/useQREmbed'
-import { toolsRoutes } from '@/lib/tools-routes'
-import { ExternalLink, HelpCircle, Info, Layout, Sheet } from 'lucide-react'
+import { getAppDict } from '@/lib/i18n'
+import { getQRTypes } from '@/lib/qr-types'
+import { getToolsRoutes } from '@/lib/tools-routes'
+import { ExternalLink, HelpCircle, Settings2, Sheet } from 'lucide-react'
 import Link from 'next/link'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 export default function QRGuidePage() {
-  const {
-    size,
-    setSize,
-    fgColor: dark,
-    setFgColor: setDark,
-    bgColor: light,
-    setBgColor: setLight,
-    level,
-    setLevel,
-  } = useQRAppearance()
+  const appearance = useQRAppearance()
+  const { size, fgColor, bgColor, level } = appearance
+
+  // i18n
+  const { locale } = useLocale()
+  const dict = useMemo(() => getAppDict(locale), [locale])
+  const routes = useMemo(() => getToolsRoutes(dict), [dict])
+  const qrTypes = useMemo(() => getQRTypes(dict), [dict])
+  const t = dict.qrGuidePage
+
+  // Guide-specific states
+  const [frameText, setFrameText] = useState('')
+  const [showLogo, setShowLogo] = useState(false)
+  const [renderText, setRenderText] = useState(true)
+  const [activeTab, setActiveTab] = useState('url')
 
   const [toast, setToast] = useState<{ message: string; visible: boolean }>({
     message: '',
@@ -36,331 +44,347 @@ export default function QRGuidePage() {
     setToast((prev) => ({ ...prev, visible: false }))
   }, [])
 
-  // Use hook to generate real-time embed examples with payment default
-  const { embedUrl, sheetsFormula } = useQREmbed({
-    domain: false,
-    params_default: true,
-    value: 'VCB|123456789|100000|Thanh toan', // Example value representing payment data
-    type: 'payment',
-    size,
-    fgColor: dark,
-    bgColor: light,
-  })
+  const activeType = qrTypes.find((type) => type.id === activeTab) || qrTypes[0]
 
-  // Manually tweak the embedUrl for the payment example to show the correct API parameters
-  // since useQREmbed currently generalizes non-URL types
-  const paymentApiUrl = embedUrl.replace(
-    'type=text&data=',
-    'type=payment&bank=VCB&account=123456789&amount=100000&content=',
+  // Generate dynamic API example with current appearance settings
+  const dynamicExample = useMemo(() => {
+    const baseExample = activeType.example
+    const params = new URLSearchParams()
+    params.set('size', size.toString())
+    params.set('dark', fgColor.replace('#', ''))
+    params.set('light', bgColor.replace('#', ''))
+    params.set('level', level)
+
+    // Append appearance params to example
+    const separator = baseExample.includes('?') ? '&' : '?'
+    return `${baseExample}${separator}${params.toString()}`
+  }, [activeType.example, size, fgColor, bgColor, level])
+
+  // Appearance params data for the table
+  const appearanceParams = useMemo(
+    () => [
+      {
+        name: 'size',
+        type: 'number',
+        default: '256',
+        desc: t.sizeDesc,
+        current: size,
+      },
+      {
+        name: 'dark',
+        type: 'hex',
+        default: '000000',
+        desc: t.darkDesc,
+        current: fgColor.replace('#', ''),
+      },
+      {
+        name: 'light',
+        type: 'hex',
+        default: 'ffffff',
+        desc: t.lightDesc,
+        current: bgColor.replace('#', ''),
+      },
+      {
+        name: 'level',
+        type: 'enum',
+        default: 'M',
+        desc: t.levelDesc,
+        current: level,
+      },
+    ],
+    [t, size, fgColor, bgColor, level],
   )
-  const paymentSheetsFormula = sheetsFormula.replace(
-    'type=text&data=',
-    'type=payment&bank=VCB&account=123456789&amount=100000&content=',
+
+  // Advanced params data for the table
+  const advancedParams = useMemo(
+    () => [
+      {
+        name: 'text',
+        type: 'string',
+        default: '(empty)',
+        desc: t.textDesc,
+        current: frameText || '(empty)',
+      },
+      {
+        name: 'renderText',
+        type: 'boolean',
+        default: '1',
+        desc: t.renderTextDesc,
+        current: renderText ? '1' : '0',
+      },
+      {
+        name: 'logo',
+        type: 'boolean',
+        default: '0',
+        desc: t.logoDesc,
+        current: showLogo ? '1' : '0',
+      },
+      {
+        name: 'logoUrl',
+        type: 'string',
+        default: '(empty)',
+        desc: t.logoUrlDesc,
+        current: '(your-logo-url)',
+      },
+    ],
+    [t, frameText, renderText, showLogo],
   )
+
+  // Full API URL with all params
+  const fullApiUrl = useMemo(() => {
+    const params = new URLSearchParams()
+    params.set('type', activeTab)
+    params.set('size', size.toString())
+    params.set('dark', fgColor.replace('#', ''))
+    params.set('light', bgColor.replace('#', ''))
+    params.set('level', level)
+    if (frameText) params.set('text', frameText)
+    params.set('renderText', renderText ? '1' : '0')
+    params.set('logo', showLogo ? '1' : '0')
+    return `${CONFIG.API_BASE}?${params.toString()}`
+  }, [
+    activeTab,
+    size,
+    fgColor,
+    bgColor,
+    level,
+    frameText,
+    renderText,
+    showLogo,
+  ])
 
   return (
-    <div className="mx-auto max-w-4xl overflow-hidden p-4 md:p-8">
+    <div className="mx-auto max-w-5xl overflow-hidden p-3 sm:p-4 md:p-8">
       <div className="mb-4">
-        <AutoBreadcrumbs routes={toolsRoutes} />
+        <AutoBreadcrumbs routes={routes} />
       </div>
 
-      <div className="mb-10 text-center">
-        <div className="bg-primary/10 text-primary mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl">
-          <HelpCircle size={28} />
+      {/* Header */}
+      <div className="mb-6 text-center sm:mb-10">
+        <div className="bg-primary/10 text-primary mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl sm:mb-4 sm:h-12 sm:w-12 sm:rounded-2xl">
+          <HelpCircle size={24} className="sm:hidden" />
+          <HelpCircle size={28} className="hidden sm:block" />
         </div>
-        <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">
-          QR Integration Guide
+        <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl md:text-4xl">
+          {t.title}
         </h1>
-        <p className="text-muted-foreground mt-4 text-base md:text-lg">
-          Learn how to embed dynamic QR codes into your spreadsheets, websites,
-          and external apps.
+        <p className="text-muted-foreground mt-2 text-sm sm:mt-4 sm:text-base md:text-lg">
+          {t.description}
         </p>
       </div>
 
-      <div className="grid gap-8">
-        {/* 1. Developer API Reference */}
-        <section className="bg-card overflow-hidden rounded-2xl border p-5 shadow-sm md:p-8">
-          <div className="space-y-8">
-            <div>
-              <h3 className="mb-3 flex items-center gap-2 text-sm font-bold">
-                <Info size={18} className="text-primary" /> Endpoint
-              </h3>
-              <div className="bg-muted overflow-x-auto rounded-lg border p-3">
-                <p className="font-mono text-xs whitespace-nowrap">
-                  GET https://tuitenpho-tool.vercel.app/api/qrcode
-                </p>
-              </div>
-            </div>
+      {/* Tab Navigation */}
+      <div className="mb-8 flex flex-wrap justify-center gap-2">
+        {qrTypes.map((type) => {
+          const Icon = type.icon
+          return (
+            <button
+              key={type.id}
+              onClick={() => setActiveTab(type.id)}
+              className={`flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
+                activeTab === type.id
+                  ? 'border-primary bg-primary text-white'
+                  : 'border-border bg-background hover:border-primary/50 text-muted-foreground hover:text-primary'
+              }`}
+            >
+              <Icon size={14} />
+              {type.id.toUpperCase()}
+            </button>
+          )
+        })}
+      </div>
 
-            {/* Detailed Parameters Table - MOVED UP */}
-            <div>
-              <h3 className="mb-3 text-sm font-bold">Query Parameters</h3>
-              <div className="overflow-x-auto rounded-xl border">
-                <table className="w-full min-w-[600px] text-left text-xs">
-                  <thead className="bg-muted">
-                    <tr>
-                      <th className="w-[120px] px-4 py-3 font-bold">
-                        Parameter
-                      </th>
-                      <th className="w-[80px] px-4 py-3 font-bold">Type</th>
-                      <th className="px-4 py-3 font-bold">
-                        Description & Usage
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y">
-                    <tr className="bg-primary/5">
-                      <td className="text-primary px-4 py-3 font-mono font-bold">
-                        type
-                      </td>
-                      <td className="px-4 py-3 font-mono">enum</td>
-                      <td className="px-4 py-3">
-                        <div className="space-y-1">
-                          <p>Determines the QR content format. Options:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {['payment', 'wifi', 'url', 'vcard', 'text'].map(
-                              (t) => (
-                                <span
-                                  key={t}
-                                  className="bg-background rounded border px-1.5 py-0.5 text-[10px] font-bold uppercase"
-                                >
-                                  {t}
-                                </span>
-                              ),
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    {/* URL-Specific */}
-                    <tr>
-                      <td className="text-primary px-4 py-3 font-mono font-semibold">
-                        weburl
-                      </td>
-                      <td className="px-4 py-3 font-mono">string</td>
-                      <td className="px-4 py-3">
-                        <span className="mr-2 rounded bg-slate-100 px-1 text-[10px] font-bold uppercase dark:bg-slate-800">
-                          For URL
-                        </span>
-                        The absolute website URL (e.g., https://google.com).
-                      </td>
-                    </tr>
-                    {/* Payment-Specific */}
-                    <tr>
-                      <td className="text-primary px-4 py-3 font-mono font-semibold">
-                        bank, account, amount, content
-                      </td>
-                      <td className="px-4 py-3 font-mono">mixed</td>
-                      <td className="px-4 py-3">
-                        <span className="mr-2 rounded bg-slate-100 px-1 text-[10px] font-bold uppercase dark:bg-slate-800">
-                          For Payment
-                        </span>
-                        <ul className="mt-1 list-inside list-disc space-y-0.5">
-                          <li>
-                            `bank`: Bank Bin or ShortName (e.g. VCB, MB, TCB).
-                          </li>
-                          <li>`account`: Bank account number.</li>
-                          <li>`amount`: (Optional) Amount in VND.</li>
-                          <li>`content`: (Optional) Transfer message.</li>
-                        </ul>
-                      </td>
-                    </tr>
-                    {/* WiFi-Specific */}
-                    <tr>
-                      <td className="text-primary px-4 py-3 font-mono font-semibold">
-                        ssid, password, encryption, hidden
-                      </td>
-                      <td className="px-4 py-3 font-mono">mixed</td>
-                      <td className="px-4 py-3">
-                        <span className="mr-2 rounded bg-slate-100 px-1 text-[10px] font-bold uppercase dark:bg-slate-800">
-                          For WiFi
-                        </span>
-                        <ul className="mt-1 list-inside list-disc space-y-0.5">
-                          <li>`ssid`: Network name.</li>
-                          <li>`encryption`: WPA (default), WEP, or nopass.</li>
-                          <li>`hidden`: 1 (true) or 0 (false).</li>
-                        </ul>
-                      </td>
-                    </tr>
-                    {/* VCard/Custom */}
-                    <tr>
-                      <td className="text-primary px-4 py-3 font-mono font-semibold">
-                        Custom Keys
-                      </td>
-                      <td className="px-4 py-3 font-mono">string</td>
-                      <td className="px-4 py-3">
-                        <span className="mr-2 rounded bg-slate-100 px-1 text-[10px] font-bold uppercase dark:bg-slate-800">
-                          For VCard
-                        </span>
-                        Use standard VCard keys (FN, TEL, EMAIL, etc). <br />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Interactive Appearance & Settings - MOVED DOWN */}
-            <div className="bg-muted/10 rounded-xl border p-6">
-              <h3 className="mb-4 flex items-center gap-2 text-sm font-bold">
-                <Layout size={18} className="text-purple-500" /> Appearance &
-                Settings
-              </h3>
-              <p className="text-muted-foreground mb-6 text-sm">
-                Adjust the appearance parameters below. These will be added to
-                your API request to customize the generated QR code.
-              </p>
-              <QRAppearanceForm
-                appearance={{
-                  size,
-                  setSize,
-                  fgColor: dark,
-                  setFgColor: setDark,
-                  bgColor: light,
-                  setBgColor: setLight,
-                  level,
-                  setLevel,
-                }}
-                className="text-muted-foreground mb-6 text-sm"
-              />
-
-              {/* Defaults Table */}
-              <div className="mb-6 overflow-x-auto">
-                <table className="bg-background/50 w-full rounded-lg border text-left text-[11px]">
-                  <thead className="bg-muted/50">
-                    <tr>
-                      <th className="px-3 py-2 font-bold">Parameter</th>
-                      <th className="px-3 py-2 font-bold">Default Value</th>
-                      <th className="px-3 py-2 font-bold">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y">
-                    <tr>
-                      <td className="px-3 py-2 font-mono">size</td>
-                      <td className="px-3 py-2 font-mono">256</td>
-                      <td className="px-3 py-2 whitespace-nowrap">
-                        Image size in pixels (W x H)
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-3 py-2 font-mono">dark</td>
-                      <td className="px-3 py-2 font-mono">#000000</td>
-                      <td className="px-3 py-2 whitespace-nowrap">
-                        Hex code for the QR dots/foreground
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-3 py-2 font-mono">light</td>
-                      <td className="px-3 py-2 font-mono">#ffffff</td>
-                      <td className="px-3 py-2 whitespace-nowrap">
-                        Hex code for the background
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-3 py-2 font-mono">level</td>
-                      <td className="px-3 py-2 font-mono">M</td>
-                      <td className="px-3 py-2 whitespace-nowrap">
-                        ECC Level: L (7%), M (15%), Q (25%), H (30%)
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-                <p className="text-muted-foreground mt-2 px-1 text-[10px] italic">
-                  * If a parameter is not included in the API request, these
-                  default values will be used.
-                </p>
-              </div>
-
-              <div className="space-y-6">
-                <EmbedSection
-                  title="Direct API Usage (Payment Example)"
-                  content={paymentApiUrl}
-                  onToast={showToast}
-                />
-
-                <div>
-                  <div className="mt-4 rounded-lg border border-green-500/20 bg-green-500/5 p-4">
-                    <h4 className="mb-2 flex items-center gap-2 text-xs font-bold text-green-600 dark:text-green-400">
-                      <Sheet size={14} /> How to use in Google Sheets
-                    </h4>
-                    <ul className="text-muted-foreground list-inside list-decimal space-y-2 text-[11px]">
-                      <li>Copy the formula above.</li>
-                      <li>Paste it into any cell in your spreadsheet.</li>
-                      <li>
-                        To make it dynamic, replace the values with cell
-                        references. For example:
-                        <code className="bg-muted mt-1 block overflow-x-auto rounded p-2 font-mono text-[10px] whitespace-nowrap">
-                          =IMAGE("https://.../api/qrcode?type=payment&bank=VCB&account="
-                          & A2 & "&amount=" & B2)
-                        </code>
-                      </li>
-                      <li>
-                        The QR code will automatically update whenever the data
-                        in referenced cells change.
-                      </li>
-                    </ul>
-                  </div>
-                  <EmbedSection
-                    className="mt-4"
-                    title="Google Sheets Formula"
-                    content={paymentSheetsFormula}
-                    onToast={showToast}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="border-primary/20 rounded-2xl border border-dashed bg-slate-50 p-4 md:p-6 dark:bg-slate-900">
-              <h3 className="mb-4 flex items-center gap-2 text-sm font-bold">
-                <Info size={18} className="text-primary" /> Supported Bank Short
-                Names
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  'VCB',
-                  'MB',
-                  'TCB',
-                  'CTG',
-                  'BIDV',
-                  'AGR',
-                  'TPB',
-                  'VPB',
-                  'OCB',
-                  'STB',
-                  'ACB',
-                  'ABB',
-                  'HDB',
-                  'VIB',
-                  'SCB',
-                  'SEAB',
-                  'NAB',
-                  'EIB',
-                  'SHB',
-                  'VAB',
-                ].map((b) => (
-                  <span
-                    key={b}
-                    className="bg-background text-primary rounded-md border px-2 py-1 font-mono text-[10px] font-bold"
-                  >
-                    {b}
-                  </span>
-                ))}
-              </div>
-              <p className="text-muted-foreground mt-3 text-[10px] italic">
-                * Case-insensitive.
-              </p>
-            </div>
+      {/* Active Tab Content */}
+      <section className="bg-card overflow-hidden rounded-xl border p-3 shadow-sm sm:rounded-2xl sm:p-5 md:p-8">
+        <div className="mb-4 flex items-center gap-2 sm:mb-6 sm:gap-3">
+          <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg sm:h-10 sm:w-10 sm:rounded-xl">
+            <activeType.icon size={18} className="sm:hidden" />
+            <activeType.icon size={22} className="hidden sm:block" />
           </div>
-        </section>
-
-        <div className="mt-6 text-center">
-          <Link
-            href="/tools/free/qrcode"
-            className="text-primary inline-flex items-center gap-2 font-bold hover:underline"
-          >
-            Back to QR Generator <ExternalLink size={16} />
-          </Link>
+          <div className="min-w-0 flex-1">
+            <h2 className="truncate text-base font-bold sm:text-xl">
+              {activeType.title}
+            </h2>
+            <p className="text-muted-foreground line-clamp-2 text-xs sm:text-sm">
+              {activeType.description}
+            </p>
+          </div>
         </div>
+
+        {/* API Parameters */}
+        <div className="mb-4 sm:mb-6">
+          <h3 className="mb-2 text-xs font-bold sm:mb-3 sm:text-sm">
+            {t.apiParams}
+          </h3>
+          <div className="-mx-3 overflow-x-auto sm:mx-0 sm:rounded-xl sm:border">
+            <table className="w-full min-w-[400px] text-left text-[10px] sm:min-w-0 sm:text-xs">
+              <thead className="bg-muted">
+                <tr>
+                  <th className="px-2 py-2 font-bold sm:px-4 sm:py-2.5">
+                    {t.paramCol}
+                  </th>
+                  <th className="px-2 py-2 font-bold sm:px-4 sm:py-2.5">
+                    {t.typeCol}
+                  </th>
+                  <th className="px-2 py-2 font-bold sm:px-4 sm:py-2.5">
+                    {t.descCol}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {activeType.params.map((p) => (
+                  <tr key={p.name}>
+                    <td className="text-primary px-4 py-2.5 font-mono font-semibold">
+                      {p.name}
+                    </td>
+                    <td className="text-muted-foreground px-4 py-2.5 font-mono">
+                      {p.type}
+                    </td>
+                    <td className="px-4 py-2.5">{p.desc}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Example URLs */}
+        <div className="space-y-4">
+          <EmbedSection
+            title={t.apiExample}
+            content={dynamicExample}
+            onToast={showToast}
+          />
+          <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-4">
+            <h4 className="mb-2 flex items-center gap-2 text-xs font-bold text-green-600 dark:text-green-400">
+              <Sheet size={14} /> {t.sheetsFormula}
+            </h4>
+            <code className="bg-muted block overflow-x-auto rounded p-2 font-mono text-[10px]">
+              {activeType.sheetsExample}
+            </code>
+            <p className="text-muted-foreground mt-2 text-[10px]">
+              {t.sheetsFormulaNote}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Appearance Settings Section */}
+      <section className="bg-card mt-8 overflow-hidden rounded-2xl border p-5 shadow-sm md:p-8">
+        <h2 className="mb-2 flex items-center gap-2 text-lg font-bold">
+          <Settings2 size={20} className="text-primary" />
+          {t.customizeSection}
+        </h2>
+        <p className="text-muted-foreground mb-6 text-sm">{t.customizeDesc}</p>
+
+        <QRAppearanceForm
+          appearance={appearance}
+          frameText={frameText}
+          onFrameTextChange={setFrameText}
+          onToggleShowLogo={setShowLogo}
+          showLogo={showLogo}
+          renderText={renderText}
+          onToggleRenderText={setRenderText}
+          locale={locale}
+        />
+
+        {/* Appearance API Params Table */}
+        <div className="mt-6">
+          <h3 className="mb-3 text-sm font-bold">{t.apiParams}</h3>
+          <div className="overflow-x-auto rounded-xl border">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-muted">
+                <tr>
+                  <th className="px-4 py-2.5 font-bold">{t.paramCol}</th>
+                  <th className="px-4 py-2.5 font-bold">{t.typeCol}</th>
+                  <th className="px-4 py-2.5 font-bold">{t.defaultCol}</th>
+                  <th className="px-4 py-2.5 font-bold">{t.descCol}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {appearanceParams.map((p) => (
+                  <tr key={p.name}>
+                    <td className="text-primary px-4 py-2.5 font-mono font-semibold">
+                      {p.name}
+                    </td>
+                    <td className="text-muted-foreground px-4 py-2.5 font-mono">
+                      {p.type}
+                    </td>
+                    <td className="text-muted-foreground px-4 py-2.5 font-mono">
+                      {p.default}
+                    </td>
+                    <td className="px-4 py-2.5">{p.desc}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Live API URL with appearance settings */}
+        <div className="mt-6">
+          <EmbedSection
+            title={`${t.apiExample} (${t.customizeSection})`}
+            content={fullApiUrl}
+            onToast={showToast}
+          />
+        </div>
+      </section>
+
+      {/* Advanced Options Section */}
+      <section className="bg-card mt-8 overflow-hidden rounded-2xl border p-5 shadow-sm md:p-8">
+        <h2 className="mb-2 flex items-center gap-2 text-lg font-bold">
+          <Settings2 size={20} className="text-primary" />
+          {t.advancedSection}
+        </h2>
+        <p className="text-muted-foreground mb-6 text-sm">{t.advancedDesc}</p>
+
+        {/* Advanced API Params Table */}
+        <div className="overflow-x-auto rounded-xl border">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-muted">
+              <tr>
+                <th className="px-4 py-2.5 font-bold">{t.paramCol}</th>
+                <th className="px-4 py-2.5 font-bold">{t.typeCol}</th>
+                <th className="px-4 py-2.5 font-bold">{t.defaultCol}</th>
+                <th className="px-4 py-2.5 font-bold">{t.descCol}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {advancedParams.map((p) => (
+                <tr key={p.name}>
+                  <td className="text-primary px-4 py-2.5 font-mono font-semibold">
+                    {p.name}
+                  </td>
+                  <td className="text-muted-foreground px-4 py-2.5 font-mono">
+                    {p.type}
+                  </td>
+                  <td className="text-muted-foreground px-4 py-2.5 font-mono">
+                    {p.default}
+                  </td>
+                  <td className="px-4 py-2.5">{p.desc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Logo Note */}
+        <div className="mt-4 rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
+          <p className="text-xs text-amber-700 dark:text-amber-400">
+            <strong>💡 {t.advancedSection}:</strong> {t.logoNote}
+          </p>
+        </div>
+      </section>
+
+      {/* Back Link */}
+      <div className="mt-8 text-center">
+        <Link
+          href="/tools/free/qrcode"
+          className="text-primary inline-flex items-center gap-2 font-bold hover:underline"
+        >
+          {t.try} <ExternalLink size={16} />
+        </Link>
       </div>
 
       <Toast

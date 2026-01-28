@@ -78,6 +78,7 @@ export interface SmsData {
 export interface LocationData {
   lat: string
   lng: string
+  useGoogleMaps?: boolean
 }
 
 /**
@@ -177,6 +178,11 @@ export const generateSmsString = (data: SmsData): string => {
  */
 export const generateLocationString = (data: LocationData): string => {
   if (!data.lat || !data.lng) return ''
+
+  if (data.useGoogleMaps) {
+    return `https://www.google.com/maps?q=${data.lat},${data.lng}`
+  }
+
   return `geo:${data.lat},${data.lng}`
 }
 

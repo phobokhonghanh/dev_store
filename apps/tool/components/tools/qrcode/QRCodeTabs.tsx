@@ -1,3 +1,5 @@
+import { useLocale } from '@/lib/hooks/useLocale'
+import { getAppDict } from '@/lib/i18n'
 import {
   AppStoreData,
   CustomField,
@@ -18,21 +20,31 @@ import {
 import { detectPlatform, SocialPlatform } from '@/lib/social-platforms'
 import { BANKS } from '@/lib/vietqr'
 import {
+  Smartphone as IconAppStore,
   Calendar as IconCalendar,
   CreditCard as IconCreditCard,
   Link as IconLink,
   Mail as IconMail,
   MapPin as IconMapPin,
-  Plus as IconPlus,
   MessageSquare as IconSms,
-  Trash as IconTrash,
   User as IconUser,
   Wifi as IconWifi,
 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import DynamicTabs, { TabItem } from '../../DynamicTabs'
-import { Field, Input, Label, Select } from '../../Form'
-import { LocationForm } from './forms/LocationForm'
+import { Field, Input } from '../../Form'
+import {
+  AppStoreForm,
+  EmailForm,
+  EventForm,
+  INITIAL_VCARD_FIELDS,
+  LocationForm,
+  PaymentForm,
+  SmsForm,
+  VCardField,
+  VCardForm,
+  WifiForm,
+} from './forms'
 
 /** Type representing the available QR code categories */
 export type QRType =
@@ -46,61 +58,43 @@ export type QRType =
   | 'location'
   | 'appstore'
 
-/** Configuration constants for the QR Tabs interface */
-const TABS_CONFIG = {
-  /** Predefined keys for the VCard dropdown */
-  PREDEFINED_KEYS: [
-    { value: 'FN', label: 'Full Name' },
-    { value: 'TEL', label: 'Phone' },
-    { value: 'EMAIL', label: 'Email' },
-    { value: 'URL', label: 'Website' },
-    { value: 'ADR', label: 'Address' },
-    { value: 'ORG', label: 'Company' },
-    { value: 'TITLE', label: 'Job Title' },
-    { value: 'NOTE', label: 'Note' },
-    { value: 'RAW', label: 'Raw Text (data)' },
-  ],
-  /** Initial state for WiFi settings */
-  DEFAULT_WIFI: {
+/** Default state configurations */
+const DEFAULTS = {
+  WIFI: {
     ssid: '',
     password: '',
     encryption: 'WPA' as const,
     hidden: false,
   },
-  /** Initial state for Payment settings */
-  DEFAULT_PAYMENT: (firstBankBin: string) => ({
+  PAYMENT: (firstBankBin: string) => ({
     bankBin: firstBankBin,
     account: '',
     name: '',
     amount: '',
     content: '',
   }),
-  /** Initial fields for VCard */
-  INITIAL_VCARD_FIELDS: [
-    { id: '1', key: 'FN', value: '', label: 'Full Name' },
-    { id: '2', key: 'TEL', value: '', label: 'Phone' },
-  ],
-  DEFAULT_EVENT: {
+  EVENT: {
     title: '',
     startDate: new Date().toISOString().slice(0, 16),
     endDate: new Date(Date.now() + 3600000).toISOString().slice(0, 16),
     location: '',
     description: '',
   },
-  DEFAULT_EMAIL: {
+  EMAIL: {
     email: '',
     subject: '',
     body: '',
   },
-  DEFAULT_SMS: {
+  SMS: {
     phone: '',
     message: '',
   },
-  DEFAULT_LOCATION: {
+  LOCATION: {
     lat: '',
     lng: '',
+    useGoogleMaps: true,
   },
-  DEFAULT_APPSTORE: {
+  APPSTORE: {
     iosUrl: '',
     androidUrl: '',
   },
@@ -116,7 +110,7 @@ interface QRCodeTabsProps {
     rawData?:
       | { url: string; platform: SocialPlatform | null }
       | WiFiData
-      | { fields: TabCustomField[] }
+      | { fields: VCardField[] }
       | PaymentData
       | EventData
       | EmailData
@@ -127,23 +121,12 @@ interface QRCodeTabsProps {
   ) => void
 }
 
-/** Internal UI state for VCard fields */
-interface TabCustomField extends CustomField {
-  id: string
-  label: string
-}
-
-/**
- * Generates a human-friendly display string for WiFi credentials
- */
+// Display string generators
 const generateWifiDisplay = (data: WiFiData): string => {
   if (!data.ssid) return ''
   return `Network: ${data.ssid}\nPassword: ${data.password}`
 }
 
-/**
- * Generates a human-friendly display string for VCard fields
- */
 const generateVCardDisplay = (fields: CustomField[]): string => {
   return fields
     .filter((f) => f.value.trim())
@@ -151,9 +134,6 @@ const generateVCardDisplay = (fields: CustomField[]): string => {
     .join('\n')
 }
 
-/**
- * Generates a human-friendly display string for Payment details
- */
 const generatePaymentDisplay = (data: PaymentData): string => {
   const parts = []
   const bank = BANKS.find((b) => b.bin === data.bankBin)
@@ -192,30 +172,27 @@ const generateAppStoreDisplay = (data: AppStoreData): string => {
 
 /**
  * Main Tabs component for the QR Code Generator.
- * Handles the different input forms (URL, WiFi, VCard, Payment) and orchestrates code generation.
+ * Handles the different input forms and orchestrates code generation.
  */
 export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
+  const { locale } = useLocale()
+  const dict = useMemo(() => getAppDict(locale), [locale])
   const [activeTab, setActiveTab] = useState<QRType>('url')
   const [urlValue, setUrlValue] = useState('')
-  const [wifiData, setWifiData] = useState<WiFiData>(TABS_CONFIG.DEFAULT_WIFI)
+  const [wifiData, setWifiData] = useState<WiFiData>(DEFAULTS.WIFI)
   const [paymentData, setPaymentData] = useState<PaymentData>(
-    TABS_CONFIG.DEFAULT_PAYMENT(BANKS[0].bin),
+    DEFAULTS.PAYMENT(BANKS[0].bin),
   )
-  const [customFields, setCustomFields] = useState<TabCustomField[]>(
-    TABS_CONFIG.INITIAL_VCARD_FIELDS,
-  )
-  const [eventData, setEventData] = useState<EventData>(
-    TABS_CONFIG.DEFAULT_EVENT,
-  )
-  const [emailData, setEmailData] = useState<EmailData>(
-    TABS_CONFIG.DEFAULT_EMAIL,
-  )
-  const [smsData, setSmsData] = useState<SmsData>(TABS_CONFIG.DEFAULT_SMS)
+  const [customFields, setCustomFields] =
+    useState<VCardField[]>(INITIAL_VCARD_FIELDS)
+  const [eventData, setEventData] = useState<EventData>(DEFAULTS.EVENT)
+  const [emailData, setEmailData] = useState<EmailData>(DEFAULTS.EMAIL)
+  const [smsData, setSmsData] = useState<SmsData>(DEFAULTS.SMS)
   const [locationData, setLocationData] = useState<LocationData>(
-    TABS_CONFIG.DEFAULT_LOCATION,
+    DEFAULTS.LOCATION,
   )
   const [appStoreData, setAppStoreData] = useState<AppStoreData>(
-    TABS_CONFIG.DEFAULT_APPSTORE,
+    DEFAULTS.APPSTORE,
   )
 
   // Synchronize generated code with parent whenever any input state changes
@@ -225,7 +202,7 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
     let rawData:
       | { url: string; platform: SocialPlatform | null }
       | WiFiData
-      | { fields: TabCustomField[] }
+      | { fields: VCardField[] }
       | PaymentData
       | EventData
       | EmailData
@@ -233,6 +210,7 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
       | LocationData
       | AppStoreData
       | null = null
+
     switch (activeTab) {
       case 'url':
         result = urlValue
@@ -275,8 +253,6 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
         rawData = locationData
         break
       case 'appstore':
-        // For appstore, we use a simple format or we can use the iOS one as default
-        // Standard is often to have a middleman URL, but we'll use iOS one for encoding
         result = appStoreData.iosUrl || appStoreData.androidUrl
         display = generateAppStoreDisplay(appStoreData)
         rawData = appStoreData
@@ -297,50 +273,14 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
     onCodeChange,
   ])
 
-  /** Adds a new empty 'Note' field to the VCard list */
-  const addCustomField = useCallback(() => {
-    setCustomFields((prev) => [
-      ...prev,
-      { id: Date.now().toString(), key: 'NOTE', value: '', label: 'Note' },
-    ])
-  }, [])
-
-  /** Removes a specific VCard field by its unique ID */
-  const removeCustomField = useCallback((id: string) => {
-    setCustomFields((prev) => prev.filter((f) => f.id !== id))
-  }, [])
-
-  /** Updates a specific property of a VCard field */
-  const updateCustomField = useCallback(
-    (id: string, field: keyof TabCustomField, newValue: string) => {
-      setCustomFields((fields) =>
-        fields.map((f) => {
-          if (f.id !== id) return f
-          if (field === 'key') {
-            const predefined = TABS_CONFIG.PREDEFINED_KEYS.find(
-              (k) => k.value === newValue,
-            )
-            return {
-              ...f,
-              key: newValue,
-              label: predefined ? predefined.label : newValue,
-            }
-          }
-          return { ...f, [field]: newValue }
-        }),
-      )
-    },
-    [],
-  )
-
   /** Renders the specific input form for the active category */
   const renderContent = () => {
     switch (activeTab) {
       case 'url':
         return (
-          <Field label="Website URL">
+          <Field label={dict.qrTabs.urlLabel}>
             <Input
-              placeholder="https://example.com"
+              placeholder={dict.qrTabs.urlPlaceholder}
               value={urlValue}
               onChange={(e) => setUrlValue(e.currentTarget.value)}
             />
@@ -348,346 +288,49 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
         )
       case 'wifi':
         return (
-          <div className="space-y-4">
-            <Field label="SSID (Network Name)">
-              <Input
-                placeholder="My Wifi"
-                value={wifiData.ssid}
-                onChange={(e) =>
-                  setWifiData({ ...wifiData, ssid: e.currentTarget.value })
-                }
-              />
-            </Field>
-            <Field label="Password">
-              <Input
-                type="password"
-                placeholder="Password"
-                value={wifiData.password}
-                onChange={(e) =>
-                  setWifiData({ ...wifiData, password: e.currentTarget.value })
-                }
-              />
-            </Field>
-            <div className="flex gap-4">
-              <Field label="Encryption" className="flex-1">
-                <Select
-                  value={wifiData.encryption}
-                  onChange={(e) =>
-                    setWifiData({
-                      ...wifiData,
-                      encryption: e.target.value as 'WPA' | 'WEP' | 'nopass',
-                    })
-                  }
-                >
-                  <option value="WPA">WPA/WPA2</option>
-                  <option value="WEP">WEP</option>
-                  <option value="nopass">No Password</option>
-                </Select>
-              </Field>
-              <div className="flex items-center gap-2 pt-6">
-                <input
-                  type="checkbox"
-                  id="hidden-wifi"
-                  className="h-4 w-4 rounded border-gray-300"
-                  checked={wifiData.hidden}
-                  onChange={(e) =>
-                    setWifiData({
-                      ...wifiData,
-                      hidden: e.currentTarget.checked,
-                    })
-                  }
-                />
-                <Label htmlFor="hidden-wifi" className="cursor-pointer">
-                  Hidden Network
-                </Label>
-              </div>
-            </div>
-          </div>
+          <WifiForm data={wifiData} onChange={setWifiData} locale={locale} />
         )
       case 'vcard':
         return (
-          <div className="space-y-3">
-            <p className="text-muted-foreground mb-2 text-sm italic">
-              Create a contact card (VCard).
-            </p>
-            {customFields.map((field, index) => {
-              return (
-                <div key={field.id} className="flex items-end gap-2">
-                  <div className="w-[140px]">
-                    {index === 0 && <Label variant="small">Key</Label>}
-                    <Select
-                      className="h-9"
-                      value={field.key}
-                      onChange={(e) =>
-                        updateCustomField(field.id, 'key', e.target.value)
-                      }
-                    >
-                      {TABS_CONFIG.PREDEFINED_KEYS.map((k) => (
-                        <option key={k.value} value={k.value}>
-                          {k.label}
-                        </option>
-                      ))}
-                    </Select>
-                  </div>
-                  <div className="flex-1">
-                    {index === 0 && <Label variant="small">Content</Label>}
-                    <Input
-                      className="h-9"
-                      placeholder="Enter value"
-                      value={field.value}
-                      onChange={(e) =>
-                        updateCustomField(
-                          field.id,
-                          'value',
-                          e.currentTarget.value,
-                        )
-                      }
-                    />
-                  </div>
-                  <button
-                    onClick={() => removeCustomField(field.id)}
-                    disabled={customFields.length <= 1}
-                    className="mb-1 rounded p-2 text-red-500 hover:bg-red-50"
-                    title="Remove field"
-                  >
-                    <IconTrash size={16} />
-                  </button>
-                </div>
-              )
-            })}
-            <button
-              className="border-input hover:bg-muted mt-2 flex w-full items-center justify-center gap-2 rounded-md border py-2 text-sm font-medium transition-colors"
-              onClick={addCustomField}
-            >
-              <IconPlus size={16} /> Add Field
-            </button>
-          </div>
+          <VCardForm
+            fields={customFields}
+            onChange={setCustomFields}
+            locale={locale}
+          />
         )
       case 'payment':
         return (
-          <div className="space-y-4">
-            <Field label="Bank">
-              <Select
-                value={paymentData.bankBin}
-                onChange={(e) =>
-                  setPaymentData({
-                    ...paymentData,
-                    bankBin: e.currentTarget.value,
-                  })
-                }
-              >
-                {BANKS.map((bank) => (
-                  <option key={bank.bin} value={bank.bin}>
-                    {bank.shortName} - {bank.name}
-                  </option>
-                ))}
-              </Select>
-            </Field>
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Account No.">
-                <Input
-                  placeholder="0123456789"
-                  value={paymentData.account}
-                  onChange={(e) =>
-                    setPaymentData({
-                      ...paymentData,
-                      account: e.currentTarget.value,
-                    })
-                  }
-                />
-              </Field>
-              <Field label="Amount (Optional)">
-                <Input
-                  placeholder="50000"
-                  value={paymentData.amount}
-                  onChange={(e) =>
-                    setPaymentData({
-                      ...paymentData,
-                      amount: e.currentTarget.value,
-                    })
-                  }
-                />
-              </Field>
-            </div>
-            <Field label="Account Name">
-              <Input
-                placeholder="JOHN DOE"
-                value={paymentData.name}
-                onChange={(e) =>
-                  setPaymentData({
-                    ...paymentData,
-                    name: e.currentTarget.value,
-                  })
-                }
-              />
-            </Field>
-            <Field label="Message (Content)">
-              <Input
-                placeholder="Payment for..."
-                value={paymentData.content}
-                onChange={(e) =>
-                  setPaymentData({
-                    ...paymentData,
-                    content: e.currentTarget.value,
-                  })
-                }
-              />
-            </Field>
-          </div>
+          <PaymentForm
+            data={paymentData}
+            onChange={setPaymentData}
+            locale={locale}
+          />
         )
       case 'event':
         return (
-          <div className="space-y-4">
-            <Field label="Event Title">
-              <Input
-                placeholder="Birthday Party"
-                value={eventData.title}
-                onChange={(e) =>
-                  setEventData({ ...eventData, title: e.currentTarget.value })
-                }
-              />
-            </Field>
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Start Date">
-                <Input
-                  type="datetime-local"
-                  value={eventData.startDate}
-                  onChange={(e) =>
-                    setEventData({
-                      ...eventData,
-                      startDate: e.currentTarget.value,
-                    })
-                  }
-                />
-              </Field>
-              <Field label="End Date">
-                <Input
-                  type="datetime-local"
-                  value={eventData.endDate}
-                  onChange={(e) =>
-                    setEventData({
-                      ...eventData,
-                      endDate: e.currentTarget.value,
-                    })
-                  }
-                />
-              </Field>
-            </div>
-            <Field label="Location">
-              <Input
-                placeholder="123 Party Lane"
-                value={eventData.location}
-                onChange={(e) =>
-                  setEventData({
-                    ...eventData,
-                    location: e.currentTarget.value,
-                  })
-                }
-              />
-            </Field>
-            <Field label="Description">
-              <Input
-                placeholder="Join us for fun!"
-                value={eventData.description}
-                onChange={(e) =>
-                  setEventData({
-                    ...eventData,
-                    description: e.currentTarget.value,
-                  })
-                }
-              />
-            </Field>
-          </div>
+          <EventForm data={eventData} onChange={setEventData} locale={locale} />
         )
       case 'email':
         return (
-          <div className="space-y-4">
-            <Field label="Email Address">
-              <Input
-                placeholder="example@mail.com"
-                value={emailData.email}
-                onChange={(e) =>
-                  setEmailData({ ...emailData, email: e.currentTarget.value })
-                }
-              />
-            </Field>
-            <Field label="Subject">
-              <Input
-                placeholder="Inquiry"
-                value={emailData.subject}
-                onChange={(e) =>
-                  setEmailData({ ...emailData, subject: e.currentTarget.value })
-                }
-              />
-            </Field>
-            <Field label="Body">
-              <Input
-                placeholder="Hello..."
-                value={emailData.body}
-                onChange={(e) =>
-                  setEmailData({ ...emailData, body: e.currentTarget.value })
-                }
-              />
-            </Field>
-          </div>
+          <EmailForm data={emailData} onChange={setEmailData} locale={locale} />
         )
       case 'sms':
-        return (
-          <div className="space-y-4">
-            <Field label="Phone Number">
-              <Input
-                placeholder="+84 123 456 789"
-                value={smsData.phone}
-                onChange={(e) =>
-                  setSmsData({ ...smsData, phone: e.currentTarget.value })
-                }
-              />
-            </Field>
-            <Field label="Message">
-              <Input
-                placeholder="Hi there!"
-                value={smsData.message}
-                onChange={(e) =>
-                  setSmsData({ ...smsData, message: e.currentTarget.value })
-                }
-              />
-            </Field>
-          </div>
-        )
+        return <SmsForm data={smsData} onChange={setSmsData} locale={locale} />
       case 'location':
-        return <LocationForm data={locationData} onChange={setLocationData} />
+        return (
+          <LocationForm
+            data={locationData}
+            onChange={setLocationData}
+            locale={locale}
+          />
+        )
       case 'appstore':
         return (
-          <div className="space-y-4">
-            <Field label="iOS App Store URL">
-              <Input
-                placeholder="https://apps.apple.com/..."
-                value={appStoreData.iosUrl}
-                onChange={(e) =>
-                  setAppStoreData({
-                    ...appStoreData,
-                    iosUrl: e.currentTarget.value,
-                  })
-                }
-              />
-            </Field>
-            <Field label="Android Play Store URL">
-              <Input
-                placeholder="https://play.google.com/store/..."
-                value={appStoreData.androidUrl}
-                onChange={(e) =>
-                  setAppStoreData({
-                    ...appStoreData,
-                    androidUrl: e.currentTarget.value,
-                  })
-                }
-              />
-            </Field>
-            <p className="text-muted-foreground text-[10px] italic">
-              Note: This tool currently encodes the iOS URL by default if both
-              are provided.
-            </p>
-          </div>
+          <AppStoreForm
+            data={appStoreData}
+            onChange={setAppStoreData}
+            locale={locale}
+          />
         )
       default:
         return null
@@ -699,60 +342,60 @@ export default function QRCodeTabs({ onCodeChange }: QRCodeTabsProps) {
     () => [
       {
         value: 'url',
-        label: 'URL',
+        label: dict.qrTabs.tabUrl,
         icon: <IconLink size={16} />,
         content: null,
       },
       {
         value: 'wifi',
-        label: 'WiFi',
+        label: dict.qrTabs.tabWifi,
         icon: <IconWifi size={16} />,
         content: null,
       },
       {
         value: 'vcard',
-        label: 'VCard',
+        label: dict.qrTabs.tabVcard,
         icon: <IconUser size={16} />,
         content: null,
       },
       {
         value: 'payment',
-        label: 'Transfer',
+        label: dict.qrTabs.tabPayment,
         icon: <IconCreditCard size={16} />,
         content: null,
       },
       {
         value: 'event',
-        label: 'Event',
+        label: dict.qrTabs.tabEvent,
         icon: <IconCalendar size={16} />,
         content: null,
       },
       {
         value: 'email',
-        label: 'Email',
+        label: dict.qrTabs.tabEmail,
         icon: <IconMail size={16} />,
         content: null,
       },
       {
         value: 'sms',
-        label: 'SMS',
+        label: dict.qrTabs.tabSms,
         icon: <IconSms size={16} />,
         content: null,
       },
       {
         value: 'location',
-        label: 'Map',
+        label: dict.qrTabs.tabLocation,
         icon: <IconMapPin size={16} />,
         content: null,
       },
       {
         value: 'appstore',
-        label: 'App Store',
-        icon: <IconPlus size={16} />,
+        label: dict.qrTabs.tabAppStore,
+        icon: <IconAppStore size={16} />,
         content: null,
       },
     ],
-    [],
+    [dict],
   )
 
   return (

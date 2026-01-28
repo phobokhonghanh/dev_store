@@ -1,23 +1,30 @@
 'use client'
 
 import { AutoBreadcrumbs } from '@/components/AutoBreadcrumbs'
-import { NavRoute, toolsRoutes } from '@/lib/tools-routes'
+import { useLocale } from '@/lib/hooks/useLocale'
+import { getAppDict } from '@/lib/i18n'
+import { getToolsRoutes, NavRoute } from '@/lib/tools-routes'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import Link from 'next/link'
+import { useMemo } from 'react'
 
 /**
  * Dashboard for the "Free Tools" category.
  * Displays a grid of available utilities with clear descriptions and icons.
  */
 export default function ToolsFreePage() {
+  const { locale } = useLocale()
+  const dict = useMemo(() => getAppDict(locale), [locale])
+  const routes = useMemo(() => getToolsRoutes(dict), [dict])
+
   // Find the 'Free Tools' section in the routes
-  const freeToolsSection = toolsRoutes.find((r) => r.href === '/tools/free')
+  const freeToolsSection = routes.find((r) => r.href === '/tools/free')
   const freeTools = freeToolsSection?.children || []
 
   return (
     <div className="mx-auto min-h-screen max-w-7xl p-4 md:p-8">
       <div className="mb-8">
-        <AutoBreadcrumbs routes={toolsRoutes} />
+        <AutoBreadcrumbs routes={routes} />
       </div>
 
       <div className="mb-12">
@@ -26,12 +33,11 @@ export default function ToolsFreePage() {
             <Sparkles size={24} />
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">
-            Free Developer Utilities
+            {dict.freeToolsPage.title}
           </h1>
         </div>
         <p className="text-muted-foreground max-w-2xl text-lg">
-          High-quality, privacy-focused tools designed to simplify your daily
-          development tasks. No registration, no ads, just focus.
+          {dict.freeToolsPage.description}
         </p>
       </div>
 
@@ -55,13 +61,12 @@ export default function ToolsFreePage() {
             </h2>
 
             <p className="text-muted-foreground mb-4 line-clamp-2 text-sm leading-relaxed">
-              {tool.description ||
-                'Quick and efficient tool to boost your productivity.'}
+              {tool.description || dict.freeToolsPage.defaultToolDesc}
             </p>
 
             <div className="flex items-center gap-2">
               <span className="text-primary border-primary/20 bg-primary/5 rounded-full border px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase">
-                Ready to Use
+                {dict.freeToolsPage.readyToUse}
               </span>
             </div>
 

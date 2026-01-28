@@ -1,6 +1,10 @@
 import {
   CustomField,
+  generateEmailString,
+  generateEventString,
+  generateLocationString,
   generatePaymentString,
+  generateSmsString,
   generateVCardString,
   generateWifiString,
   WiFiData,
@@ -77,12 +81,69 @@ export async function GET(req: NextRequest) {
           qrValue = generatePaymentString({
             bankBin: bank.bin,
             account,
-            name: '', // Optional in generation
+            name: searchParams.get('name') || '',
             amount,
             content,
           })
         }
         break
+      case 'event': {
+        const title = searchParams.get('title') || ''
+        const startDate = searchParams.get('start') || ''
+        const endDate = searchParams.get('end') || ''
+        const eventLocation = searchParams.get('location') || ''
+        const description = searchParams.get('description') || ''
+        if (title) {
+          qrValue = generateEventString({
+            title,
+            startDate,
+            endDate,
+            location: eventLocation,
+            description,
+          })
+        }
+        break
+      }
+      case 'email': {
+        const emailAddr = searchParams.get('email') || ''
+        const subject = searchParams.get('subject') || ''
+        const body = searchParams.get('body') || ''
+        if (emailAddr) {
+          qrValue = generateEmailString({ email: emailAddr, subject, body })
+        }
+        break
+      }
+      case 'sms': {
+        const phone = searchParams.get('phone') || ''
+        const message = searchParams.get('message') || ''
+        if (phone) {
+          qrValue = generateSmsString({ phone, message })
+        }
+        break
+      }
+      case 'location': {
+        const lat = searchParams.get('lat') || ''
+        const lng = searchParams.get('lng') || ''
+        const useGoogle =
+          searchParams.get('google') === '1' ||
+          searchParams.get('google') === 'true'
+        if (lat && lng) {
+          qrValue = generateLocationString({
+            lat,
+            lng,
+            useGoogleMaps: useGoogle,
+          })
+        }
+        break
+      }
+      case 'appstore': {
+        const iosUrl = searchParams.get('ios') || ''
+        const androidUrl = searchParams.get('android') || ''
+        if (iosUrl || androidUrl) {
+          qrValue = iosUrl || androidUrl
+        }
+        break
+      }
     }
   }
 

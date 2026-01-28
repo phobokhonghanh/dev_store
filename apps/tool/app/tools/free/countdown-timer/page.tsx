@@ -6,19 +6,26 @@ import {
   RotateCcw as IconRotate,
   X as IconX,
 } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { AutoBreadcrumbs } from '@/components/AutoBreadcrumbs'
 import { Field, Input } from '@/components/Form'
 import Fullscreen from '@/components/FullscreenWrapper'
 import Timer, { TimeData } from '@/components/tools/time/Timer'
-import { toolsRoutes } from '@/lib/tools-routes'
+import { useLocale } from '@/lib/hooks/useLocale'
+import { getAppDict } from '@/lib/i18n'
+import { getToolsRoutes } from '@/lib/tools-routes'
 
 /**
  * Countdown Timer Tool Page.
  * Allows users to set a specific duration and count down, with keyboard shortcuts support.
  */
 export default function ToolsCountdownPage() {
+  const { locale } = useLocale()
+  const dict = useMemo(() => getAppDict(locale), [locale])
+  const routes = useMemo(() => getToolsRoutes(dict), [dict])
+  const t = dict.countdownPage
+
   const [isLoading] = useState(false)
 
   /** Target duration set by the user */
@@ -160,21 +167,19 @@ export default function ToolsCountdownPage() {
         </div>
       )}
       <div className="mb-4">
-        <AutoBreadcrumbs routes={toolsRoutes} />
+        <AutoBreadcrumbs routes={routes} />
       </div>
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-green-600 dark:text-green-500">
-          Countdown Timer
+          {t.title}
         </h2>
-        <p className="text-muted-foreground mt-1 text-sm">
-          Set any duration and count down in real time.
-        </p>
+        <p className="text-muted-foreground mt-1 text-sm">{t.description}</p>
       </div>
 
       {/* Target Settings */}
       <div className="bg-card text-card-foreground mb-8 rounded-xl border p-6 shadow-sm">
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
-          <Field label="Days">
+          <Field label={t.days}>
             <Input
               type="number"
               value={target.days}
@@ -184,7 +189,7 @@ export default function ToolsCountdownPage() {
               min={0}
             />
           </Field>
-          <Field label="Hours">
+          <Field label={t.hours}>
             <Input
               type="number"
               value={target.hours}
@@ -195,7 +200,7 @@ export default function ToolsCountdownPage() {
               max={23}
             />
           </Field>
-          <Field label="Minutes">
+          <Field label={t.minutes}>
             <Input
               type="number"
               value={target.minutes}
@@ -206,7 +211,7 @@ export default function ToolsCountdownPage() {
               max={59}
             />
           </Field>
-          <Field label="Seconds">
+          <Field label={t.seconds}>
             <Input
               type="number"
               value={target.seconds}
@@ -238,14 +243,14 @@ export default function ToolsCountdownPage() {
                 onClick={start}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-12 min-w-[120px] items-center justify-center rounded-full px-8 text-sm font-bold shadow-lg transition-all hover:scale-105"
               >
-                <IconPlayerPlay className="mr-2 h-5 w-5" /> Start
+                <IconPlayerPlay className="mr-2 h-5 w-5" /> {t.start}
               </button>
 
               <button
                 onClick={clear}
                 className="border-border bg-background hover:bg-accent inline-flex h-12 min-w-[120px] items-center justify-center rounded-full border px-8 text-sm font-bold shadow-sm transition-all hover:scale-105"
               >
-                <IconX className="mr-2 h-5 w-5" /> Clear
+                <IconX className="mr-2 h-5 w-5" /> {t.clear}
               </button>
             </>
           )}
@@ -256,13 +261,13 @@ export default function ToolsCountdownPage() {
                 onClick={start}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-12 min-w-[120px] items-center justify-center rounded-full px-8 text-sm font-bold shadow-lg transition-all hover:scale-105"
               >
-                <IconPlayerPlay className="mr-2 h-5 w-5" /> Continue
+                <IconPlayerPlay className="mr-2 h-5 w-5" /> {t.continue}
               </button>
               <button
                 onClick={reset}
                 className="border-border bg-background hover:bg-accent inline-flex h-12 min-w-[120px] items-center justify-center rounded-full border px-8 text-sm font-bold shadow-sm transition-all hover:scale-105"
               >
-                <IconRotate className="mr-2 h-5 w-5" /> Reset
+                <IconRotate className="mr-2 h-5 w-5" /> {t.reset}
               </button>
             </>
           )}
@@ -273,13 +278,13 @@ export default function ToolsCountdownPage() {
                 onClick={pause}
                 className="bg-background inline-flex h-12 min-w-[120px] items-center justify-center rounded-full border border-red-200 px-8 text-sm font-bold text-red-600 shadow-sm transition-all hover:scale-105 hover:bg-red-50"
               >
-                <IconPlayerPause className="mr-2 h-5 w-5" /> Pause
+                <IconPlayerPause className="mr-2 h-5 w-5" /> {t.pause}
               </button>
               <button
                 onClick={reset}
                 className="border-border bg-background hover:bg-accent inline-flex h-12 min-w-[120px] items-center justify-center rounded-full border px-8 text-sm font-bold shadow-sm transition-all hover:scale-105"
               >
-                <IconRotate className="mr-2 h-5 w-5" /> Reset
+                <IconRotate className="mr-2 h-5 w-5" /> {t.reset}
               </button>
             </>
           )}
@@ -287,17 +292,17 @@ export default function ToolsCountdownPage() {
 
         <div className="mt-8 flex flex-col items-center gap-1">
           <p className="text-muted-foreground text-center text-[10px] font-bold tracking-widest uppercase">
-            Keyboard Shortcuts
+            {t.keyboardShortcuts}
           </p>
           <p className="text-muted-foreground text-center text-xs">
             <span className="bg-muted rounded border px-1.5 py-0.5 text-[10px]">
               Space
             </span>{' '}
-            Toggle Start/Pause •{' '}
+            {t.toggleStartPause} •{' '}
             <span className="bg-muted rounded border px-1.5 py-0.5 text-[10px]">
               R
             </span>{' '}
-            Reset
+            {t.reset}
           </p>
         </div>
       </div>

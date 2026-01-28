@@ -1,6 +1,11 @@
 'use client'
 
-import { NavRoute, toolsRoutes } from '@/lib/tools-routes'
+import React, { useMemo } from 'react'
+
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { useLocale } from '@/lib/hooks/useLocale'
+import { getAppDict } from '@/lib/i18n'
+import { getToolsRoutes, NavRoute } from '@/lib/tools-routes'
 import { Logo } from '@origini/components'
 import { cn } from '@origini/libs/utils'
 import {
@@ -91,7 +96,7 @@ const NavItem = ({
               e.preventDefault()
               setIsOpen(!isOpen)
             }}
-            className="hover:bg-primary/10 ml-2 rounded-sm p-1 transition-colors"
+            className="hover:bg-primary/10 ml-2 cursor-pointer rounded-sm p-1 transition-colors"
           >
             {isOpen ? (
               <ChevronDown className="h-4 w-4" />
@@ -124,7 +129,15 @@ interface SidebarProps {
   toggleSidebar: () => void
 }
 
-export function Sidebar({ header, isCollapsed, toggleSidebar }: SidebarProps) {
+export const Sidebar = React.memo(function Sidebar({
+  header,
+  isCollapsed,
+  toggleSidebar,
+}: SidebarProps) {
+  const { locale, setLocale } = useLocale()
+  const dict = useMemo(() => getAppDict(locale), [locale])
+  const routes = useMemo(() => getToolsRoutes(dict), [dict])
+
   return (
     <nav
       className={cn(
@@ -147,7 +160,7 @@ export function Sidebar({ header, isCollapsed, toggleSidebar }: SidebarProps) {
           <button
             onClick={toggleSidebar}
             className={cn(
-              'text-muted-foreground hover:text-primary absolute top-4 right-2 transition-colors',
+              'text-muted-foreground hover:text-primary absolute top-4 right-2 cursor-pointer transition-colors',
               isCollapsed ? 'top-16 right-1/2 translate-x-1/2' : '',
             )}
           >
@@ -162,7 +175,7 @@ export function Sidebar({ header, isCollapsed, toggleSidebar }: SidebarProps) {
         {/* Navigation Items */}
         <div className="flex-1 overflow-y-auto px-2 py-2">
           <div className="space-y-1">
-            {toolsRoutes.map((route) => (
+            {routes.map((route) => (
               <NavItem
                 key={route.href}
                 route={route}
@@ -171,7 +184,21 @@ export function Sidebar({ header, isCollapsed, toggleSidebar }: SidebarProps) {
             ))}
           </div>
         </div>
+
+        {/* Footer: Language Switcher */}
+        <div
+          className={cn(
+            'border-border border-t',
+            isCollapsed ? 'px-1 py-2' : 'px-2 py-3',
+          )}
+        >
+          <LanguageSwitcher
+            locale={locale}
+            onLocaleChange={setLocale}
+            isCollapsed={isCollapsed}
+          />
+        </div>
       </div>
     </nav>
   )
-}
+})

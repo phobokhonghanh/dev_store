@@ -1,88 +1,125 @@
 # 🛠️ Developer Tools Hub
 
-> **Simple. Fast. 100% Free & Open Source.**
-> A collection of powerful utilities designed to boost your productivity, wrapped in a beautiful, modern interface.
+> **Đơn giản. Nhanh chóng. 100% Miễn phí & Mã nguồn mở.**
+> Bộ sưu tập các công cụ tiện ích mạnh mẽ giúp tăng năng suất làm việc, được thiết kế với giao diện hiện đại và đẹp mắt.
 
 ![Version](https://img.shields.io/badge/version-1.0_LIVE-green?style=for-the-badge)
 ![Tech](https://img.shields.io/badge/built_with-Next.js_15-black?style=for-the-badge)
+![i18n](https://img.shields.io/badge/i18n-VI%20%7C%20EN-blue?style=for-the-badge)
 
-## 🚀 Why Use This Tool?
+[🇬🇧 English Version](./README.en.md)
 
-We believe developer tools should be **accessible**, **fast**, and **delightful to use**. No ads, no paywalls, just pure utility.
+## 🚀 Tại sao nên sử dụng?
 
-- **🎨 Premium UI/UX:** Built with a focus on aesthetics and user experience. Dark mode support, glassmorphism effects, and smooth animations.
-- **⚡ Blazing Fast:** Powered by [Next.js 15](https://nextjs.org/) and [Turbo](https://turbo.build/), ensuring instant load times.
-- **🔌 Developer Ready:** Every tool is designed with API integrations and embeddability in mind.
+Chúng tôi tin rằng các công cụ dành cho lập trình viên nên **dễ tiếp cận**, **nhanh chóng** và **thú vị khi sử dụng**. Không quảng cáo, không trả phí, chỉ có tiện ích thuần túy.
 
----
-
-## 🌟 Featured Tools
-
-### 1. Advanced QR Code Generator
-
-Generate fully customizable QR codes for various use cases. Unlike basic generators, we offer deep integration features.
-
-- **Supported Types:**
-  - 🔗 **URL:** Instant deep links.
-  - 📶 **WiFi:** Share network credentials securely.
-  - 💳 **Payment (VietQR):** Generate standardized payment QRs compatible with all Vietnamese banking apps (Napas 247).
-  - 👤 **VCard:** Share contact details instantly.
-- **Key Capabilities:**
-  - **Customization:** Adjust size, error correction levels, and custom colors (foreground/background).
-  - **Logo Embedding:** Upload your brand logo to be placed automatically in the center.
-  - **📊 Google Sheets Integration:** Use our unique **Embed API** (e.g., `=IMAGE(...)`) to generate QR codes dynamically directly inside your spreadsheets.
-  - **High-Res Export:** Download high-quality PNGs for print/web.
-
-### 2. Precision Countdown Timer
-
-_(Coming Soon)_ A productivity focused timer for events, pomodoros, and deadlines.
+- **🎨 Giao diện Premium:** Thiết kế tập trung vào thẩm mỹ và trải nghiệm người dùng. Hỗ trợ chế độ tối, hiệu ứng glassmorphism và animation mượt mà.
+- **⚡ Siêu nhanh:** Được xây dựng với [Next.js 15](https://nextjs.org/) và [Turbo](https://turbo.build/), đảm bảo thời gian tải tức thì.
+- **🔌 Sẵn sàng cho Lập trình viên:** Mọi công cụ đều được thiết kế với khả năng tích hợp API và nhúng.
+- **🌐 Đa ngôn ngữ:** Hỗ trợ đầy đủ Tiếng Việt và Tiếng Anh với kiến trúc i18n tập trung.
 
 ---
 
-## 💻 Tech Stack
+## 🌐 Hệ thống Đa ngôn ngữ (i18n)
 
-This project is built using the latest modern web technologies:
+Dự án sử dụng kiến trúc i18n tập trung với các tính năng:
+
+- **Centralized Dictionary:** Tất cả văn bản nằm trong `lib/i18n.ts`
+- **Factory Functions:** Các file dữ liệu tĩnh như `tools-routes.ts` sử dụng factory pattern để hỗ trợ i18n
+- **Locale-Aware Components:** Mọi component sử dụng `useLocale()` hook để lấy ngôn ngữ hiện tại
+- **Language Switcher:** Dropdown với cờ quốc gia ở sidebar để chuyển đổi ngôn ngữ
+
+### Kiến trúc i18n
+
+```
+lib/
+├── i18n.ts              # Master dictionary (VI/EN)
+├── config.ts            # SupportedLocale type, DEFAULT_LOCALE
+├── tools-routes.ts      # Factory function getToolsRoutes(dict)
+└── hooks/
+    └── useLocale.tsx    # Context provider cho locale
+```
+
+---
+
+## 🌟 Công cụ Nổi bật
+
+### 1. QR Code Generator Nâng cao
+
+Tạo mã QR tùy chỉnh hoàn toàn cho nhiều mục đích sử dụng khác nhau. Không giống các công cụ cơ bản, chúng tôi cung cấp các tính năng tích hợp sâu.
+
+**📌 9 Loại QR Code được hỗ trợ:**
+
+| Loại                         | Mô tả                                                                                           |
+| ---------------------------- | ----------------------------------------------------------------------------------------------- |
+| 🔗 **URL**                   | Điều hướng đến trang web                                                                        |
+| 📶 **WiFi**                  | Chia sẻ thông tin mạng WiFi một cách an toàn                                                    |
+| 💳 **Chuyển khoản (VietQR)** | Tạo mã thanh toán ngân hàng theo chuẩn Napas 247, tương thích với tất cả app ngân hàng Việt Nam |
+| 👤 **VCard**                 | Lưu thông tin liên lạc vào danh bạ                                                              |
+| 📅 **Sự kiện**               | Thêm lịch hẹn vào ứng dụng Lịch                                                                 |
+| ✉️ **Email**                 | Soạn sẵn thư với địa chỉ nhận, tiêu đề và nội dung                                              |
+| 💬 **SMS**                   | Soạn sẵn tin nhắn đến số điện thoại                                                             |
+| 📍 **Vị trí**                | Chia sẻ tọa độ hoặc link Google Maps                                                            |
+| 📱 **App Store**             | Điều hướng đến iOS App Store hoặc Android Play Store                                            |
+
+**⚙️ Tính năng chính:**
+
+- **Tùy chỉnh:** Điều chỉnh kích thước, mức sửa lỗi, màu nền và màu mã.
+- **Nhúng Logo:** Tải logo thương hiệu để đặt tự động vào giữa mã QR.
+- **📊 Tích hợp Google Sheets:** Sử dụng **Embed API** (`=IMAGE(...)`) để tạo mã QR động trực tiếp trong bảng tính.
+- **Xuất chất lượng cao:** Tải xuống PNG độ phân giải cao cho in ấn/web.
+
+### 2. Bộ đếm ngược Chính xác
+
+Timer tập trung năng suất cho sự kiện, pomodoro và deadline. Hỗ trợ đầy đủ i18n với các labels (Ngày/Giờ/Phút/Giây) và nút (Bắt đầu/Tạm dừng/Đặt lại).
+
+---
+
+## 💻 Công nghệ Sử dụng
+
+Dự án này được xây dựng bằng các công nghệ web hiện đại nhất:
 
 - **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
 - **Styling:** [TailwindCSS](https://tailwindcss.com/)
 - **Icons:** [Lucide React](https://lucide.dev/)
-- **State Management:** React Hooks
+- **State Management:** React Hooks + Context (useLocale)
 - **Language:** TypeScript (Strict)
+- **i18n:** Custom architecture với centralized dictionary
 
 ---
 
-## 🛠️ Getting Started
+## 🛠️ Bắt đầu
 
-Want to run this locally or contribute?
+Muốn chạy dự án cục bộ hoặc đóng góp?
 
-1.  **Clone the repository:**
+1.  **Clone repository:**
 
     ```bash
     git clone https://github.com/phobokhonghanh/dev_store.git
     cd dev_store
     ```
 
-2.  **Install dependencies:**
+2.  **Cài đặt dependencies:**
 
     ```bash
     yarn install
     ```
 
-3.  **Run the Tools app:**
+3.  **Chạy ứng dụng Tools:**
 
     ```bash
     yarn dev --filter=tool
     ```
 
-4.  Open [http://localhost:3003](http://localhost:3003) to see the magic!
+4.  Mở [http://localhost:3003](http://localhost:3003) để xem kết quả!
 
 ---
 
-## 🤝 Contributing
+## 🤝 Đóng góp
 
-We welcome contributions! If you have an idea for a new tool or want to improve an existing one, please fork the repo and submit a PR.
+Chúng tôi hoan nghênh mọi đóng góp! Nếu bạn có ý tưởng cho công cụ mới hoặc muốn cải thiện công cụ hiện có, vui lòng fork repo và gửi PR.
 
-**Ideas for new tools:**
+**Ý tưởng cho công cụ mới:**
 
 - JSON Formatter/Validator
 - Base64 Encoder/Decoder
@@ -91,4 +128,4 @@ We welcome contributions! If you have an idea for a new tool or want to improve 
 
 ---
 
-made with ❤️ by [itc]
+Được tạo với ❤️ bởi [itc]

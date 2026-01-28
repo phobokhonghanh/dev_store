@@ -4,10 +4,6 @@ import { QRCodeCanvas } from 'qrcode.react'
 const QR_CONFIG = {
   /** Default ratio for center logo relative to QR size */
   LOGO_SIZE_RATIO: 0.2,
-  /** Minimum width of the display container */
-  MIN_CONTAINER_WIDTH: '300px',
-  /** Maximum size for the QR preview in the UI */
-  MAX_PREVIEW_SIZE: '250px',
   /** Maximum length of text to show below the QR before truncating */
   MAX_TEXT_DISPLAY_LENGTH: 100,
 }
@@ -71,11 +67,8 @@ export default function QRCode({
   const finalDisplayText = displayText ?? value
 
   return (
-    <div
-      className="flex h-full flex-col items-center justify-center gap-4"
-      style={{ minWidth: QR_CONFIG.MIN_CONTAINER_WIDTH }}
-    >
-      <div className="border-border bg-background relative flex flex-col items-center justify-center rounded-lg border p-6 shadow-sm transition-all">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-4">
+      <div className="border-border bg-background relative flex w-full max-w-xs flex-col items-center justify-center rounded-lg border p-4 shadow-sm transition-all sm:max-w-sm sm:p-6">
         {frameText && (
           <div className="bg-primary absolute -top-3 rounded-full px-3 py-1 shadow-sm">
             <span className="text-primary-foreground text-[10px] font-black tracking-widest uppercase">
@@ -94,13 +87,12 @@ export default function QRCode({
           style={{
             width: '100%',
             height: 'auto',
-            maxWidth: QR_CONFIG.MAX_PREVIEW_SIZE,
-            maxHeight: QR_CONFIG.MAX_PREVIEW_SIZE,
+            maxWidth: '100%',
           }}
         />
         {frameText && (
-          <div className="mt-4 flex items-center justify-center">
-            <span className="text-muted-foreground/60 text-xs font-bold tracking-tight uppercase">
+          <div className="mt-3 flex items-center justify-center sm:mt-4">
+            <span className="text-muted-foreground/60 text-[10px] font-bold tracking-tight uppercase sm:text-xs">
               {frameText}
             </span>
           </div>
@@ -108,10 +100,7 @@ export default function QRCode({
       </div>
 
       {renderText && finalDisplayText && (
-        <p
-          className="text-muted-foreground min-h-[20px] text-center text-xs break-all whitespace-pre-wrap"
-          style={{ maxWidth: QR_CONFIG.MIN_CONTAINER_WIDTH }}
-        >
+        <p className="text-muted-foreground min-h-[20px] max-w-full px-2 text-center text-[10px] break-all whitespace-pre-wrap sm:text-xs">
           {finalDisplayText.length > QR_CONFIG.MAX_TEXT_DISPLAY_LENGTH
             ? finalDisplayText.substring(0, QR_CONFIG.MAX_TEXT_DISPLAY_LENGTH) +
               '...'

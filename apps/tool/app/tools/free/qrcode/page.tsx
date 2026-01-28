@@ -12,13 +12,22 @@ import QRCodeTabs, { QRType } from '@/components/tools/qrcode/QRCodeTabs'
 import { useClipboard } from '@/lib/hooks/useClipboard'
 import { useDownload } from '@/lib/hooks/useDownload'
 import { useFileUpload } from '@/lib/hooks/useFileUpload'
+import { useLocale } from '@/lib/hooks/useLocale'
 import { useQRAppearance } from '@/lib/hooks/useQRAppearance'
 import { useQREmbed } from '@/lib/hooks/useQREmbed'
-import { toolsRoutes } from '@/lib/tools-routes'
+import { getAppDict } from '@/lib/i18n'
+import { getToolsRoutes } from '@/lib/tools-routes'
 import { ChevronDown, Copy, Download, HelpCircle, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 /**
  * Main Content Component for the QR Code Tool.
@@ -26,6 +35,9 @@ import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
  */
 function QRCodeToolContent() {
   const searchParams = useSearchParams()
+  const { locale } = useLocale()
+  const dict = useMemo(() => getAppDict(locale), [locale])
+  const routes = useMemo(() => getToolsRoutes(dict), [dict])
 
   // --- State: QR Content ---
 
@@ -141,26 +153,25 @@ function QRCodeToolContent() {
   }
 
   return (
-    <div className="p-4 md:p-8">
+    <div className="p-3 sm:p-4 md:p-8">
       {/* Header & Nav */}
       <div className="mb-4">
-        <AutoBreadcrumbs routes={toolsRoutes} />
+        <AutoBreadcrumbs routes={routes} />
       </div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-green-600 dark:text-green-500">
-          QR Code Generator
+      <div className="mb-4 sm:mb-6">
+        <h2 className="text-xl font-bold text-green-600 sm:text-2xl dark:text-green-500">
+          {dict.sidebar.qrCodeGenerator}
         </h2>
-        <p className="text-muted-foreground mt-1">
-          Generate customized QR codes for URLs, WiFi networks, VCards, and
-          more.
+        <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+          {dict.sidebar.qrCodeGeneratorDesc}
         </p>
       </div>
 
       {/* Main Tool Container */}
-      <div className="bg-card text-card-foreground rounded-lg border p-6 shadow">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
+      <div className="bg-card text-card-foreground rounded-lg border p-3 shadow sm:p-4 md:p-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8">
           {/* LEFT COLUMN: Inputs & Config */}
-          <div className="space-y-6 md:col-span-7">
+          <div className="space-y-4 sm:space-y-6 md:col-span-7">
             {/* 1. Input Tabs */}
             <QRCodeTabs
               onCodeChange={useCallback(
@@ -190,7 +201,7 @@ function QRCodeToolContent() {
               </div>
               <div className="relative flex justify-center text-[10px] font-bold tracking-widest uppercase">
                 <span className="bg-background text-muted-foreground px-4">
-                  Display Settings
+                  {dict.common.displaySettings}
                 </span>
               </div>
             </div>
@@ -233,11 +244,12 @@ function QRCodeToolContent() {
                   if (val) setShowLogo(true)
                 }}
                 qrType={qrType}
+                locale={locale}
                 advancedContent={
                   showLogo && (
                     <FileUploader
-                      label="Custom Logo Overlay"
-                      description="Upload a custom image for the center"
+                      label={dict.qrCodePage.customLogoLabel}
+                      description={dict.qrCodePage.customLogoDesc}
                       file={logoFile}
                       previewSrc={logoSrc as string}
                       accept="image/*"
@@ -271,28 +283,27 @@ function QRCodeToolContent() {
               frameText={frameText}
             />
 
-            <div className="relative mt-8 flex gap-3">
+            <div className="relative mt-6 flex flex-col gap-2 sm:mt-8 sm:flex-row sm:gap-3">
               <button
-                className="border-input bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 flex-1 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors"
+                className="border-input bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 w-full items-center justify-center rounded-md border px-3 py-2 text-xs font-medium transition-colors sm:flex-1 sm:px-4 sm:text-sm"
                 onClick={handleDownload}
                 disabled={!qrValue}
               >
-                <Download size={18} className="mr-2" /> Download PNG
+                <Download size={16} className="mr-1.5 sm:mr-2" />{' '}
+                {dict.qrCodePage.downloadPng}
               </button>
 
-              <div className="group relative flex-1">
-                <button
-                  className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 w-full items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors"
-                  disabled={!qrValue}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleCopy(qrValue)
-                  }}
-                >
-                  <Copy size={18} className="mr-2" />
-                  Copy
-                </button>
-              </div>
+              <button
+                className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 w-full items-center justify-center rounded-md border px-3 py-2 text-xs font-medium transition-colors sm:flex-1 sm:px-4 sm:text-sm"
+                disabled={!qrValue}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleCopy(qrValue)
+                }}
+              >
+                <Copy size={16} className="mr-1.5 sm:mr-2" />
+                {dict.qrCodePage.copy}
+              </button>
             </div>
           </div>
         </div>
@@ -307,24 +318,24 @@ function QRCodeToolContent() {
                   size={14}
                   className="text-green-600 dark:text-green-500"
                 />{' '}
-                FAQ & Integration
+                {dict.qrCodePage.faqTitle}
               </h5>
               <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {[
                   {
-                    q: 'How to use in Google Sheets?',
+                    q: dict.qrCodePage.faq1,
                     h: '/tools/free/qrcode/guide',
                   },
                   {
-                    q: 'Can I change QR colors?',
+                    q: dict.qrCodePage.faq2,
                     h: '/tools/free/qrcode/guide',
                   },
                   {
-                    q: 'Integration with other apps?',
+                    q: dict.qrCodePage.faq3,
                     h: '/tools/free/qrcode/guide',
                   },
                   {
-                    q: 'Commercial usage allowed?',
+                    q: dict.qrCodePage.faq4,
                     h: '/tools/free/qrcode/guide',
                   },
                 ].map((faq, i) => (
@@ -337,7 +348,7 @@ function QRCodeToolContent() {
                         {faq.q}
                       </span>
                       <div className="text-muted-foreground group-hover:text-primary/70 mt-2 flex items-center text-[10px] transition-colors">
-                        View Guide{' '}
+                        {dict.qrCodePage.viewGuide}{' '}
                         <ChevronDown
                           size={12}
                           className="ml-1 rotate-[-90deg]"
@@ -352,19 +363,20 @@ function QRCodeToolContent() {
             {/* Embed Side (Refactored to Component) */}
             <div>
               <h4 className="text-muted-foreground mb-4 flex items-center gap-1.5 text-[10px] font-bold tracking-wider uppercase">
-                <Zap size={10} className="text-yellow-500" /> Embed Integration
+                <Zap size={10} className="text-yellow-500" />{' '}
+                {dict.qrCodePage.embedTitle}
               </h4>
               <div className="space-y-4">
                 {/* Google Sheets Formula */}
                 <EmbedSection
-                  title="Sheet Formula"
+                  title={dict.qrCodePage.sheetFormula}
                   content={sheetsFormula}
                   onToast={showToast}
                 />
 
                 {/* Direct URL */}
                 <EmbedSection
-                  title="Direct URL"
+                  title={dict.qrCodePage.directUrl}
                   content={embedUrl}
                   onToast={showToast}
                 />

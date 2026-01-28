@@ -1,5 +1,6 @@
 import NavbarLayout from '@/components/navbar'
 import VersionBadge from '@/components/VersionBadge'
+import { LocaleProvider } from '@/lib/hooks/useLocale'
 import Footer from '@origini/components/Footer'
 import Head from '@origini/components/Head'
 import '@origini/components/styles.css'
@@ -47,9 +48,11 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider>
-          <VersionBadge />
-          <NavbarLayout>{children}</NavbarLayout>
-          <Footer />
+          <LocaleProvider>
+            <VersionBadge />
+            <NavbarLayout>{children}</NavbarLayout>
+            <Footer />
+          </LocaleProvider>
         </ThemeProvider>
       </body>
     </html>
