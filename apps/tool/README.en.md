@@ -25,19 +25,22 @@ We believe developer tools should be **accessible**, **fast**, and **delightful 
 The project uses a centralized i18n architecture with the following features:
 
 - **Centralized Dictionary:** All text content lives in `lib/i18n.ts`
-- **Factory Functions:** Static data files like `tools-routes.ts` use factory pattern for i18n support
-- **Locale-Aware Components:** All components use `useLocale()` hook to get the current language
-- **Language Switcher:** Dropdown with country flags in the sidebar to switch languages
+- **Factory Functions:** Static data files like `tools-routes.ts` and `qr-types.ts` use factory pattern for i18n support
+- **Locale-Aware Hooks:** Use `useLocale()` and `useDict()` for centralized language and dictionary access.
+- **Toast System:** The `useToast()` notification system supports multi-language and reduces prop drilling.
 
 ### i18n Architecture
 
 ```
 lib/
 ├── i18n.ts              # Master dictionary (VI/EN)
-├── config.ts            # SupportedLocale type, DEFAULT_LOCALE
+├── config.ts            # Centralized config (Locale, API_BASE)
 ├── tools-routes.ts      # Factory function getToolsRoutes(dict)
+├── qr-types.ts          # Factory function getQRTypes(dict)
 └── hooks/
-    └── useLocale.tsx    # Context provider for locale
+    ├── useLocale.tsx    # Context provider for locale
+    ├── useDict.ts       # Hook for quick dictionary access
+    └── useToast.tsx     # Context & hook for notifications
 ```
 
 ---
@@ -65,7 +68,9 @@ Generate fully customizable QR codes for various use cases. Unlike basic generat
 **⚙️ Key Capabilities:**
 
 - **Customization:** Adjust size, error correction levels, and custom colors (foreground/background).
-- **Logo Embedding:** Upload your brand logo to be placed automatically in the center.
+- **Logo Embedding:** Upload your brand logo or use a public logo URL.
+- **📚 Full API Documentation:** The [QR Guide](/tools/free/qrcode/guide) page provides details on every API parameter with real-world examples.
+- **📱 Mobile Optimized:** QR display and tables automatically scale perfectly on all screen sizes.
 - **📊 Google Sheets Integration:** Use our unique **Embed API** (e.g., `=IMAGE(...)`) to generate QR codes dynamically directly inside your spreadsheets.
 - **High-Res Export:** Download high-quality PNGs for print/web.
 

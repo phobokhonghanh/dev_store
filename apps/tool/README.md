@@ -25,19 +25,22 @@ Chúng tôi tin rằng các công cụ dành cho lập trình viên nên **dễ 
 Dự án sử dụng kiến trúc i18n tập trung với các tính năng:
 
 - **Centralized Dictionary:** Tất cả văn bản nằm trong `lib/i18n.ts`
-- **Factory Functions:** Các file dữ liệu tĩnh như `tools-routes.ts` sử dụng factory pattern để hỗ trợ i18n
-- **Locale-Aware Components:** Mọi component sử dụng `useLocale()` hook để lấy ngôn ngữ hiện tại
-- **Language Switcher:** Dropdown với cờ quốc gia ở sidebar để chuyển đổi ngôn ngữ
+- **Factory Functions:** Các file dữ liệu tĩnh như `tools-routes.ts` và `qr-types.ts` sử dụng factory pattern để hỗ trợ i18n
+- **Locale-Aware Hooks:** Sử dụng `useLocale()` và `useDict()` để truy cập ngôn ngữ và từ điển tập trung.
+- **Toast System:** Hệ thống thông báo `useToast()` hỗ trợ đa ngôn ngữ và giảm prop drilling.
 
 ### Kiến trúc i18n
 
 ```
 lib/
 ├── i18n.ts              # Master dictionary (VI/EN)
-├── config.ts            # SupportedLocale type, DEFAULT_LOCALE
+├── config.ts            # Centralized config (Locale, API_BASE)
 ├── tools-routes.ts      # Factory function getToolsRoutes(dict)
+├── qr-types.ts          # Factory function getQRTypes(dict)
 └── hooks/
-    └── useLocale.tsx    # Context provider cho locale
+    ├── useLocale.tsx    # Context provider cho locale
+    ├── useDict.ts       # Hook lấy từ điển nhanh
+    └── useToast.tsx     # Context & hook cho thông báo
 ```
 
 ---
@@ -65,7 +68,9 @@ Tạo mã QR tùy chỉnh hoàn toàn cho nhiều mục đích sử dụng khác
 **⚙️ Tính năng chính:**
 
 - **Tùy chỉnh:** Điều chỉnh kích thước, mức sửa lỗi, màu nền và màu mã.
-- **Nhúng Logo:** Tải logo thương hiệu để đặt tự động vào giữa mã QR.
+- **Nhúng Logo:** Tải logo thương hiệu hoặc sử dụng URL logo công khai.
+- **📚 Tài liệu API đầy đủ:** Trang [QR Guide](/tools/free/qrcode/guide) cung cấp chi tiết mọi tham số API và ví dụ thực tế.
+- **📱 Tối ưu Di động:** Giao diện mã QR và bảng biểu tự động co giãn (scale) hoàn hảo trên mọi kích thước màn hình.
 - **📊 Tích hợp Google Sheets:** Sử dụng **Embed API** (`=IMAGE(...)`) để tạo mã QR động trực tiếp trong bảng tính.
 - **Xuất chất lượng cao:** Tải xuống PNG độ phân giải cao cho in ấn/web.
 
