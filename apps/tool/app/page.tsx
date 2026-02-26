@@ -1,7 +1,6 @@
 'use client'
 
-import HeroSection from '@/components/HeroSection'
-import PricingSection from '@/components/PricingSection'
+import { HeroSection, PricingSection } from '@/components/home'
 
 /**
  * Main Landing Page for the Tools Application.

@@ -1,30 +1,46 @@
-import { ColorPicker, Field, Input, Select, Switch } from '@/components/Form'
+import { ColorPicker, Field, Input, Select, Switch } from '@/components/form'
 import { DEFAULT_LOCALE, type SupportedLocale } from '@/lib/config'
-import { UseQRAppearanceResult } from '@/lib/hooks/useQRAppearance'
+import { UseQRAppearanceResult } from '@/lib/qr/hooks/useQRAppearance'
 import { getAppDict } from '@/lib/i18n'
-import { ChevronDown, ChevronUp, Settings2, Sparkles } from 'lucide-react'
-import React, { useMemo, useState } from 'react'
-
-interface QRAppearanceFormProps {
-  appearance: UseQRAppearanceResult
-  frameText: string
-  onFrameTextChange: (text: string) => void
-  onToggleShowLogo: (show: boolean) => void
-  showLogo: boolean
-  renderText: boolean
-  onToggleRenderText: (render: boolean) => void
-  autoDetectEnabled?: boolean
-  onToggleAutoDetect?: (enabled: boolean) => void
-  qrType?: string
-  advancedContent?: React.ReactNode
-  className?: string
-  locale?: SupportedLocale
-}
+import { Settings2, Sparkles } from 'lucide-react'
+import React, { useMemo, useCallback } from 'react'
+import { ToolSection } from '@/components/tools/shared'
+import { PresetGroup } from '../shared/PresetGroup'
+import { TogglesGrid } from '@/components/tools/shared'
+import { LogoManager } from './LogoManager'
 
 /**
- * Reusable form component for configuring QR Code appearance settings.
- * Includes controls for Size, Error Correction Level, and Colors.
+ * Interface for QRAppearanceForm props
  */
+interface QRAppearanceFormProps {
+  /** Object containing appearance state and setters from useQRAppearance hook */
+  appearance: UseQRAppearanceResult
+  /** Current text to be displayed in the decorative frame */
+  frameText: string
+  /** Callback to update the frame text */
+  onFrameTextChange: (text: string) => void
+  /** Callback to toggle logo visibility */
+  onToggleShowLogo: (show: boolean) => void
+  /** Current state of logo visibility */
+  showLogo: boolean
+  /** Whether to render secondary text in the QR code */
+  renderText: boolean
+  /** Callback to toggle secondary text rendering */
+  onToggleRenderText: (render: boolean) => void
+  /** Type of QR code (e.g., 'url', 'wifi') to condition some fields */
+  qrType?: string
+  /** Slot for additional content to be rendered inside the advanced section */
+  advancedContent?: React.ReactNode
+  /** Custom CSS classes for the container */
+  className?: string
+  /** Current locale for translations */
+  locale?: SupportedLocale
+  /** Logo selected from presets or auto-detected */
+  effectiveLogo?: string
+  /** Callback to update the custom logo URL */
+  setCustomLogoUrl: (url: string | null) => void
+}
+
 export function QRAppearanceForm({
   appearance,
   frameText,
@@ -33,14 +49,16 @@ export function QRAppearanceForm({
   showLogo,
   renderText,
   onToggleRenderText,
-  autoDetectEnabled,
-  onToggleAutoDetect,
   qrType,
   advancedContent,
   className,
   locale = DEFAULT_LOCALE,
+  effectiveLogo,
+  setCustomLogoUrl,
 }: QRAppearanceFormProps) {
+  // Memoize dictionary to optimize heavy i18n lookups
   const dict = useMemo(() => getAppDict(locale).qrAppearance, [locale])
+
   const {
     size,
     setSize,
@@ -52,105 +70,107 @@ export function QRAppearanceForm({
     setLevel,
   } = appearance
 
-  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false)
-  const framePresets = ['SCAN ME', 'FOLLOW ME', 'VISIT US', 'WIFI']
+  // Stable reference for static presets
+  const framePresets = useMemo(
+    () => ['SCAN ME', 'FOLLOW ME', 'VISIT US', 'WIFI'],
+    [],
+  )
+
+  /**
+   * Memoized event handlers
+   */
+  const handleFrameTextChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onFrameTextChange(e.currentTarget.value)
+    },
+    [onFrameTextChange],
+  )
+
+  const handleSizeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSize(Number(e.target.value))
+    },
+    [setSize],
+  )
+
+  const handleLevelChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setLevel(e.target.value as 'L' | 'M' | 'Q' | 'H')
+    },
+    [setLevel],
+  )
 
   return (
     <div className={className}>
-      {/* 1. Configuration Toggles (TOP) */}
-      <div className="border-border bg-muted/20 mb-6 grid grid-cols-1 items-center gap-4 rounded-xl border p-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Switch
-          checked={showLogo}
-          onCheckedChange={onToggleShowLogo}
-          label={dict.displayLogo}
-        />
-        <Switch
-          checked={renderText}
-          onCheckedChange={onToggleRenderText}
-          label={dict.displayText}
-        />
-        {qrType === 'url' && onToggleAutoDetect && (
+      {/* 1. Global Toggles - now integrated cleaner */}
+      <div className="mb-6 px-4">
+        <TogglesGrid className="border-none shadow-none bg-transparent p-0">
           <Switch
-            checked={!!autoDetectEnabled}
-            onCheckedChange={onToggleAutoDetect}
-            label={dict.autoDetect}
+            checked={showLogo}
+            onCheckedChange={onToggleShowLogo}
+            label={dict.displayLogo}
           />
-        )}
+          <Switch
+            checked={renderText}
+            onCheckedChange={onToggleRenderText}
+            label={dict.displayText}
+          />
+        </TogglesGrid>
       </div>
 
-      {/* 2. Basic Settings: Visual Frame */}
-      <div className="border-border bg-muted/30 space-y-4 rounded-xl border p-4">
-        <div className="flex items-center gap-2">
-          <Sparkles size={14} className="text-primary" />
-          <h4 className="text-muted-foreground/60 text-[10px] font-black tracking-widest uppercase">
-            {dict.visualFrame}
-          </h4>
-        </div>
+      {/* 2. Visual Frame Section - Flatted, no heavy border */}
+      <div className="space-y-4 px-4 pb-6">
+        {/* <div className="flex items-center gap-2 mb-2">
+          <Sparkles size={16} className="text-primary" />
+          <span className="text-sm font-semibold text-foreground/80">{dict.visualFrame}</span>
+        </div> */}
 
         <Field label={dict.frameText}>
           <Input
             placeholder={dict.frameTextPlaceholder}
             value={frameText}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              onFrameTextChange(e.currentTarget.value)
-            }
-            className="h-9"
+            onChange={handleFrameTextChange}
+            className="h-10"
           />
         </Field>
 
-        <div className="flex flex-wrap gap-2">
-          {framePresets.map((p) => (
-            <button
-              key={p}
-              onClick={() => onFrameTextChange(p)}
-              className={`rounded-md border px-3 py-1 text-[11px] font-bold transition-all ${
-                frameText === p
-                  ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                  : 'border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-primary'
-              }`}
-            >
-              {p}
-            </button>
-          ))}
-          <button
-            onClick={() => onFrameTextChange('')}
-            className="rounded-md border border-red-200 bg-red-50 px-3 py-1 text-[11px] font-bold text-red-600 hover:bg-red-100"
-          >
-            {dict.clearFrame}
-          </button>
-        </div>
+        <PresetGroup
+          presets={framePresets}
+          value={frameText}
+          onChange={onFrameTextChange}
+          onClear={() => onFrameTextChange('')}
+          clearLabel={dict.clearFrame}
+        />
       </div>
 
-      {/* 3. Advanced Settings (Collapsible) */}
-      <div className="mt-8">
-        <button
-          onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
-          className="hover:bg-muted/50 border-border bg-background flex w-full items-center justify-between rounded-lg border px-4 py-3 text-sm font-semibold transition-colors"
-        >
-          <div className="flex items-center gap-2">
-            <Settings2 size={18} className="text-primary" />
-            <span>{dict.advancedCustomization}</span>
-          </div>
-          {isAdvancedOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-        </button>
+      {/* Divider */}
+      <div className="h-px bg-border/50 mx-6 mb-6" />
 
-        {isAdvancedOpen && (
-          <div className="animate-in fade-in slide-in-from-top-2 border-border bg-muted/5 mt-4 space-y-8 rounded-lg border p-6 duration-200">
-            {/* 1. Size & Colors Grouped */}
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              <Field label={`${dict.qrCodeSize}: ${size}px`}>
+      {/* 4. Advanced Customization - Using standard ToolSection but styled to blend in */}
+      <div className="px-4 pb-4">
+        <ToolSection
+          collapsible
+          defaultOpen={false}
+          title={dict.advancedCustomization}
+          icon={Settings2}
+          className="shadow-sm"
+        >
+          <div className="space-y-8 pt-6 pb-2">
+            {/* Size & Colors */}
+            <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
+              <Field label={`${dict.qrCodeSize}: ${size}px`} className="space-y-3">
                 <input
                   type="range"
                   min="128"
                   max="1024"
                   step="32"
                   value={size}
-                  onChange={(e) => setSize(Number(e.target.value))}
-                  className="mt-2 w-full accent-green-600"
+                  onChange={handleSizeChange}
+                  className="mt-2 w-full accent-primary transition-all hover:scale-[1.01]"
                 />
               </Field>
 
-              <div className="flex gap-4">
+              <div className="flex gap-6">
                 <Field label={dict.dotsColor} className="flex-1">
                   <ColorPicker value={fgColor} onChange={setFgColor} />
                 </Field>
@@ -160,31 +180,44 @@ export function QRAppearanceForm({
               </div>
             </div>
 
-            {/* 2. Custom Logo Upload Slot */}
-            {advancedContent && <div>{advancedContent}</div>}
+            {/* Logo Manager - Now inside Advanced */}
+            {qrType === 'url' && showLogo && (
+              <div className="border-t pt-6 animate-in fade-in slide-in-from-top-2 duration-500">
+                <LogoManager
+                  showLogo={showLogo}
+                  currentLogo={effectiveLogo}
+                  onSelectLogo={(url: string | null) => {
+                    setCustomLogoUrl(url)
+                  }}
+                />
+              </div>
+            )}
 
-            {/* 3. Error Correction Grouped */}
-            <Field label={dict.errorCorrection}>
-              <div className="space-y-2">
+            {/* Custom Content Slot */}
+            {advancedContent && (
+              <div className="border-t pt-8">{advancedContent}</div>
+            )}
+
+            {/* Recovery Level */}
+            <Field label={dict.errorCorrection} className="border-t pt-8">
+              <div className="space-y-3">
                 <Select
-                  className="h-10"
+                  className="h-11"
                   value={level}
-                  onChange={(e) =>
-                    setLevel(e.target.value as 'L' | 'M' | 'Q' | 'H')
-                  }
+                  onChange={handleLevelChange}
                 >
                   <option value="L">{dict.errorCorrectionLow}</option>
                   <option value="M">{dict.errorCorrectionMedium}</option>
                   <option value="Q">{dict.errorCorrectionQuartile}</option>
                   <option value="H">{dict.errorCorrectionHigh}</option>
                 </Select>
-                <p className="text-muted-foreground text-[10px] italic">
+                <p className="text-muted-foreground text-xs leading-relaxed opacity-70">
                   {dict.errorCorrectionNote}
                 </p>
               </div>
             </Field>
           </div>
-        )}
+        </ToolSection>
       </div>
     </div>
   )

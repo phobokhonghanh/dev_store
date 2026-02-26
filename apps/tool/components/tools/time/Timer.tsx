@@ -1,5 +1,6 @@
 'use client'
 
+import { useDict } from '@/lib/hooks/useDict'
 import { useMemo } from 'react'
 import TimeBlock from './TimeBlock'
 
@@ -14,32 +15,43 @@ export type TimeData = {
   [key: string]: number // Add index signature to allow access by variable key
 }
 
-const TIME_CONFIG = [
-  { key: 'y', label: 'Years', pad: 0, forceShow: false },
-  { key: 'mo', label: 'Months', pad: 2, forceShow: false },
-  { key: 'd', label: 'Days', pad: 2, forceShow: false },
-  { key: 'h', label: 'Hours', pad: 2, forceShow: true },
-  { key: 'm', label: 'Minutes', pad: 2, forceShow: true },
-  { key: 's', label: 'Seconds', pad: 2, forceShow: true },
-  {
-    key: 'ms',
-    label: 'Milliseconds',
-    pad: 3,
-    separator: '.',
-    forceShow: false,
-  },
-] as const
+export default function Timer({
+  time,
+  showMilliseconds = false,
+}: {
+  time: TimeData
+  showMilliseconds?: boolean
+}) {
+  const dict = useDict()
+  const { timer: t } = dict
 
-export default function Timer({ time }: { time: TimeData }) {
   const visibleParts = useMemo(() => {
-    return TIME_CONFIG.map((config) => {
-      const value = time[config.key]
-      return { ...config, value }
-    }).filter((part) => part.forceShow || part.value > 0)
-  }, [time])
+    const config = [
+      { key: 'd', label: t.days, pad: 0, visible: true },
+      { key: 'h', label: t.hours, pad: 2, visible: true },
+      { key: 'm', label: t.minutes, pad: 2, visible: true },
+      { key: 's', label: t.seconds, pad: 2, visible: true },
+      {
+        key: 'ms',
+        label: t.milliseconds,
+        pad: 3,
+        separator: '.',
+        visible: showMilliseconds,
+      },
+    ]
+
+    return config
+      .map((c) => ({ ...c, value: time[c.key] }))
+      .filter((part) => {
+        if (part.key === 'ms') {
+          return part.visible
+        }
+        return part.value > 0 || part.key === 'h' || part.key === 'm' || part.key === 's'
+      })
+  }, [time, t, showMilliseconds])
 
   return (
-    <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+    <div className="flex flex-wrap justify-center gap-y-6 gap-x-2 sm:gap-x-4 md:gap-x-6">
       {visibleParts.map((part, index) => {
         const isLast = index === visibleParts.length - 1
         const nextPart = !isLast ? visibleParts[index + 1] : null
@@ -54,11 +66,8 @@ export default function Timer({ time }: { time: TimeData }) {
 
             {!isLast && (
               <span
-                className={`-mt-1 text-2xl font-bold sm:text-4xl ${
-                  separator === '.'
-                    ? 'text-muted-foreground'
-                    : 'text-foreground'
-                }`}
+                className={`-mt-1 text-xl font-bold sm:text-2xl md:text-3xl ${separator === '.' ? 'text-muted-foreground' : 'text-foreground'
+                  }`}
               >
                 {separator}
               </span>

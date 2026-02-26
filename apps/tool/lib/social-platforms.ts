@@ -106,7 +106,7 @@ export const SOCIAL_PLATFORMS: SocialPlatform[] = [
     name: 'Apple',
     domain: 'apple.com',
     pattern: /(?:www\.)?apple\.com/,
-    logo: 'https://cdn-icons-png.flaticon.com/512/0/747.png',
+    logo: 'https://cdn-icons-png.flaticon.com/128/2504/2504884.png',
   },
   {
     name: 'Netflix',

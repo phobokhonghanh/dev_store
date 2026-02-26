@@ -1,5 +1,4 @@
-import NavbarLayout from '@/components/navbar'
-import VersionBadge from '@/components/VersionBadge'
+import { Navbar as NavbarLayout, VersionBadge } from '@/components/layout'
 import { LocaleProvider } from '@/lib/hooks/useLocale'
 import Footer from '@origini/components/Footer'
 import Head from '@origini/components/Head'

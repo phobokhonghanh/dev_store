@@ -1,159 +1,211 @@
-'use client'
-
-import { SOCIAL_PLATFORMS } from '@/lib/social-platforms'
 import { cn } from '@origini/libs/utils'
 import {
-  ChevronLeft,
-  ChevronRight,
   Image as ImageIcon,
-  Search,
   Trash2,
+  Upload,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { Label } from '../../Form'
+import { useDict } from '@/lib/hooks/useDict'
+import { useCallback, useState } from 'react'
+import { ToolSection } from '@/components/tools/shared'
+import { DestructiveButton } from '@/components/ui/ActionButton'
 
+/**
+ * Props for the LogoManager component.
+ * 
+ * Following Single Responsibility Principle:
+ * This component ONLY handles logo display and upload UI.
+ * State management is handled by the parent via callbacks.
+ */
 interface LogoManagerProps {
-  /** Effective logo being used */
+  /** The URL of the currently selected logo image */
   currentLogo?: string | null
-  /** Callback to set logo manually */
+  /** Callback function triggered when a logo is selected (file upload) or removed */
   onSelectLogo: (logoUrl: string | null) => void
-  /** Toggle for logo visibility */
+  /** Controls the overall visibility of the manager UI */
   showLogo: boolean
 }
 
-const ITEMS_PER_PAGE = 8
-
+/**
+ * Simplified LogoManager component.
+ * 
+ * Features:
+ * - Active logo preview with remove capability
+ * - Prominent drag-and-drop upload area
+ * - File validation with error handling
+ * 
+ * Removed (as per plan):
+ * - Social platform preset selection
+ * - Search/pagination functionality
+ */
 export function LogoManager({
   currentLogo,
   onSelectLogo,
   showLogo,
 }: LogoManagerProps) {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [page, setPage] = useState(0)
+  const dict = useDict()
+  const t = dict.logoManager
 
-  const filteredPlatforms = useMemo(() => {
-    return SOCIAL_PLATFORMS.filter((p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()),
-    )
-  }, [searchTerm])
+  // Local state for drag-and-drop feedback
+  const [isDragging, setIsDragging] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
 
-  const totalPages = Math.ceil(filteredPlatforms.length / ITEMS_PER_PAGE)
-  const paginatedPlatforms = filteredPlatforms.slice(
-    page * ITEMS_PER_PAGE,
-    (page + 1) * ITEMS_PER_PAGE,
-  )
+  /**
+   * Handles file processing from both input and drop events.
+   * Validates file type and converts to Data URL.
+   */
+  const processFile = useCallback((file: File | null) => {
+    if (!file) return
 
-  const handleSelect = (url: string) => {
-    onSelectLogo(url)
-    // If selecting a preset, maybe we should disable auto-detect?
-    // User choice usually overrides auto-detect until they change the URL again.
-  }
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please select an image file')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('File size must be less than 5MB')
+      return
+    }
+
+    setUploadError(null)
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string
+      if (dataUrl) {
+        onSelectLogo(dataUrl)
+      }
+    }
+    reader.onerror = () => {
+      setUploadError('Failed to read file')
+    }
+    reader.readAsDataURL(file)
+  }, [onSelectLogo])
+
+  /**
+   * Handle file input change
+   */
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null
+    processFile(file)
+    e.target.value = '' // Reset to allow re-upload of same file
+  }, [processFile])
+
+  /**
+   * Handle drag events for the drop zone
+   */
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(true)
+  }, [])
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+  }, [])
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+    const file = e.dataTransfer.files?.[0] ?? null
+    processFile(file)
+  }, [processFile])
+
+  /**
+   * Remove the current logo
+   */
+  const handleRemove = useCallback(() => {
+    onSelectLogo(null)
+    setUploadError(null)
+  }, [onSelectLogo])
+
+  // Early return if component is hidden
+  if (!showLogo) return null
 
   return (
-    <div className="bg-muted/30 border-border space-y-4 rounded-xl border p-4">
-      {showLogo && (
-        <div className="space-y-4 pt-2">
-          <div className="flex items-center gap-3">
-            <div className="bg-background relative flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border-2 border-dashed">
-              {currentLogo ? (
-                <img
-                  src={currentLogo}
-                  alt="Current Logo"
-                  className="h-full w-full rounded object-contain p-1"
-                />
-              ) : (
-                <ImageIcon size={24} className="text-muted-foreground/40" />
-              )}
-              {currentLogo && (
-                <button
-                  onClick={() => onSelectLogo(null)}
-                  className="absolute -top-2 -right-2 rounded-full bg-red-500 p-1 text-white shadow-sm hover:bg-red-600"
-                >
-                  <Trash2 size={10} />
-                </button>
-              )}
+    <ToolSection title={t.activeLogo} icon={ImageIcon} className="bg-muted/10">
+      <div className="space-y-4 pt-2">
+        {/* Active Logo Preview */}
+        {currentLogo && (
+          <div className="flex items-center gap-4 p-3 rounded-lg bg-background border">
+            <div className="relative h-16 w-16 shrink-0 rounded-lg border-2 overflow-hidden bg-white">
+              <img
+                src={currentLogo}
+                alt={t.activeLogo}
+                className="h-full w-full object-contain p-1"
+                onError={() => setUploadError('Failed to load image')}
+              />
             </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-bold">Active Logo</span>
-              <p className="text-muted-foreground text-xs">
-                {currentLogo
-                  ? 'Logo will be displayed in center'
-                  : 'No logo selected'}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground truncate">
+                {t.activeLogoDesc || 'Logo Selected'}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Click remove to clear
               </p>
             </div>
+            <DestructiveButton
+              onClick={handleRemove}
+              icon={<Trash2 size={14} />}
+              aria-label="Remove Logo"
+            >
+              Remove
+            </DestructiveButton>
+          </div>
+        )}
+
+        {/* Upload Area */}
+        <label
+          className={cn(
+            'relative flex flex-col items-center justify-center gap-2 p-6 rounded-xl border-2 border-dashed cursor-pointer transition-all',
+            isDragging
+              ? 'border-primary bg-primary/5 scale-[1.02]'
+              : 'border-muted-foreground/20 hover:border-primary/50 hover:bg-muted/30',
+            currentLogo && 'py-4'
+          )}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          <input
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={handleFileChange}
+          />
+
+          <div className={cn(
+            'flex items-center justify-center w-12 h-12 rounded-full transition-colors',
+            isDragging ? 'bg-primary/20' : 'bg-muted'
+          )}>
+            <Upload size={20} className={cn(
+              isDragging ? 'text-primary' : 'text-muted-foreground'
+            )} />
           </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
-                Preset Logos
-              </Label>
-              <div className="relative">
-                <Search
-                  size={14}
-                  className="text-muted-foreground absolute top-1/2 left-2 -translate-y-1/2"
-                />
-                <input
-                  type="text"
-                  placeholder="Filter..."
-                  className="bg-background focus:ring-primary h-7 w-24 rounded-md border pr-2 pl-7 text-xs focus:ring-1 focus:outline-none"
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value)
-                    setPage(0)
-                  }}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-4 gap-2">
-              {paginatedPlatforms.map((platform) => (
-                <button
-                  key={platform.name}
-                  onClick={() => handleSelect(platform.logo)}
-                  className={cn(
-                    'bg-background hover:border-primary/50 hover:bg-primary/5 flex flex-col items-center gap-1 rounded-lg border p-2 transition-all',
-                    currentLogo === platform.logo &&
-                      'border-primary ring-primary ring-1',
-                  )}
-                  title={platform.name}
-                >
-                  <img
-                    src={platform.logo}
-                    alt={platform.name}
-                    className="h-6 w-6 object-contain"
-                  />
-                  <span className="line-clamp-1 w-full text-center text-[8px]">
-                    {platform.name}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 pt-1">
-                <button
-                  disabled={page === 0}
-                  onClick={() => setPage(page - 1)}
-                  className="hover:bg-muted rounded p-1 disabled:opacity-30"
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                <span className="text-muted-foreground text-[10px] font-medium">
-                  {page + 1} / {totalPages}
-                </span>
-                <button
-                  disabled={page === totalPages - 1}
-                  onClick={() => setPage(page + 1)}
-                  className="hover:bg-muted rounded p-1 disabled:opacity-30"
-                >
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-            )}
+          <div className="text-center">
+            <p className="text-sm font-medium text-foreground">
+              {currentLogo ? 'Replace Logo' : 'Upload Logo'}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Drag & drop or click to select
+            </p>
           </div>
-        </div>
-      )}
-    </div>
+
+          <p className="text-[10px] text-muted-foreground/60 uppercase tracking-wide">
+            PNG, JPG, SVG, GIF (max 5MB)
+          </p>
+        </label>
+
+        {/* Error Message */}
+        {uploadError && (
+          <div className="flex items-center gap-2 p-2 rounded-md bg-destructive/10 text-destructive text-xs">
+            <span>⚠️</span>
+            <span>{uploadError}</span>
+          </div>
+        )}
+      </div>
+    </ToolSection>
   )
 }

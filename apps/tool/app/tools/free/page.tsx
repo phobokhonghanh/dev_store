@@ -1,6 +1,6 @@
 'use client'
 
-import { AutoBreadcrumbs } from '@/components/AutoBreadcrumbs'
+import { AutoBreadcrumbs } from '@/components/layout'
 import { useLocale } from '@/lib/hooks/useLocale'
 import { getAppDict } from '@/lib/i18n'
 import { getToolsRoutes, NavRoute } from '@/lib/tools-routes'

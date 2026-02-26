@@ -1,9 +1,9 @@
 'use client'
 
-import { Field, Input } from '@/components/Form'
+import { Field, Input } from '@/components/form'
 import { DEFAULT_LOCALE, type SupportedLocale } from '@/lib/config'
 import { getAppDict } from '@/lib/i18n'
-import { SmsData } from '@/lib/qrcode-utils'
+import { SmsData } from '@/lib/qr'
 import { useMemo } from 'react'
 
 interface SmsFormProps {

@@ -1,11 +1,10 @@
-'use client'
-
-import { Field, Input, Select } from '@/components/Form'
+import { Field, Input } from '@/components/form'
 import { DEFAULT_LOCALE, type SupportedLocale } from '@/lib/config'
 import { getAppDict } from '@/lib/i18n'
-import { PaymentData } from '@/lib/qrcode-utils'
-import { BANKS } from '@/lib/vietqr'
-import { useMemo } from 'react'
+import { PaymentData } from '@/lib/qr'
+import { useMemo, useCallback } from 'react'
+import { BankSelect } from './BankSelect'
+import { FormGrid } from '../../shared/FormGrid'
 
 interface PaymentFormProps {
   data: PaymentData
@@ -20,75 +19,56 @@ export function PaymentForm({
 }: PaymentFormProps) {
   const dict = useMemo(() => getAppDict(locale).payment, [locale])
 
+  const handleUpdate = useCallback(
+    (field: keyof PaymentData, value: string) => {
+      onChange({ ...data, [field]: value })
+    },
+    [data, onChange],
+  )
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Field label={dict.bankLabel}>
-        <Select
+        <BankSelect
           value={data.bankBin}
-          onChange={(e) =>
-            onChange({
-              ...data,
-              bankBin: e.currentTarget.value,
-            })
-          }
-        >
-          {BANKS.map((bank) => (
-            <option key={bank.bin} value={bank.bin}>
-              {bank.shortName} - {bank.name}
-            </option>
-          ))}
-        </Select>
+          onChange={(val) => handleUpdate('bankBin', val)}
+          placeholder={dict.bankPlaceholder} // Assuming we might add this to i18n later or use default
+        />
       </Field>
-      <div className="grid grid-cols-2 gap-4">
+
+      <FormGrid>
         <Field label={dict.accountLabel}>
           <Input
             placeholder={dict.accountPlaceholder}
             value={data.account}
-            onChange={(e) =>
-              onChange({
-                ...data,
-                account: e.currentTarget.value,
-              })
-            }
+            onChange={(e) => handleUpdate('account', e.currentTarget.value)}
           />
         </Field>
         <Field label={dict.amountLabel}>
           <Input
             placeholder={dict.amountPlaceholder}
             value={data.amount}
-            onChange={(e) =>
-              onChange({
-                ...data,
-                amount: e.currentTarget.value,
-              })
-            }
+            onChange={(e) => handleUpdate('amount', e.currentTarget.value)}
           />
         </Field>
-      </div>
-      <Field label={dict.accountNameLabel}>
-        <Input
-          placeholder={dict.accountNamePlaceholder}
-          value={data.name}
-          onChange={(e) =>
-            onChange({
-              ...data,
-              name: e.currentTarget.value,
-            })
-          }
-        />
-      </Field>
-      <Field label={dict.messageLabel}>
-        <Input
-          placeholder={dict.messagePlaceholder}
-          value={data.content}
-          onChange={(e) =>
-            onChange({
-              ...data,
-              content: e.currentTarget.value,
-            })
-          }
-        />
-      </Field>
+      </FormGrid>
+
+      <FormGrid>
+        <Field label={dict.accountNameLabel}>
+          <Input
+            placeholder={dict.accountNamePlaceholder}
+            value={data.name}
+            onChange={(e) => handleUpdate('name', e.currentTarget.value)}
+          />
+        </Field>
+        <Field label={dict.messageLabel}>
+          <Input
+            placeholder={dict.messagePlaceholder}
+            value={data.content}
+            onChange={(e) => handleUpdate('content', e.currentTarget.value)}
+          />
+        </Field>
+      </FormGrid>
     </div>
   )
 }

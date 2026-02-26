@@ -1,10 +1,10 @@
 'use client'
 
-import { Field, Input, Label } from '@/components/Form'
+import { Field, Input, Label } from '@/components/form'
 import { CONFIG, DEFAULT_LOCALE } from '@/lib/config'
 import { useGoogleMaps } from '@/lib/hooks/useGoogleMaps'
 import { getDict } from '@/lib/i18n'
-import { LocationData } from '@/lib/qrcode-utils'
+import { LocationData } from '@/lib/qr'
 import { Globe, Loader2, Map, MapPin, Navigation } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -56,6 +56,12 @@ export function LocationForm({
     searching: false,
   })
   const [error, setError] = useState<string | null>(null)
+
+  // Search suggestions state
+  const [searchQuery, setSearchQuery] = useState('')
+  const [suggestions, setSuggestions] = useState<Array<{ display_name: string; lat: string; lon: string }>>([]
+  )
+  const [showSuggestions, setShowSuggestions] = useState(false)
 
   // Map provider state
   const [mapProvider, setMapProvider] = useState<MapProvider>('leaflet')
@@ -148,17 +154,20 @@ export function LocationForm({
     }
   }, [data.lat, data.lng, setPosition, mapProvider])
 
-  // Nominatim Search for Leaflet/OSM
+  // Nominatim Search for Leaflet/OSM - returns suggestions
   const handleNominatimSearch = useCallback(
-    async (query: string) => {
-      if (!query.trim()) return
+    async (query: string, selectFirst = false) => {
+      if (!query.trim()) {
+        setSuggestions([])
+        return
+      }
 
       setLoading((prev) => ({ ...prev, searching: true }))
       setError(null)
 
       try {
         const res = await fetch(
-          `${CONFIG.NOMINATIM_URL}?format=json&q=${encodeURIComponent(query)}&limit=1`,
+          `${CONFIG.NOMINATIM_URL}?format=json&q=${encodeURIComponent(query)}&limit=5`,
           { headers: { 'User-Agent': CONFIG.MAP.USER_AGENT } },
         )
 
@@ -167,21 +176,60 @@ export function LocationForm({
         const results = await res.json()
 
         if (results?.length > 0) {
-          handlePositionChange(
-            parseFloat(results[0].lat),
-            parseFloat(results[0].lon),
-          )
+          if (selectFirst) {
+            // Direct selection (e.g., Enter key)
+            handlePositionChange(
+              parseFloat(results[0].lat),
+              parseFloat(results[0].lon),
+            )
+            setSuggestions([])
+            setShowSuggestions(false)
+          } else {
+            // Show suggestions dropdown
+            setSuggestions(results)
+            setShowSuggestions(true)
+          }
         } else {
           setError(dict.errorNoResults)
+          setSuggestions([])
         }
       } catch {
         setError(dict.errorSearchFailed)
+        setSuggestions([])
       } finally {
         setLoading((prev) => ({ ...prev, searching: false }))
       }
     },
     [handlePositionChange, dict],
   )
+
+  // Handle suggestion selection
+  const handleSelectSuggestion = useCallback(
+    (suggestion: { lat: string; lon: string }) => {
+      handlePositionChange(
+        parseFloat(suggestion.lat),
+        parseFloat(suggestion.lon),
+      )
+      setSuggestions([])
+      setShowSuggestions(false)
+      setSearchQuery('')
+    },
+    [handlePositionChange],
+  )
+
+  // Debounced search as user types
+  useEffect(() => {
+    if (!searchQuery.trim() || mapProvider === 'google') {
+      setSuggestions([])
+      return
+    }
+
+    const timer = setTimeout(() => {
+      handleNominatimSearch(searchQuery, false)
+    }, 400)
+
+    return () => clearTimeout(timer)
+  }, [searchQuery, mapProvider, handleNominatimSearch])
 
   const handleGetCurrentLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -244,22 +292,20 @@ export function LocationForm({
         <div className="bg-muted/20 flex gap-1 rounded-md p-0.5">
           <button
             onClick={handleGoogleProviderClick}
-            className={`flex cursor-pointer items-center gap-1.5 rounded px-2.5 py-1 text-xs transition-all ${
-              isGoogleMode
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
+            className={`flex cursor-pointer items-center gap-1.5 rounded px-2.5 py-1 text-xs transition-all ${isGoogleMode
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+              }`}
           >
             <Map size={12} />
             {dict.mapProviderGoogle}
           </button>
           <button
             onClick={() => setMapProvider('leaflet')}
-            className={`flex cursor-pointer items-center gap-1.5 rounded px-2.5 py-1 text-xs transition-all ${
-              !isGoogleMode
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
+            className={`flex cursor-pointer items-center gap-1.5 rounded px-2.5 py-1 text-xs transition-all ${!isGoogleMode
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+              }`}
           >
             <Globe size={12} />
             {dict.mapProviderOSM}
@@ -267,7 +313,7 @@ export function LocationForm({
         </div>
       </div>
 
-      {/* Search Input */}
+      {/* Search Input with Suggestions */}
       <div className="relative">
         <Field label={dict.searchLabel}>
           <div className="relative">
@@ -278,11 +324,19 @@ export function LocationForm({
                   ? dict.searchPlaceholderGoogle
                   : dict.searchPlaceholderOSM
               }
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !isGoogleMode) {
-                  handleNominatimSearch(e.currentTarget.value)
+              value={isGoogleMode ? undefined : searchQuery}
+              onChange={(e) => {
+                if (!isGoogleMode) {
+                  setSearchQuery(e.currentTarget.value)
                 }
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !isGoogleMode) {
+                  handleNominatimSearch(searchQuery, true)
+                }
+              }}
+              onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
               className="pr-10"
             />
             <div className="text-muted-foreground absolute top-1/2 right-3 flex -translate-y-1/2 gap-2">
@@ -300,8 +354,25 @@ export function LocationForm({
             </div>
           </div>
         </Field>
+
+        {/* Suggestions Dropdown */}
+        {showSuggestions && suggestions.length > 0 && (
+          <div className="bg-background absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-md border shadow-lg">
+            {suggestions.map((s, i) => (
+              <button
+                key={i}
+                type="button"
+                className="hover:bg-muted/50 w-full cursor-pointer px-3 py-2 text-left text-xs transition-colors"
+                onMouseDown={() => handleSelectSuggestion(s)}
+              >
+                <span className="line-clamp-2">{s.display_name}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
         {error && (
-          <p className="text-destructive mt-1 ml-1 text-[10px]">{error}</p>
+          <p className="text-primary mt-1 ml-1 text-[10px]">{error}</p>
         )}
       </div>
 

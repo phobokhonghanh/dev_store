@@ -8,8 +8,8 @@ import {
   generateVCardString,
   generateWifiString,
   WiFiData,
-} from '@/lib/qrcode-utils'
-import { getBankByBinOrShortName } from '@/lib/vietqr'
+} from '@/lib/qr'
+import { getBankByBinOrShortName } from '@/lib/qr/vietqr'
 import { NextRequest, NextResponse } from 'next/server'
 import QRCode from 'qrcode'
 
@@ -106,10 +106,27 @@ export async function GET(req: NextRequest) {
       }
       case 'email': {
         const emailAddr = searchParams.get('email') || ''
+
+        // Handle array params for cc/bcc (e.g. ?cc=a&cc=b) or comma-separated string
+        const getMultiParam = (key: string) => {
+          const all = searchParams.getAll(key)
+          if (all.length > 1) return all.join(',')
+          return searchParams.get(key) || ''
+        }
+
+        const cc = getMultiParam('cc')
+        const bcc = getMultiParam('bcc')
+
         const subject = searchParams.get('subject') || ''
         const body = searchParams.get('body') || ''
         if (emailAddr) {
-          qrValue = generateEmailString({ email: emailAddr, subject, body })
+          qrValue = generateEmailString({
+            email: emailAddr,
+            cc,
+            bcc,
+            subject,
+            body,
+          })
         }
         break
       }
@@ -169,8 +186,83 @@ export async function GET(req: NextRequest) {
         'Cache-Control': 'public, max-age=31536000, immutable',
       },
     })
-  } catch (err) {
+  } catch (err: any) {
     console.error('QR Generation Error:', err)
+
+    // Handle "Data too long" error from node-qrcode
+    if (err.message && (err.message.includes('amount of data') || err.message.includes('too big'))) {
+      return new NextResponse('Data too long for QR code. Please reduce content.', { status: 400 })
+    }
+
+    return new NextResponse('Internal Server Error', { status: 500 })
+  }
+}
+
+// Shared generation logic
+const generateQR = (type: string, data: any): string => {
+  switch (type) {
+    case 'email':
+      return generateEmailString({
+        email: data.email || '',
+        cc: data.cc || '',
+        bcc: data.bcc || '',
+        subject: data.subject || '',
+        body: data.body || '',
+      })
+    // Add other cases as needed by extracting logic from GET
+    default:
+      return ''
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json()
+    const { type, ...data } = body
+
+    // Validate type
+    if (!type) {
+      return new NextResponse('Missing QR type', { status: 400 })
+    }
+
+    let qrValue = ''
+
+    // For now only email uses POST large payload
+    if (type === 'email') {
+      qrValue = generateQR('email', data)
+    } else {
+      // Fallback or other types implementation
+      // For this task, we focus on email
+      return new NextResponse('Type not supported for POST yet', { status: 400 })
+    }
+
+    if (!qrValue) {
+      return new NextResponse('Failed to generate QR content', { status: 400 })
+    }
+
+    // Generate QR Image
+    const qrBuffer = await QRCode.toBuffer(qrValue, {
+      width: 1024,
+      margin: 1,
+      color: {
+        dark: data.fgColor || '#000000',
+        light: data.bgColor || '#ffffff',
+      },
+      errorCorrectionLevel: (data.level as any) || 'M',
+    })
+
+    return new NextResponse(qrBuffer as any, {
+      headers: {
+        'Content-Type': 'image/png',
+        'Cache-Control': 'public, max-age=31536000, immutable',
+      },
+    })
+
+  } catch (err: any) {
+    console.error('QR POST Generation Error:', err)
+    if (err.message && (err.message.includes('amount of data') || err.message.includes('too big'))) {
+      return new NextResponse('Data too long for QR code. Please reduce content.', { status: 400 })
+    }
     return new NextResponse('Internal Server Error', { status: 500 })
   }
 }

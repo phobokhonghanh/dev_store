@@ -8,9 +8,9 @@ import {
 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { AutoBreadcrumbs } from '@/components/AutoBreadcrumbs'
-import { Field, Input } from '@/components/Form'
-import Fullscreen from '@/components/FullscreenWrapper'
+import { AutoBreadcrumbs } from '@/components/layout'
+import { Field, Input } from '@/components/form'
+import Fullscreen from '@/components/layout/FullscreenWrapper'
 import Timer, { TimeData } from '@/components/tools/time/Timer'
 import { useLocale } from '@/lib/hooks/useLocale'
 import { getAppDict } from '@/lib/i18n'
@@ -27,6 +27,7 @@ export default function ToolsCountdownPage() {
   const t = dict.countdownPage
 
   const [isLoading] = useState(false)
+  const [showMS, setShowMS] = useState(false)
 
   /** Target duration set by the user */
   const [target, setTarget] = useState({
@@ -36,52 +37,57 @@ export default function ToolsCountdownPage() {
     seconds: 0,
   })
 
-  /** Remaining seconds in the active countdown */
-  const [timeLeft, setTimeLeft] = useState(0)
+  /** Remaining milliseconds in the active countdown */
+  const [timeLeftMS, setTimeLeftMS] = useState(0)
   /** Whether the timer is currently ticking */
   const [running, setRunning] = useState(false)
 
-  /** Core timer effect: decrements timeLeft every second when running */
+  /** Core timer effect: decrements timeLeftMS every 10ms when running */
   useEffect(() => {
     if (!running) return
 
+    const startTime = Date.now()
+    const initialTimeLeft = timeLeftMS
+
     const interval = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval)
-          setRunning(false)
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
+      const elapsed = Date.now() - startTime
+      const nextTimeLeft = Math.max(0, initialTimeLeft - elapsed)
+
+      setTimeLeftMS(nextTimeLeft)
+
+      if (nextTimeLeft <= 0) {
+        setRunning(false)
+        clearInterval(interval)
+      }
+    }, 10)
 
     return () => clearInterval(interval)
-  }, [running])
+  }, [running]) // Removed timeLeftMS from deps to avoid frequent interval resets
 
-  /** Calculates total seconds from the 'target' state object */
-  const calcSeconds = useCallback(
+  /** Calculates total milliseconds from the 'target' state object */
+  const calcTotalMS = useCallback(
     () =>
-      target.days * 86400 +
-      target.hours * 3600 +
-      target.minutes * 60 +
-      target.seconds,
+      (target.days * 86400 +
+        target.hours * 3600 +
+        target.minutes * 60 +
+        target.seconds) *
+      1000,
     [target],
   )
 
   /** Starts or resumes the countdown */
   const start = useCallback(() => {
-    const sec = calcSeconds()
-    if (sec <= 0) return
+    const totalMS = calcTotalMS()
+    if (totalMS <= 0) return
 
-    if (timeLeft > 0) {
+    if (timeLeftMS > 0) {
       setRunning(true)
       return
     }
 
-    setTimeLeft(sec)
+    setTimeLeftMS(totalMS)
     setRunning(true)
-  }, [calcSeconds, timeLeft])
+  }, [calcTotalMS, timeLeftMS])
 
   /** Pauses the active countdown */
   const pause = useCallback(() => setRunning(false), [])
@@ -89,7 +95,7 @@ export default function ToolsCountdownPage() {
   /** Resets the timer to the beginning of the last set duration */
   const reset = useCallback(() => {
     setRunning(false)
-    setTimeLeft(0)
+    setTimeLeftMS(0)
   }, [])
 
   /** Clears all target inputs and resets the timer */
@@ -102,12 +108,20 @@ export default function ToolsCountdownPage() {
     })
 
     setRunning(false)
-    setTimeLeft(0)
+    setTimeLeftMS(0)
   }
 
   /** Register global keyboard shortcuts for the timer */
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      const activeElement = document.activeElement
+      const isInput =
+        activeElement?.tagName === 'INPUT' ||
+        activeElement?.tagName === 'TEXTAREA' ||
+        activeElement?.getAttribute('contenteditable') === 'true'
+
+      if (isInput) return
+
       if (e.code === 'Space') {
         e.preventDefault()
         if (running) {
@@ -116,7 +130,9 @@ export default function ToolsCountdownPage() {
           start()
         }
       }
-      if (e.key.toLowerCase() === 'r') reset()
+      if (e.key.toLowerCase() === 'r') {
+        reset()
+      }
     }
 
     window.addEventListener('keydown', handler)
@@ -124,40 +140,45 @@ export default function ToolsCountdownPage() {
   }, [running, start, pause, reset])
 
   /**
-   * Converts raw seconds into a structured TimeData object for the Timer component.
-   * @param sec Total seconds
+   * Converts raw milliseconds into a structured TimeData object.
+   * @param totalMS Total milliseconds
    * @returns Structured TimeData
    */
-  const formatTime = (sec: number): TimeData => {
-    const d = Math.floor(sec / 86400)
-    const h = Math.floor((sec % 86400) / 3600)
-    const m = Math.floor((sec % 3600) / 60)
-    const s = sec % 60
+  const formatTime = (totalMS: number): TimeData => {
+    // Add 50ms epsilon so the timer feels "fuller"
+    let remaining = totalMS + 50
 
-    return {
-      y: 0,
-      mo: 0,
-      d,
-      h,
-      m,
-      s,
-      ms: 0,
-    }
+    const y = 0
+    const mo = 0
+
+    const d = Math.floor(remaining / (86400 * 1000))
+    remaining %= 86400 * 1000
+
+    const h = Math.floor(remaining / (3600 * 1000))
+    remaining %= 3600 * 1000
+
+    const m = Math.floor(remaining / (60 * 1000))
+    remaining %= 60 * 1000
+
+    const s = Math.floor(remaining / 1000)
+    const ms = remaining % 1000
+
+    return { y, mo, d, h, m, s, ms }
   }
 
   /** The time object passed to the visual Timer display */
   const timeObj =
-    !running && timeLeft === 0
+    !running && timeLeftMS === 0
       ? {
-          y: 0,
-          mo: 0,
-          d: target.days,
-          h: target.hours,
-          m: target.minutes,
-          s: target.seconds,
-          ms: 0,
-        }
-      : formatTime(timeLeft)
+        y: 0,
+        mo: 0,
+        d: target.days,
+        h: target.hours,
+        m: target.minutes,
+        s: target.seconds,
+        ms: 0,
+      }
+      : formatTime(timeLeftMS)
 
   return (
     <div className="p-4 md:p-8">
@@ -169,14 +190,32 @@ export default function ToolsCountdownPage() {
       <div className="mb-4">
         <AutoBreadcrumbs routes={routes} />
       </div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-green-600 dark:text-green-500">
-          {t.title}
-        </h2>
-        <p className="text-muted-foreground mt-1 text-sm">{t.description}</p>
+      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <h2 className="text-2xl font-bold text-green-600 dark:text-green-500">
+            {t.title}
+          </h2>
+          <p className="text-muted-foreground mt-1 text-sm">{t.description}</p>
+        </div>
+
+        {/* Visibility Toggles */}
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+          <div className="flex items-center gap-3">
+            <span className="text-muted-foreground text-sm font-medium">{t.showMilliseconds}</span>
+            <button
+              onClick={() => setShowMS(!showMS)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${showMS ? 'bg-primary' : 'bg-muted'
+                }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${showMS ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+              />
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Target Settings */}
       <div className="bg-card text-card-foreground mb-8 rounded-xl border p-6 shadow-sm">
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
           <Field label={t.days}>
@@ -184,7 +223,7 @@ export default function ToolsCountdownPage() {
               type="number"
               value={target.days}
               onChange={(e) =>
-                setTarget({ ...target, days: Number(e.target.value) || 0 })
+                setTarget({ ...target, days: Math.max(0, Number(e.target.value) || 0) })
               }
               min={0}
             />
@@ -194,10 +233,9 @@ export default function ToolsCountdownPage() {
               type="number"
               value={target.hours}
               onChange={(e) =>
-                setTarget({ ...target, hours: Number(e.target.value) || 0 })
+                setTarget({ ...target, hours: Math.max(0, Number(e.target.value) || 0) })
               }
               min={0}
-              max={23}
             />
           </Field>
           <Field label={t.minutes}>
@@ -205,10 +243,9 @@ export default function ToolsCountdownPage() {
               type="number"
               value={target.minutes}
               onChange={(e) =>
-                setTarget({ ...target, minutes: Number(e.target.value) || 0 })
+                setTarget({ ...target, minutes: Math.max(0, Number(e.target.value) || 0) })
               }
               min={0}
-              max={59}
             />
           </Field>
           <Field label={t.seconds}>
@@ -216,10 +253,9 @@ export default function ToolsCountdownPage() {
               type="number"
               value={target.seconds}
               onChange={(e) =>
-                setTarget({ ...target, seconds: Number(e.target.value) || 0 })
+                setTarget({ ...target, seconds: Math.max(0, Number(e.target.value) || 0) })
               }
               min={0}
-              max={59}
             />
           </Field>
         </div>
@@ -232,40 +268,43 @@ export default function ToolsCountdownPage() {
       >
         <Fullscreen targetId="timer-root" />
 
-        <div className="mb-4 scale-110 sm:scale-125 md:scale-150">
-          <Timer time={timeObj} />
+        <div className="mb-4 scale-90 sm:scale-110 md:scale-125">
+          <Timer
+            time={timeObj}
+            showMilliseconds={showMS}
+          />
         </div>
 
         <div className="mt-12 flex flex-wrap justify-center gap-4">
-          {!running && timeLeft === 0 && (
+          {!running && timeLeftMS === 0 && (
             <>
               <button
                 onClick={start}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-12 min-w-[120px] items-center justify-center rounded-full px-8 text-sm font-bold shadow-lg transition-all hover:scale-105"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-12 min-w-[140px] items-center justify-center rounded-full px-8 text-sm font-bold shadow-lg transition-all hover:scale-105"
               >
                 <IconPlayerPlay className="mr-2 h-5 w-5" /> {t.start}
               </button>
 
               <button
                 onClick={clear}
-                className="border-border bg-background hover:bg-accent inline-flex h-12 min-w-[120px] items-center justify-center rounded-full border px-8 text-sm font-bold shadow-sm transition-all hover:scale-105"
+                className="border-border bg-background hover:bg-accent inline-flex h-12 min-w-[140px] items-center justify-center rounded-full border px-8 text-sm font-bold shadow-sm transition-all hover:scale-105"
               >
                 <IconX className="mr-2 h-5 w-5" /> {t.clear}
               </button>
             </>
           )}
 
-          {!running && timeLeft > 0 && (
+          {!running && timeLeftMS > 0 && (
             <>
               <button
                 onClick={start}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-12 min-w-[120px] items-center justify-center rounded-full px-8 text-sm font-bold shadow-lg transition-all hover:scale-105"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-12 min-w-[140px] items-center justify-center rounded-full px-8 text-sm font-bold shadow-lg transition-all hover:scale-105"
               >
                 <IconPlayerPlay className="mr-2 h-5 w-5" /> {t.continue}
               </button>
               <button
                 onClick={reset}
-                className="border-border bg-background hover:bg-accent inline-flex h-12 min-w-[120px] items-center justify-center rounded-full border px-8 text-sm font-bold shadow-sm transition-all hover:scale-105"
+                className="border-border bg-background hover:bg-accent inline-flex h-12 min-w-[140px] items-center justify-center rounded-full border px-8 text-sm font-bold shadow-sm transition-all hover:scale-105"
               >
                 <IconRotate className="mr-2 h-5 w-5" /> {t.reset}
               </button>
@@ -276,13 +315,13 @@ export default function ToolsCountdownPage() {
             <>
               <button
                 onClick={pause}
-                className="bg-background inline-flex h-12 min-w-[120px] items-center justify-center rounded-full border border-red-200 px-8 text-sm font-bold text-red-600 shadow-sm transition-all hover:scale-105 hover:bg-red-50"
+                className="bg-background inline-flex h-12 min-w-[140px] items-center justify-center rounded-full border border-red-200 px-8 text-sm font-bold text-red-600 shadow-sm transition-all hover:scale-105 hover:bg-red-50"
               >
                 <IconPlayerPause className="mr-2 h-5 w-5" /> {t.pause}
               </button>
               <button
                 onClick={reset}
-                className="border-border bg-background hover:bg-accent inline-flex h-12 min-w-[120px] items-center justify-center rounded-full border px-8 text-sm font-bold shadow-sm transition-all hover:scale-105"
+                className="border-border bg-background hover:bg-accent inline-flex h-12 min-w-[140px] items-center justify-center rounded-full border px-8 text-sm font-bold shadow-sm transition-all hover:scale-105"
               >
                 <IconRotate className="mr-2 h-5 w-5" /> {t.reset}
               </button>

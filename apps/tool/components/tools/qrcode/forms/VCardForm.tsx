@@ -1,9 +1,9 @@
 'use client'
 
-import { Input, Label, Select } from '@/components/Form'
+import { Input, Label, Select } from '@/components/form'
 import { DEFAULT_LOCALE, type SupportedLocale } from '@/lib/config'
 import { getAppDict, VCardFormDict } from '@/lib/i18n'
-import { CustomField } from '@/lib/qrcode-utils'
+import { CustomField } from '@/lib/qr'
 import { Plus, Trash } from 'lucide-react'
 import { useCallback, useMemo } from 'react'
 
@@ -38,15 +38,15 @@ export function getInitialVCardFields(locale: SupportedLocale): VCardField[] {
 }
 
 interface VCardFormProps {
-  fields: VCardField[]
+  data: VCardField[]
   onChange: (fields: VCardField[]) => void
-  locale?: SupportedLocale
+  locale: SupportedLocale
 }
 
 export function VCardForm({
-  fields,
+  data: fields,
   onChange,
-  locale = DEFAULT_LOCALE,
+  locale,
 }: VCardFormProps) {
   const dict = useMemo(() => getAppDict(locale).vcard, [locale])
   const predefinedKeys = useMemo(() => getPredefinedKeys(dict), [dict])

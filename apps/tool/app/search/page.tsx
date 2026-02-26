@@ -1,6 +1,7 @@
 'use client'
 
-import { NavRoute, toolsRoutes } from '@/lib/tools-routes'
+import { useDict } from '@/lib/hooks/useDict'
+import { getToolsRoutes, NavRoute } from '@/lib/tools-routes'
 import { cn } from '@origini/libs/utils'
 import { Crown, Search } from 'lucide-react'
 import Link from 'next/link'
@@ -23,10 +24,16 @@ const getAllTools = (routes: NavRoute[]): NavRoute[] => {
 }
 
 export default function SearchPage() {
+  const dict = useDict()
+  const { searchPage: t } = dict
+
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState<'all' | 'free' | 'premium'>('all')
 
-  const allTools = useMemo(() => getAllTools(toolsRoutes), [])
+  const allTools = useMemo(() => {
+    const routes = getToolsRoutes(dict)
+    return getAllTools(routes)
+  }, [dict])
 
   const filteredTools = useMemo(() => {
     let tools = allTools
@@ -55,10 +62,10 @@ export default function SearchPage() {
       <div className="space-y-6 text-center">
         <div className="space-y-2">
           <h1 className="text-primary text-4xl font-extrabold tracking-tight lg:text-5xl">
-            Explore Toolkit
+            {t.title}
           </h1>
           <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
-            Powerful tools for developers, designers, and creators.
+            {t.subtitle}
           </p>
         </div>
 
@@ -71,7 +78,7 @@ export default function SearchPage() {
             <input
               type="text"
               className="border-border bg-card ring-offset-background placeholder:text-muted-foreground focus-visible:ring-primary h-14 w-full rounded-2xl border px-12 text-lg shadow-sm transition-all focus-visible:ring-2 focus-visible:outline-none"
-              placeholder="Search by name or description..."
+              placeholder={t.placeholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -80,9 +87,9 @@ export default function SearchPage() {
           {/* Filters */}
           <div className="flex items-center justify-center gap-2">
             {[
-              { id: 'all', label: 'All Tools' },
-              { id: 'free', label: 'Free' },
-              { id: 'premium', label: 'Premium' },
+              { id: 'all', label: t.filterAll },
+              { id: 'free', label: t.filterFree },
+              { id: 'premium', label: t.filterPremium },
             ].map((btn) => (
               <button
                 key={btn.id}
@@ -106,8 +113,8 @@ export default function SearchPage() {
         <div className="flex items-center justify-between border-b pb-4">
           <h2 className="text-xl font-bold tracking-tight">
             {searchTerm || filter !== 'all'
-              ? `Search Results (${filteredTools.length})`
-              : 'All Tools'}
+              ? `${t.resultsTitle} (${filteredTools.length})`
+              : t.allToolsTitle}
           </h2>
         </div>
 
@@ -116,9 +123,7 @@ export default function SearchPage() {
             <div className="bg-muted/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
               <Search className="text-muted-foreground h-8 w-8" />
             </div>
-            <p className="text-muted-foreground text-lg">
-              No tools found matching your criteria
-            </p>
+            <p className="text-muted-foreground text-lg">{t.noResults}</p>
             <button
               onClick={() => {
                 setSearchTerm('')
@@ -126,7 +131,7 @@ export default function SearchPage() {
               }}
               className="text-primary mt-4 font-medium hover:underline"
             >
-              Clear all filters
+              {t.clearFilters}
             </button>
           </div>
         ) : (
@@ -155,12 +160,12 @@ export default function SearchPage() {
                     </div>
                     <p className="text-muted-foreground mt-2 line-clamp-2 text-sm leading-relaxed">
                       {tool.description ||
-                        `Access the ${tool.label} utility for your development needs.`}
+                        t.defaultToolDesc.replace('{label}', tool.label)}
                     </p>
                   </div>
 
                   <div className="text-primary mt-2 flex items-center text-sm font-semibold opacity-0 transition-all duration-300 group-hover:opacity-100">
-                    Open Tool
+                    {t.openTool}
                     <span className="ml-1 transition-transform group-hover:translate-x-1">
                       →
                     </span>
