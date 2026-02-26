@@ -1,208 +1,235 @@
 'use client'
 
-import FileUploader from '@/components/common/FileUpload'
-import Fullscreen from '@/components/common/FullscreenWrapper'
-import { AutoBreadcrumbs } from '@/components/layout/AutoBreadcrumbs'
-import QRCode from '@/components/tools/qrcode/QRCode'
-import QRCodeTabs, { QRType } from '@/components/tools/qrcode/QRCodeTabs'
-import { toolsRoutes } from '@/data/tools'
-import { useDownload } from '@/hooks/tools/io/useDownload'
-import { useFileUpload } from '@/hooks/tools/io/useFileUpload'
-import { useClipboard } from '@/hooks/useClipboard'
-import { Check, Copy, Download } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { AutoBreadcrumbs } from '@/components/layout'
+import { EmbedSection, FAQSection } from '@/components/tools/shared'
+import { Toast } from '@/components/ui'
+import {
+  QRCode,
+  QRCodeTabs,
+  QRAppearanceForm,
+  QRType,
+} from '@/components/tools/qrcode'
+import { useLocale } from '@/lib/hooks/useLocale'
+import { getAppDict } from '@/lib/i18n'
+import { useQRCodeTool } from '@/lib/qr/hooks/useQRCodeTool'
+import { useFAQ } from '@/lib/hooks/useFAQ'
+import { useQREmbed } from '@/lib/qr/hooks/useQREmbed'
+import { getToolsRoutes } from '@/lib/tools-routes'
+import { Copy, Download } from 'lucide-react'
+import { useEffect, useMemo } from 'react'
+import type { SupportedLocale } from '@/lib/config'
 
-export default function QRCodeToolPage() {
-  // State: QR Content
+export default function QRCodePage() {
+  const { locale } = useLocale()
+  // Cast locale to SupportedLocale to satisfy getAppDict strict typing
+  const dict = useMemo(() => getAppDict(locale as SupportedLocale), [locale])
+  const routes = useMemo(() => getToolsRoutes(dict), [dict]) // Pass dict, not locale!
+
   const {
-    file: logoFile,
-    fileContent: logoSrc,
-    handleFileSelect: onSelectLogo,
-    clearFile: onClearLogo,
-    error: logoError,
-  } = useFileUpload({
-    accept: 'image/*',
-    readAs: 'DataURL',
+    // Content
+    qrType,
+    setQrType,
+    qrValue,
+    setQrValue,
+    // Appearance
+    appearance,
+    frameText,
+    setFrameText,
+    showLogo,
+    setShowLogo,
+    renderText,
+    setRenderText,
+    effectiveLogo,
+    // Logo state (separated for upload vs auto-detect)
+    setUploadedLogo,
+    setDetectedLogo,
+    // Utils
+    toast,
+    showToast,
+    hideToast,
+    handleDownload,
+    copyToClipboard,
+    qrRef
+  } = useQRCodeTool()
+
+  const { data: faqData } = useFAQ()
+
+  const currentFAQ = useMemo(() => {
+    if (!faqData) return []
+    // Allow fallback to default if specific tab not found
+    return faqData[qrType] || faqData['default'] || []
+  }, [faqData, qrType])
+  const { embedUrl, sheetsFormula, method } = useQREmbed({
+    value: qrValue,
+    type: qrType,
+    size: appearance.size,
+    fgColor: appearance.fgColor,
+    bgColor: appearance.bgColor,
+    domain: true,
   })
-  const [qrValue, setQrValue] = useState('')
-  const [qrType, setQrType] = useState<QRType>('url')
 
-  // State: Appearance Config
-  const [size, setSize] = useState<number>(256)
-  const [fgColor, setFgColor] = useState<string>('#000000')
-  const [bgColor, setBgColor] = useState<string>('#ffffff')
-  const [level, setLevel] = useState<'L' | 'M' | 'Q' | 'H'>('M')
-
-  const clipboard = useClipboard({ timeout: 2000 })
-  const { downloadCanvas } = useDownload()
-  const qrRef = useRef<HTMLDivElement>(null)
-  const handleDownload = () => {
-    const canvas = qrRef.current?.querySelector('canvas')
-    if (canvas) {
-      downloadCanvas(canvas, `qrcode-${qrType}-${Date.now()}`, 'png')
+  // --- Keyboard Shortcuts ---
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+Enter → Download
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault()
+        handleDownload()
+      }
+      // Ctrl+Shift+C → Copy QR value
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') {
+        e.preventDefault()
+        copyToClipboard(qrValue)
+      }
     }
-  }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleDownload, copyToClipboard, qrValue])
 
   return (
-    <div className="p-4 md:p-8">
-      {/* Header & Nav */}
-      <div className="mb-4">
-        <AutoBreadcrumbs routes={toolsRoutes} />
+    <div className="container mx-auto max-w-5xl space-y-8 p-4 pt-6 pb-20 md:p-6 md:pt-8">
+      {/* Header & Breadcrumbs */}
+      <div className="space-y-4">
+        <AutoBreadcrumbs routes={routes} />
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+            {dict.sidebar.qrCodeGenerator}
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            {dict.sidebar.qrCodeGeneratorDesc}
+          </p>
+        </div>
       </div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-green-600 dark:text-green-500">
-          QR Code Generator
-        </h2>
-        <p className="text-muted-foreground mt-1">
-          Generate customized QR codes for URLs, WiFi networks, VCards, and
-          more.
-        </p>
-      </div>
 
-      {/* Main Tool Container */}
-      <div className="bg-card text-card-foreground rounded-lg border p-6 shadow">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
-          {/* LEFT COLUMN: Inputs & Config */}
-          <div className="space-y-6 md:col-span-7">
-            {/* 1. Input Tabs */}
-            <QRCodeTabs
-              onCodeChange={(code, type) => {
-                setQrValue(code)
-                setQrType(type)
-              }}
-            />
+      <Toast
+        message={toast.message}
+        visible={toast.visible}
+        onClose={hideToast}
+      />
 
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="border-border w-full border-t"></div>
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background text-muted-foreground px-2">
-                  Display Settings
-                </span>
-              </div>
+      {/* Main Grid: Left (Tabs/Form) - Right (Preview/Actions) */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+
+        {/* Left Column: Input Forms */}
+        <div className="space-y-6 lg:col-span-7 xl:col-span-8">
+          {/* Unified Generator Panel */}
+          <div className="bg-card rounded-xl border shadow-sm overflow-hidden">
+            <div className="px-4 pt-4 pb-3">
+              <QRCodeTabs
+                activeTab={qrType}
+                onTabChange={setQrType}
+                onCodeChange={(result, type) => {
+                  setQrValue(result)
+                }}
+                locale={locale}
+                onDetectLogo={(url) => {
+                  setDetectedLogo(url)
+                  if (url) setShowLogo(true)
+                }}
+              />
             </div>
 
-            {/* 2. Configuration */}
-            <div className="flex gap-4">
-              <div className="flex-1 space-y-1">
-                <label className="text-sm font-medium">Size: {size}px</label>
-                <input
-                  type="range"
-                  min="128"
-                  max="1024"
-                  step="32"
-                  value={size}
-                  onChange={(e) => setSize(Number(e.target.value))}
-                  className="w-full"
-                />
-              </div>
-              <div className="flex-1 space-y-1">
-                <label className="text-sm font-medium">Error Correction</label>
-                <select
-                  className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-2 py-1 text-sm focus-visible:ring-2 focus-visible:outline-none"
-                  value={level}
-                  onChange={(e) =>
-                    setLevel(e.target.value as 'L' | 'M' | 'Q' | 'H')
-                  }
-                >
-                  <option value="L">Low (7%)</option>
-                  <option value="M">Medium (15%)</option>
-                  <option value="Q">Quartile (25%)</option>
-                  <option value="H">High (30%)</option>
-                </select>
-              </div>
-            </div>
+            {/* Divider */}
+            <div className="h-px bg-border/50 mx-6 my-2" />
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium">Foreground Color</label>
-                <div className="flex gap-2">
-                  <input
-                    type="color"
-                    value={fgColor}
-                    onChange={(e) => setFgColor(e.target.value)}
-                    className="h-10 w-16 cursor-pointer rounded border p-1"
-                  />
-                  <input
-                    type="text"
-                    value={fgColor}
-                    onChange={(e) => setFgColor(e.target.value)}
-                    className="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm uppercase"
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium">Background Color</label>
-                <div className="flex gap-2">
-                  <input
-                    type="color"
-                    value={bgColor}
-                    onChange={(e) => setBgColor(e.target.value)}
-                    className="h-10 w-16 cursor-pointer rounded border p-1"
-                  />
-                  <input
-                    type="text"
-                    value={bgColor}
-                    onChange={(e) => setBgColor(e.target.value)}
-                    className="border-input bg-background flex h-10 w-full rounded-md border px-3 py-2 text-sm uppercase"
-                  />
-                </div>
-              </div>
+            {/* Appearance Section */}
+            <div>
+              <QRAppearanceForm
+                appearance={appearance}
+                frameText={frameText}
+                onFrameTextChange={setFrameText}
+                onToggleShowLogo={setShowLogo}
+                showLogo={showLogo}
+                renderText={renderText}
+                onToggleRenderText={setRenderText}
+                qrType={qrType}
+                locale={locale as SupportedLocale}
+                effectiveLogo={(effectiveLogo as string) || undefined}
+                setCustomLogoUrl={setUploadedLogo}
+                className="pt-2 pb-4"
+              />
             </div>
-
-            <FileUploader
-              label="Center Logo"
-              description="Logo will be displayed in the center of the QR code"
-              file={logoFile}
-              previewSrc={logoSrc as string}
-              accept="image/*"
-              onFileSelect={onSelectLogo}
-              onClear={onClearLogo}
-              error={logoError}
-            />
           </div>
+        </div>
 
-          {/* RIGHT COLUMN: Display */}
-          <div
-            className="relative md:col-span-5"
-            id="qrcode-tool-root"
-            ref={qrRef}
-          >
-            <Fullscreen targetId="qrcode-tool-root" />
-            <QRCode
-              value={qrValue}
-              size={size}
-              fgColor={fgColor}
-              bgColor={bgColor}
-              level={level}
-              includeMargin={true}
-              imageSrc={logoSrc as string | undefined}
-            />
+        {/* Right Column: Preview & Actions */}
+        <div className="lg:col-span-5 xl:col-span-4 space-y-4">
+          <div className="sticky top-24 space-y-4">
+            {/* QR Code Block - No Card Wrapper */}
+            <div className="flex justify-center" ref={qrRef}>
+              <QRCode
+                value={qrValue}
+                displayText={undefined}
+                renderText={false}
+                size={appearance.size}
+                fgColor={appearance.fgColor}
+                bgColor={appearance.bgColor}
+                level={appearance.level}
+                includeMargin={true}
+                imageSrc={(effectiveLogo as string) || undefined}
+                imageSize={appearance.size * 0.2}
+                imageExcavate={true}
+                frameText={frameText}
+              />
+            </div>
 
-            <div className="mt-8 flex gap-3">
+            {/* Text Display Block - Separate from QR */}
+            {renderText && qrValue && (
+              <div className="text-center px-2">
+                <p className="text-muted-foreground text-xs break-all whitespace-pre-wrap leading-relaxed">
+                  {qrValue.length > 100 ? qrValue.substring(0, 100) + '...' : qrValue}
+                </p>
+              </div>
+            )}
+
+            {/* Action Buttons Block */}
+            <div className="grid grid-cols-2 gap-3">
               <button
-                className="border-input bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 flex-1 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors"
                 onClick={handleDownload}
-                disabled={!qrValue}
+                title="Ctrl+Enter"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-colors shadow-sm cursor-pointer group"
               >
-                <Download size={18} className="mr-2" /> Download PNG
+                <Download size={16} />
+                <span className="flex items-center gap-1.5">
+                  {dict.qrTabs.download}
+                  <kbd className="hidden group-hover:inline-flex items-center rounded border border-primary-foreground/20 bg-primary-foreground/10 px-1 py-0.5 text-[9px] font-mono">⌘↵</kbd>
+                </span>
               </button>
-
               <button
-                className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 flex-1 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors"
-                onClick={() => clipboard.copy(qrValue)}
-                disabled={!qrValue}
+                onClick={() => copyToClipboard(qrValue)}
+                title="Ctrl+Shift+C"
+                className="bg-secondary text-secondary-foreground hover:bg-secondary/80 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-colors border shadow-sm cursor-pointer group"
               >
-                {clipboard.copied ? (
-                  <Check size={18} className="mr-2 text-green-500" />
-                ) : (
-                  <Copy size={18} className="mr-2" />
-                )}
-                {clipboard.copied ? 'Copied' : 'Copy'}
+                <Copy size={16} />
+                <span className="flex items-center gap-1.5">
+                  {dict.qrTabs.copy}
+                  <kbd className="hidden group-hover:inline-flex items-center rounded border border-border bg-muted/50 px-1 py-0.5 text-[9px] font-mono">⌘⇧C</kbd>
+                </span>
               </button>
             </div>
+
+            {/* Embed & Integrations */}
+            <div className="bg-card rounded-xl border shadow-sm p-4 space-y-3">
+              <EmbedSection
+                title={dict.qrCodePage.embedTitle}
+                content={embedUrl}
+                sheetsFormula={sheetsFormula}
+                method={method}
+                onToast={showToast}
+                dict={dict.embedSection}
+              />
+
+              {/* Reuse FAQSection component */}
+              <FAQSection
+                title={dict.qrCodePage.faqTitle}
+                items={currentFAQ}
+                viewGuideText={dict.qrCodePage.viewGuide}
+              />
+            </div>
+
           </div>
+
         </div>
       </div>
     </div>

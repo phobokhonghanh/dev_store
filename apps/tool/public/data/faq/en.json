@@ -1,0 +1,40 @@
+{
+    "default": [
+        {
+            "question": "How do I create a QR code?",
+            "link": "/tools/free/qrcode/guide"
+        },
+        {
+            "question": "Do QR codes expire?",
+            "link": "/tools/free/qrcode/guide"
+        },
+        {
+            "question": "Can I change the QR code color?",
+            "link": "/tools/free/qrcode/guide"
+        },
+        {
+            "question": "How to add a logo to the QR code?",
+            "link": "/tools/free/qrcode/guide"
+        }
+    ],
+    "wifi": [
+        {
+            "question": "How does WiFi QR code work?",
+            "link": "/tools/free/qrcode/guide"
+        },
+        {
+            "question": "Which phones can scan WiFi code?",
+            "link": "/tools/free/qrcode/guide"
+        }
+    ],
+    "payment": [
+        {
+            "question": "What is VietQR?",
+            "link": "/tools/free/qrcode/guide"
+        },
+        {
+            "question": "How to receive money via QR?",
+            "link": "/tools/free/qrcode/guide"
+        }
+    ]
+}

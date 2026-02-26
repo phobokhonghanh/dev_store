@@ -1,5 +1,6 @@
 export { default as Analytics } from "./Analytics";
 export { default as Container } from "./Container";
+export { default as Logo } from "./Logo";
 // export { default as Feed } from "./Feed";
 export { default as Footer } from "./Footer";
 export { default as Header } from "./Header";

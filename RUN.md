@@ -43,6 +43,7 @@ Dưới đây là danh sách các câu lệnh điều khiển dự án được 
 
 ## Standard Workflow
 
+0. **Install:** `yarn install`
 1. **Start:** `yarn dev`
 2. **Format:** `yarn fmt`
 3. **Check:** `yarn lint` & `yarn test`
@@ -63,8 +64,35 @@ Dưới đây là danh sách các câu lệnh điều khiển dự án được 
 2. **build**
    ```
    yarn build --filter=home
+   yarn build --filter=blog
+   yarn build --filter=tool
    ```
 3. **start**
    ```
    yarn turbo run start --filter=home
+   yarn turbo run start --filter=blog
+   yarn turbo run start --filter=tool
    ```
+
+---
+
+# AI Integration (UI/UX Pro Max)
+
+Dự án này tích hợp bộ kỹ năng **UI/UX Pro Max** để hỗ trợ AI Assistant (Antigravity, Claude, Cursor, v.v.) thiết kế giao diện chuyên nghiệp.
+
+### Setup (Cho thành viên mới)
+
+Để thiết lập môi trường AI trong project của bạn, hãy chạy lệnh sau:
+
+```bash
+npx uipro-cli init --ai antigravity
+```
+
+_Lưu ý: Thư mục `.agent/shared` đã được đưa vào `.gitignore` để tránh đẩy các file dữ liệu lớn lên repository. Mỗi thành viên cần chạy lệnh trên một lần để khởi tạo tại máy cục bộ._
+
+### Cách sử dụng
+
+Khi yêu cầu AI thực hiện các công việc liên quan đến giao diện (UI/UX), bạn có thể nhắc AI sử dụng workflow:
+`"Sử dụng workflow ui-ux-pro-max để thiết kế..."`
+
+Điều này sẽ giúp AI truy cập vào 50+ style, 90+ bảng màu và các tiêu chuẩn UX chuyên sâu có sẵn trong project.
